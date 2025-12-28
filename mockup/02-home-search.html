@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#AE1C3E">
+  <title>Tra Cứu Giá Đất - Agribank Trà Vinh</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Design System -->
+  <link rel="stylesheet" href="css/design-system.css">
+
+  <style>
+    /* Home Screen Specific Styles */
+    .home-screen {
+      min-height: 100vh;
+      background: var(--color-gray-50);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Custom Header */
+    .home-header {
+      background: var(--gradient-vibrant);
+      padding: var(--space-4) var(--space-5);
+      padding-top: calc(var(--space-4) + env(safe-area-inset-top));
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .header-logo {
+      width: 44px;
+      height: 44px;
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-logo svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .header-text {
+      color: var(--color-white);
+    }
+
+    .header-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-bold);
+      margin-bottom: 2px;
+    }
+
+    .header-subtitle {
+      font-size: var(--text-xs);
+      opacity: 0.9;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .header-btn {
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      border-radius: var(--radius-lg);
+      color: var(--color-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .header-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .header-btn svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .user-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-full);
+      border: 2px solid var(--color-white);
+      overflow: hidden;
+      background: var(--gradient-orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-white);
+      font-weight: var(--font-bold);
+      font-size: var(--text-sm);
+    }
+
+    /* Welcome Section */
+    .welcome-section {
+      background: var(--gradient-vibrant);
+      padding: 0 var(--space-5) var(--space-6);
+      margin-top: -1px;
+    }
+
+    .welcome-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-5);
+      color: var(--color-white);
+    }
+
+    .welcome-greeting {
+      font-size: var(--text-lg);
+      font-weight: var(--font-semibold);
+      margin-bottom: var(--space-1);
+    }
+
+    .welcome-message {
+      font-size: var(--text-sm);
+      opacity: 0.9;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: var(--space-3);
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-lg);
+    }
+
+    .stat-value {
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+    }
+
+    .stat-label {
+      font-size: var(--text-xs);
+      opacity: 0.8;
+      margin-top: var(--space-1);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: var(--space-5);
+      padding-bottom: calc(var(--space-24) + env(safe-area-inset-bottom));
+      margin-top: -var(--space-4);
+    }
+
+    /* Search Card */
+    .search-card {
+      background: var(--color-white);
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      animation: slideUp 0.5s ease-out;
+    }
+
+    .search-header {
+      background: linear-gradient(135deg, rgba(0, 132, 61, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%);
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--color-gray-100);
+    }
+
+    .search-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-bold);
+      color: var(--color-gray-900);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .search-title .icon {
+      width: 24px;
+      height: 24px;
+      color: var(--color-primary);
+    }
+
+    .search-body {
+      padding: var(--space-5);
+    }
+
+    /* Step Container */
+    .step-container {
+      margin-bottom: var(--space-5);
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      background: var(--gradient-primary);
+      color: var(--color-white);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-sm);
+      font-weight: var(--font-bold);
+      flex-shrink: 0;
+    }
+
+    .step-info {
+      flex: 1;
+    }
+
+    .step-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: var(--color-gray-800);
+    }
+
+    .step-description {
+      font-size: var(--text-sm);
+      color: var(--color-gray-500);
+    }
+
+    /* Select Field */
+    .select-field {
+      margin-bottom: var(--space-4);
+    }
+
+    .select-label {
+      display: block;
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-gray-700);
+      margin-bottom: var(--space-2);
+    }
+
+    .select-wrapper {
+      position: relative;
+    }
+
+    .select-icon {
+      position: absolute;
+      left: var(--space-4);
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      color: var(--color-gray-400);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .custom-select {
+      width: 100%;
+      padding: var(--space-4);
+      padding-left: var(--space-12);
+      padding-right: var(--space-10);
+      font-family: var(--font-family-body);
+      font-size: var(--text-base);
+      color: var(--color-gray-800);
+      background: var(--color-white);
+      border: 2px solid var(--color-gray-200);
+      border-radius: var(--radius-xl);
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      min-height: 56px;
+    }
+
+    .custom-select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px rgba(0, 132, 61, 0.1);
+    }
+
+    .select-arrow {
+      position: absolute;
+      right: var(--space-4);
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      color: var(--color-gray-400);
+      pointer-events: none;
+    }
+
+    /* Search Button */
+    .search-btn {
+      width: 100%;
+      padding: var(--space-4) var(--space-6);
+      font-size: var(--text-lg);
+      font-weight: var(--font-bold);
+      color: var(--color-white);
+      background: var(--gradient-primary);
+      border: none;
+      border-radius: var(--radius-xl);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      min-height: 60px;
+      box-shadow: var(--shadow-button);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-3);
+      margin-top: var(--space-6);
+    }
+
+    .search-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 132, 61, 0.4);
+    }
+
+    .search-btn:active {
+      transform: translateY(0);
+    }
+
+    .search-btn svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+      margin-top: var(--space-6);
+    }
+
+    .section-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-bold);
+      color: var(--color-gray-800);
+      margin-bottom: var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .section-title .icon {
+      width: 20px;
+      height: 20px;
+      color: var(--color-primary);
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-3);
+    }
+
+    .action-card {
+      background: var(--color-white);
+      border-radius: var(--radius-xl);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      text-decoration: none;
+      border: 2px solid transparent;
+    }
+
+    .action-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--color-primary-light);
+      transform: translateY(-2px);
+    }
+
+    .action-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-3);
+    }
+
+    .action-icon.green {
+      background: linear-gradient(135deg, rgba(0, 132, 61, 0.1) 0%, rgba(0, 168, 77, 0.1) 100%);
+      color: var(--color-primary);
+    }
+
+    .action-icon.orange {
+      background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 184, 0, 0.1) 100%);
+      color: var(--color-secondary);
+    }
+
+    .action-icon.teal {
+      background: linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(8, 145, 178, 0.1) 100%);
+      color: #0D9488;
+    }
+
+    .action-icon.blue {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+      color: #3B82F6;
+    }
+
+    .action-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .action-title {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--color-gray-800);
+      margin-bottom: var(--space-1);
+    }
+
+    .action-desc {
+      font-size: var(--text-xs);
+      color: var(--color-gray-500);
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 428px;
+      background: var(--color-white);
+      border-top: 1px solid var(--color-gray-100);
+      padding: var(--space-2) var(--space-4);
+      padding-bottom: calc(var(--space-2) + env(safe-area-inset-bottom));
+      display: flex;
+      justify-content: space-around;
+      z-index: var(--z-fixed);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--space-2) var(--space-3);
+      color: var(--color-gray-400);
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      min-width: 64px;
+      position: relative;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      color: var(--color-primary);
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      top: -8px;
+      width: 24px;
+      height: 3px;
+      background: var(--gradient-primary);
+      border-radius: var(--radius-full);
+    }
+
+    .nav-icon {
+      width: 24px;
+      height: 24px;
+      margin-bottom: var(--space-1);
+    }
+
+    .nav-label {
+      font-size: var(--text-xs);
+      font-weight: var(--font-medium);
+    }
+
+    /* Animation */
+    .fade-in-up {
+      animation: fadeInUp 0.5s ease-out forwards;
+      opacity: 0;
+    }
+
+    .fade-in-up:nth-child(1) { animation-delay: 0.1s; }
+    .fade-in-up:nth-child(2) { animation-delay: 0.2s; }
+    .fade-in-up:nth-child(3) { animation-delay: 0.3s; }
+    .fade-in-up:nth-child(4) { animation-delay: 0.4s; }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="mobile-container">
+    <div class="home-screen">
+      <!-- Header -->
+      <header class="home-header">
+        <div class="header-row">
+          <div class="header-brand">
+            <div class="header-logo">
+              <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M25 5L40 15V35L25 45L10 35V15L25 5Z" fill="#00843D"/>
+                <path d="M25 12L33 17V27L25 32L17 27V17L25 12Z" fill="#FFB800"/>
+                <path d="M25 18L29 21V27L25 30L21 27V21L25 18Z" fill="white"/>
+              </svg>
+            </div>
+            <div class="header-text">
+              <div class="header-title">AGRIBANK TRÀ VINH</div>
+              <div class="header-subtitle">Tra Cứu Giá Đất</div>
+            </div>
+          </div>
+          <div class="header-actions">
+            <button class="header-btn" aria-label="Thông báo">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+              </svg>
+            </button>
+            <div class="user-avatar">NV</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Welcome Section -->
+      <section class="welcome-section">
+        <div class="welcome-card">
+          <div class="welcome-greeting">Xin chào, Nguyễn Văn A!</div>
+          <div class="welcome-message">Tra cứu giá đất nhanh chóng và chính xác</div>
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-value">9</div>
+              <div class="stat-label">Quận/Huyện</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">250+</div>
+              <div class="stat-label">Tuyến đường</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">2024</div>
+              <div class="stat-label">Cập nhật</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Search Card -->
+        <div class="search-card">
+          <div class="search-header">
+            <h2 class="search-title">
+              <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              Tra Cứu Giá Đất
+            </h2>
+          </div>
+          <div class="search-body">
+            <!-- Step 1: Location Selection -->
+            <div class="step-container">
+              <div class="step-header">
+                <div class="step-number">1</div>
+                <div class="step-info">
+                  <div class="step-title">Chọn vị trí</div>
+                  <div class="step-description">Chọn quận/huyện, đường và đoạn đường</div>
+                </div>
+              </div>
+
+              <!-- District Select -->
+              <div class="select-field fade-in-up">
+                <label class="select-label">Quận/Huyện</label>
+                <div class="select-wrapper">
+                  <svg class="select-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                  </svg>
+                  <select class="custom-select" id="district">
+                    <option value="">Chọn Quận/Huyện</option>
+                    <option value="tp-tra-vinh">TP. Trà Vinh</option>
+                    <option value="cang-long">Huyện Càng Long</option>
+                    <option value="cau-ke">Huyện Cầu Kè</option>
+                    <option value="tieu-can">Huyện Tiểu Cần</option>
+                    <option value="chau-thanh">Huyện Châu Thành</option>
+                    <option value="cau-ngang">Huyện Cầu Ngang</option>
+                    <option value="tra-cu">Huyện Trà Cú</option>
+                    <option value="duyen-hai">Huyện Duyên Hải</option>
+                    <option value="tx-duyen-hai">TX. Duyên Hải</option>
+                  </select>
+                  <svg class="select-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Street Select -->
+              <div class="select-field fade-in-up">
+                <label class="select-label">Đường</label>
+                <div class="select-wrapper">
+                  <svg class="select-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                  </svg>
+                  <select class="custom-select" id="street">
+                    <option value="">Chọn Đường</option>
+                    <option value="nguyen-thi-minh-khai">Nguyễn Thị Minh Khai</option>
+                    <option value="ly-thuong-kiet">Lý Thường Kiệt</option>
+                    <option value="tran-phu">Trần Phú</option>
+                    <option value="le-loi">Lê Lợi</option>
+                    <option value="hung-vuong">Hùng Vương</option>
+                    <option value="nguyen-dang">Nguyễn Đáng</option>
+                    <option value="pham-ngu-lao">Phạm Ngũ Lão</option>
+                    <option value="dien-bien-phu">Điện Biên Phủ</option>
+                  </select>
+                  <svg class="select-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Segment Select -->
+              <div class="select-field fade-in-up">
+                <label class="select-label">Đoạn đường (Từ - Đến)</label>
+                <div class="select-wrapper">
+                  <svg class="select-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <select class="custom-select" id="segment">
+                    <option value="">Chọn Đoạn đường</option>
+                    <option value="segment-1">Từ đầu đường đến Lý Thường Kiệt</option>
+                    <option value="segment-2">Từ Lý Thường Kiệt đến Trần Phú</option>
+                    <option value="segment-3">Từ Trần Phú đến cuối đường</option>
+                    <option value="all">Toàn tuyến</option>
+                  </select>
+                  <svg class="select-arrow" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Search Button -->
+            <button class="search-btn" onclick="handleSearch()">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              TRA CỨU
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <h3 class="section-title">
+            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            Truy cập nhanh
+          </h3>
+          <div class="action-grid">
+            <a href="04-history.html" class="action-card">
+              <div class="action-icon green">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div class="action-title">Lịch sử</div>
+              <div class="action-desc">Xem tra cứu gần đây</div>
+            </a>
+            <a href="#" class="action-card">
+              <div class="action-icon orange">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+              </div>
+              <div class="action-title">Thống kê</div>
+              <div class="action-desc">Biểu đồ giá đất</div>
+            </a>
+            <a href="#" class="action-card">
+              <div class="action-icon teal">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+              </div>
+              <div class="action-title">Văn bản</div>
+              <div class="action-desc">QĐ UBND tỉnh</div>
+            </a>
+            <a href="#" class="action-card">
+              <div class="action-icon blue">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div class="action-title">Hướng dẫn</div>
+              <div class="action-desc">Cách sử dụng</div>
+            </a>
+          </div>
+        </div>
+      </main>
+
+      <!-- Bottom Navigation -->
+      <nav class="bottom-nav">
+        <a href="02-home-search.html" class="nav-item active">
+          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+          </svg>
+          <span class="nav-label">Trang chủ</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <span class="nav-label">Tra cứu</span>
+        </a>
+        <a href="04-history.html" class="nav-item">
+          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span class="nav-label">Lịch sử</span>
+        </a>
+        <a href="#" class="nav-item">
+          <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+          </svg>
+          <span class="nav-label">Tài khoản</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+
+  <script>
+    function handleSearch() {
+      const district = document.getElementById('district').value;
+      const street = document.getElementById('street').value;
+      const segment = document.getElementById('segment').value;
+
+      if (!district) {
+        alert('Vui lòng chọn Quận/Huyện');
+        return;
+      }
+      if (!street) {
+        alert('Vui lòng chọn Đường');
+        return;
+      }
+
+      // Navigate to results page
+      window.location.href = '03-results.html';
+    }
+  </script>
+</body>
+</html>

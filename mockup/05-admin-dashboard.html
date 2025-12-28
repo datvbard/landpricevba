@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#AE1C3E">
+  <title>Admin Dashboard - Agribank Trà Vinh</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Design System -->
+  <link rel="stylesheet" href="css/design-system.css">
+
+  <style>
+    /* Admin Dashboard Specific Styles */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--color-gray-50);
+    }
+
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--gradient-dark);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      left: 0;
+      top: 0;
+      z-index: var(--z-fixed);
+      transition: transform var(--transition-slow);
+    }
+
+    .sidebar-header {
+      padding: var(--space-6);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .sidebar-logo {
+      width: 48px;
+      height: 48px;
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sidebar-logo svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .sidebar-title {
+      color: var(--color-white);
+    }
+
+    .sidebar-title h1 {
+      font-size: var(--text-lg);
+      font-weight: var(--font-bold);
+      margin-bottom: 2px;
+    }
+
+    .sidebar-title p {
+      font-size: var(--text-xs);
+      opacity: 0.7;
+      margin: 0;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: var(--space-4);
+      overflow-y: auto;
+    }
+
+    .nav-section {
+      margin-bottom: var(--space-6);
+    }
+
+    .nav-section-title {
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      color: rgba(255, 255, 255, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 0 var(--space-3);
+      margin-bottom: var(--space-3);
+    }
+
+    .nav-menu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      border-radius: var(--radius-lg);
+      transition: all var(--transition-fast);
+      margin-bottom: var(--space-1);
+    }
+
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--color-white);
+    }
+
+    .nav-link.active {
+      background: var(--gradient-primary);
+      color: var(--color-white);
+      box-shadow: 0 4px 15px rgba(0, 132, 61, 0.3);
+    }
+
+    .nav-link svg {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .nav-link span {
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      padding: 2px 8px;
+      background: var(--color-secondary);
+      color: var(--color-white);
+      font-size: var(--text-xs);
+      font-weight: var(--font-bold);
+      border-radius: var(--radius-full);
+    }
+
+    .sidebar-footer {
+      padding: var(--space-4);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .admin-user {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3);
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: var(--radius-lg);
+    }
+
+    .admin-avatar {
+      width: 40px;
+      height: 40px;
+      background: var(--gradient-orange);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-white);
+      font-weight: var(--font-bold);
+      font-size: var(--text-sm);
+    }
+
+    .admin-info {
+      flex: 1;
+    }
+
+    .admin-name {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--color-white);
+    }
+
+    .admin-role {
+      font-size: var(--text-xs);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .logout-btn {
+      width: 36px;
+      height: 36px;
+      background: rgba(239, 68, 68, 0.2);
+      border: none;
+      border-radius: var(--radius-md);
+      color: #EF4444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .logout-btn:hover {
+      background: #EF4444;
+      color: var(--color-white);
+    }
+
+    .logout-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 280px;
+      min-height: 100vh;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      background: var(--color-white);
+      padding: var(--space-4) var(--space-6);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--color-gray-200);
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+    }
+
+    .page-title {
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+      color: var(--color-gray-800);
+    }
+
+    .top-bar-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .search-box {
+      position: relative;
+      width: 300px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: var(--space-3) var(--space-4) var(--space-3) var(--space-10);
+      background: var(--color-gray-50);
+      border: 2px solid transparent;
+      border-radius: var(--radius-lg);
+      font-size: var(--text-sm);
+      transition: all var(--transition-fast);
+    }
+
+    .search-box input:focus {
+      outline: none;
+      background: var(--color-white);
+      border-color: var(--color-primary);
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: var(--space-3);
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      color: var(--color-gray-400);
+    }
+
+    .top-btn {
+      width: 44px;
+      height: 44px;
+      background: var(--color-gray-50);
+      border: none;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      position: relative;
+      color: var(--color-gray-600);
+    }
+
+    .top-btn:hover {
+      background: var(--color-gray-100);
+      color: var(--color-primary);
+    }
+
+    .top-btn svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .notification-dot {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 10px;
+      height: 10px;
+      background: var(--color-error);
+      border-radius: var(--radius-full);
+      border: 2px solid var(--color-white);
+    }
+
+    /* Dashboard Content */
+    .dashboard-content {
+      padding: var(--space-6);
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-5);
+      margin-bottom: var(--space-6);
+    }
+
+    .stat-card {
+      background: var(--color-white);
+      border-radius: var(--radius-xl);
+      padding: var(--space-5);
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-normal);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+
+    .stat-card.green::before { background: var(--gradient-primary); }
+    .stat-card.orange::before { background: var(--gradient-orange); }
+    .stat-card.teal::before { background: linear-gradient(135deg, #14B8A6 0%, #0891B2 100%); }
+    .stat-card.blue::before { background: linear-gradient(135deg, #3B82F6 0%, #6366F1 100%); }
+
+    .stat-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: var(--space-3);
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-icon.green {
+      background: linear-gradient(135deg, rgba(0, 132, 61, 0.1) 0%, rgba(0, 168, 77, 0.1) 100%);
+      color: var(--color-primary);
+    }
+
+    .stat-icon.orange {
+      background: linear-gradient(135deg, rgba(255, 107, 53, 0.1) 0%, rgba(255, 184, 0, 0.1) 100%);
+      color: var(--color-secondary);
+    }
+
+    .stat-icon.teal {
+      background: linear-gradient(135deg, rgba(20, 184, 166, 0.1) 0%, rgba(8, 145, 178, 0.1) 100%);
+      color: #0D9488;
+    }
+
+    .stat-icon.blue {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+      color: #3B82F6;
+    }
+
+    .stat-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .stat-trend {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-sm);
+    }
+
+    .stat-trend.up {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--color-success);
+    }
+
+    .stat-trend.down {
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--color-error);
+    }
+
+    .stat-trend svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .stat-value {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      color: var(--color-gray-900);
+      margin-bottom: var(--space-1);
+    }
+
+    .stat-label {
+      font-size: var(--text-sm);
+      color: var(--color-gray-500);
+    }
+
+    /* Content Grid */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: var(--space-5);
+    }
+
+    /* Table Card */
+    .table-card {
+      background: var(--color-white);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .table-header {
+      padding: var(--space-5);
+      border-bottom: 1px solid var(--color-gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .table-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-bold);
+      color: var(--color-gray-800);
+    }
+
+    .table-actions {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .table-btn {
+      padding: var(--space-2) var(--space-4);
+      background: var(--color-gray-50);
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--radius-md);
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-gray-600);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      transition: all var(--transition-fast);
+    }
+
+    .table-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .table-btn.primary {
+      background: var(--gradient-primary);
+      border: none;
+      color: var(--color-white);
+    }
+
+    .table-btn.primary:hover {
+      box-shadow: var(--shadow-button);
+    }
+
+    .table-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Table with horizontal scroll for many columns */
+    .table-scroll-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px; /* Ensure table doesn't compress on smaller screens */
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: var(--space-3) var(--space-4);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .data-table th {
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+      color: var(--color-gray-500);
+      background: var(--color-gray-50);
+      border-bottom: 1px solid var(--color-gray-100);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .data-table td {
+      font-size: var(--text-sm);
+      color: var(--color-gray-700);
+      border-bottom: 1px solid var(--color-gray-100);
+    }
+
+    .data-table tr:hover td {
+      background: rgba(0, 132, 61, 0.02);
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Sticky first columns for horizontal scroll */
+    .data-table th:first-child,
+    .data-table td:first-child {
+      position: sticky;
+      left: 0;
+      background: var(--color-white);
+      z-index: 1;
+    }
+
+    .data-table th:first-child {
+      background: var(--color-gray-50);
+    }
+
+    .data-table tr:hover td:first-child {
+      background: rgba(0, 132, 61, 0.02);
+    }
+
+    .table-stt {
+      font-weight: var(--font-medium);
+      color: var(--color-gray-500);
+      text-align: center;
+      width: 50px;
+    }
+
+    .table-district {
+      font-weight: var(--font-medium);
+      color: var(--color-gray-700);
+    }
+
+    .table-street {
+      font-weight: var(--font-semibold);
+      color: var(--color-gray-800);
+    }
+
+    .table-segment {
+      color: var(--color-gray-600);
+      font-size: var(--text-xs);
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .table-location {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .table-location-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, rgba(0, 132, 61, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--color-primary);
+    }
+
+    .table-location-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .table-location-name {
+      font-weight: var(--font-medium);
+      color: var(--color-gray-800);
+    }
+
+    .table-location-district {
+      font-size: var(--text-xs);
+      color: var(--color-gray-500);
+    }
+
+    .table-price {
+      font-weight: var(--font-semibold);
+      color: var(--color-primary);
+      text-align: right;
+    }
+
+    .table-price.ubnd {
+      color: var(--color-gray-600);
+    }
+
+    .table-price.low {
+      color: #0891B2;
+    }
+
+    .table-price.high {
+      color: var(--color-secondary);
+    }
+
+    .table-price.avg {
+      color: var(--color-primary);
+      font-weight: var(--font-bold);
+    }
+
+    .table-status {
+      display: inline-flex;
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: var(--font-semibold);
+    }
+
+    .table-status.active {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--color-success);
+    }
+
+    .table-status.pending {
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--color-warning);
+    }
+
+    .action-btns {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      background: var(--color-gray-50);
+      border: 1px solid var(--color-gray-200);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      color: var(--color-gray-500);
+    }
+
+    .action-btn:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    .action-btn.delete:hover {
+      border-color: var(--color-error);
+      color: var(--color-error);
+    }
+
+    .action-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Activity Card */
+    .activity-card {
+      background: var(--color-white);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .activity-header {
+      padding: var(--space-5);
+      border-bottom: 1px solid var(--color-gray-100);
+    }
+
+    .activity-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-bold);
+      color: var(--color-gray-800);
+    }
+
+    .activity-list {
+      padding: var(--space-4);
+    }
+
+    .activity-item {
+      display: flex;
+      gap: var(--space-4);
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
+      transition: all var(--transition-fast);
+    }
+
+    .activity-item:hover {
+      background: var(--color-gray-50);
+    }
+
+    .activity-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .activity-icon.green {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--color-success);
+    }
+
+    .activity-icon.orange {
+      background: rgba(255, 107, 53, 0.1);
+      color: var(--color-secondary);
+    }
+
+    .activity-icon.blue {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3B82F6;
+    }
+
+    .activity-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .activity-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .activity-text {
+      font-size: var(--text-sm);
+      color: var(--color-gray-700);
+      margin-bottom: var(--space-1);
+    }
+
+    .activity-text strong {
+      font-weight: var(--font-semibold);
+      color: var(--color-gray-800);
+    }
+
+    .activity-time {
+      font-size: var(--text-xs);
+      color: var(--color-gray-400);
+    }
+
+    /* Responsive */
+    @media (max-width: 1280px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .search-box {
+        display: none;
+      }
+      .data-table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <div class="sidebar-logo">
+            <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M25 5L40 15V35L25 45L10 35V15L25 5Z" fill="#00843D"/>
+              <path d="M25 12L33 17V27L25 32L17 27V17L25 12Z" fill="#FFB800"/>
+              <path d="M25 18L29 21V27L25 30L21 27V21L25 18Z" fill="white"/>
+            </svg>
+          </div>
+          <div class="sidebar-title">
+            <h1>AGRIBANK</h1>
+            <p>Trà Vinh Admin</p>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">Menu chính</div>
+          <ul class="nav-menu">
+            <li>
+              <a href="#" class="nav-link active">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                </svg>
+                <span>Tổng quan</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="nav-link">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span>Quản lý Giá Đất</span>
+                <span class="nav-badge">250</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="nav-link">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+                <span>Quản lý Hệ Số</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="nav-link">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+                <span>Quản lý Users</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Báo cáo</div>
+          <ul class="nav-menu">
+            <li>
+              <a href="#" class="nav-link">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                <span>Thống kê</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="nav-link">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span>Lịch sử tra cứu</span>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="nav-link">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                <span>Xuất báo cáo</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Cài đặt</div>
+          <ul class="nav-menu">
+            <li>
+              <a href="#" class="nav-link">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+                <span>Cài đặt hệ thống</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="admin-user">
+          <div class="admin-avatar">AD</div>
+          <div class="admin-info">
+            <div class="admin-name">Admin</div>
+            <div class="admin-role">Quản trị viên</div>
+          </div>
+          <button class="logout-btn" title="Đăng xuất">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <h1 class="page-title">Tổng Quan</h1>
+        <div class="top-bar-actions">
+          <div class="search-box">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input type="text" placeholder="Tìm kiếm...">
+          </div>
+          <button class="top-btn">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+            <span class="notification-dot"></span>
+          </button>
+          <button class="top-btn">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard Content -->
+      <div class="dashboard-content">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card green">
+            <div class="stat-header">
+              <div class="stat-icon green">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                </svg>
+              </div>
+              <div class="stat-trend up">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+                </svg>
+                +12%
+              </div>
+            </div>
+            <div class="stat-value">250</div>
+            <div class="stat-label">Tuyến đường</div>
+          </div>
+
+          <div class="stat-card orange">
+            <div class="stat-header">
+              <div class="stat-icon orange">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              <div class="stat-trend up">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+                </svg>
+                +5%
+              </div>
+            </div>
+            <div class="stat-value">45</div>
+            <div class="stat-label">Bộ hệ số</div>
+          </div>
+
+          <div class="stat-card teal">
+            <div class="stat-header">
+              <div class="stat-icon teal">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                </svg>
+              </div>
+              <div class="stat-trend up">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+                </svg>
+                +8%
+              </div>
+            </div>
+            <div class="stat-value">156</div>
+            <div class="stat-label">Người dùng</div>
+          </div>
+
+          <div class="stat-card blue">
+            <div class="stat-header">
+              <div class="stat-icon blue">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+              </div>
+              <div class="stat-trend up">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+                </svg>
+                +25%
+              </div>
+            </div>
+            <div class="stat-value">1,245</div>
+            <div class="stat-label">Lượt tra cứu</div>
+          </div>
+        </div>
+
+        <!-- Content Grid -->
+        <div class="content-grid">
+          <!-- Table Card -->
+          <div class="table-card">
+            <div class="table-header">
+              <h2 class="table-title">Giá Đất Mới Cập Nhật</h2>
+              <div class="table-actions">
+                <button class="table-btn">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                  </svg>
+                  Lọc
+                </button>
+                <button class="table-btn primary">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                  </svg>
+                  Thêm mới
+                </button>
+              </div>
+            </div>
+            <div class="table-scroll-container">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>STT</th>
+                    <th>Quan/Huyen</th>
+                    <th>Ten duong</th>
+                    <th>Doan (Tu)</th>
+                    <th>Doan (Den)</th>
+                    <th>Gia UBND</th>
+                    <th>Gia thap</th>
+                    <th>Gia cao</th>
+                    <th>Gia TB</th>
+                    <th>Thao tac</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="table-stt">1</td>
+                    <td class="table-district">TP. Tra Vinh</td>
+                    <td class="table-street">D. Pham Thai Buong</td>
+                    <td class="table-segment">D. Hung Vuong</td>
+                    <td class="table-segment">Vong xoay Cho Tra Vinh</td>
+                    <td class="table-price ubnd">36,500</td>
+                    <td class="table-price low">247,700</td>
+                    <td class="table-price high">254,400</td>
+                    <td class="table-price avg">251,000</td>
+                    <td>
+                      <div class="action-btns">
+                        <button class="action-btn" title="Chinh sua">
+                          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                          </svg>
+                        </button>
+                        <button class="action-btn delete" title="Xoa">
+                          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="table-stt">2</td>
+                    <td class="table-district">TP. Tra Vinh</td>
+                    <td class="table-street">D. Dien Bien Phu</td>
+                    <td class="table-segment">Vong xoay Cho</td>
+                    <td class="table-segment">D. Pham Hong Thai</td>
+                    <td class="table-price ubnd">36,500</td>
+                    <td class="table-price low">153,400</td>
+                    <td class="table-price high">190,500</td>
+                    <td class="table-price avg">172,000</td>
+                    <td>
+                      <div class="action-btns">
+                        <button class="action-btn" title="Chinh sua">
+                          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                          </svg>
+                        </button>
+                        <button class="action-btn delete" title="Xoa">
+                          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="table-stt">3</td>
+                    <td class="table-district">TP. Tra Vinh</td>
+                    <td class="table-street">D. Dien Bien Phu</td>
+                    <td class="table-segment">D. Pham Hong Thai</td>
+                    <td class="table-segment">D. Tran Phu</td>
+                    <td class="table-price ubnd">30,800</td>
+                    <td class="table-price low">94,000</td>
+                    <td class="table-price high">126,000</td>
+                    <td class="table-price avg">110,000</td>
+                    <td>
+                      <div class="action-btns">
+                        <button class="action-btn" title="Chinh sua">
+                          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                          </svg>
+                        </button>
+                        <button class="action-btn delete" title="Xoa">
+                          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="table-stt">4</td>
+                    <td class="table-district">TP. Tra Vinh</td>
+                    <td class="table-street">D. Nguyen Thi Minh Khai</td>
+                    <td class="table-segment">D. Ly Thuong Kiet</td>
+                    <td class="table-segment">D. Tran Phu</td>
+                    <td class="table-price ubnd">8,500</td>
+                    <td class="table-price low">12,000</td>
+                    <td class="table-price high">25,000</td>
+                    <td class="table-price avg">18,500</td>
+                    <td>
+                      <div class="action-btns">
+                        <button class="action-btn" title="Chinh sua">
+                          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                          </svg>
+                        </button>
+                        <button class="action-btn delete" title="Xoa">
+                          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="table-stt">5</td>
+                    <td class="table-district">H. Cang Long</td>
+                    <td class="table-street">D. Tran Phu</td>
+                    <td class="table-segment">Nga 3 Cang Long</td>
+                    <td class="table-segment">Cau Cang Long</td>
+                    <td class="table-price ubnd">5,500</td>
+                    <td class="table-price low">8,000</td>
+                    <td class="table-price high">15,000</td>
+                    <td class="table-price avg">12,000</td>
+                    <td>
+                      <div class="action-btns">
+                        <button class="action-btn" title="Chinh sua">
+                          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                          </svg>
+                        </button>
+                        <button class="action-btn delete" title="Xoa">
+                          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="table-stt">6</td>
+                    <td class="table-district">H. Cau Ke</td>
+                    <td class="table-street">D. Hung Vuong</td>
+                    <td class="table-segment">UBND Huyen</td>
+                    <td class="table-segment">Cho Cau Ke</td>
+                    <td class="table-price ubnd">4,200</td>
+                    <td class="table-price low">6,500</td>
+                    <td class="table-price high">11,000</td>
+                    <td class="table-price avg">8,500</td>
+                    <td>
+                      <div class="action-btns">
+                        <button class="action-btn" title="Chinh sua">
+                          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                          </svg>
+                        </button>
+                        <button class="action-btn delete" title="Xoa">
+                          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                          </svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Activity Card -->
+          <div class="activity-card">
+            <div class="activity-header">
+              <h2 class="activity-title">Hoạt động gần đây</h2>
+            </div>
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="activity-icon green">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                  </svg>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-text"><strong>Admin</strong> đã thêm mới giá đất đường Nguyễn Đáng</div>
+                  <div class="activity-time">5 phút trước</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon orange">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                  </svg>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-text"><strong>Admin</strong> đã cập nhật hệ số vị trí</div>
+                  <div class="activity-time">15 phút trước</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon blue">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                  </svg>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-text"><strong>Nguyễn Văn A</strong> đã đăng ký tài khoản mới</div>
+                  <div class="activity-time">1 giờ trước</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon green">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-text"><strong>Hệ thống</strong> đã sao lưu dữ liệu thành công</div>
+                  <div class="activity-time">2 giờ trước</div>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon orange">
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                  </svg>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-text"><strong>Admin</strong> đã import dữ liệu từ Excel</div>
+                  <div class="activity-time">3 giờ trước</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1389 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#AE1C3E">
+  <title>Kết Quả Tra Cứu - Agribank Trà Vinh</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Design System -->
+  <link rel="stylesheet" href="css/design-system.css">
+
+  <style>
+    /* Results Screen Specific Styles */
+    .results-screen {
+      min-height: 100vh;
+      background: var(--color-gray-50);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .results-header {
+      background: var(--gradient-vibrant);
+      padding: var(--space-4) var(--space-5);
+      padding-top: calc(var(--space-4) + env(safe-area-inset-top));
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      border-radius: var(--radius-lg);
+      color: var(--color-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      flex-shrink: 0;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .back-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .header-info {
+      flex: 1;
+      color: var(--color-white);
+    }
+
+    .header-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-bold);
+    }
+
+    .header-subtitle {
+      font-size: var(--text-sm);
+      opacity: 0.9;
+    }
+
+    /* Location Info Card */
+    .location-card {
+      background: var(--gradient-vibrant);
+      margin-top: -1px;
+      padding: 0 var(--space-5) var(--space-6);
+    }
+
+    .location-info {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: var(--radius-xl);
+      padding: var(--space-4);
+      color: var(--color-white);
+    }
+
+    .location-row {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+    }
+
+    .location-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .location-icon svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    .location-details {
+      flex: 1;
+    }
+
+    .location-name {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      margin-bottom: var(--space-1);
+    }
+
+    .location-address {
+      font-size: var(--text-sm);
+      opacity: 0.9;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: var(--space-5);
+      padding-bottom: calc(var(--space-8) + env(safe-area-inset-bottom));
+      margin-top: -var(--space-4);
+    }
+
+    /* Price Grid */
+    .price-section {
+      background: var(--color-white);
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      margin-bottom: var(--space-5);
+      animation: slideUp 0.5s ease-out;
+    }
+
+    .price-header {
+      background: linear-gradient(135deg, rgba(0, 132, 61, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%);
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--color-gray-100);
+    }
+
+    .price-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-bold);
+      color: var(--color-gray-800);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .price-title .icon {
+      width: 20px;
+      height: 20px;
+      color: var(--color-primary);
+    }
+
+    .price-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1px;
+      background: var(--color-gray-100);
+    }
+
+    .price-item {
+      background: var(--color-white);
+      padding: var(--space-4);
+      text-align: center;
+      transition: all var(--transition-fast);
+      cursor: pointer;
+    }
+
+    .price-item:hover {
+      background: rgba(0, 132, 61, 0.02);
+    }
+
+    .price-item.selected {
+      background: linear-gradient(135deg, rgba(0, 132, 61, 0.08) 0%, rgba(20, 184, 166, 0.08) 100%);
+    }
+
+    .price-item.featured {
+      grid-column: span 2;
+      background: var(--gradient-vibrant);
+      color: var(--color-white);
+    }
+
+    .price-item.featured .price-label {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .price-item.featured .price-value {
+      color: var(--color-white);
+    }
+
+    .price-label {
+      font-size: var(--text-sm);
+      color: var(--color-gray-500);
+      margin-bottom: var(--space-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-1);
+    }
+
+    .price-label .radio-dot {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--color-gray-300);
+      border-radius: var(--radius-full);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all var(--transition-fast);
+    }
+
+    .price-item.selected .price-label .radio-dot {
+      border-color: var(--color-primary);
+      background: var(--color-primary);
+    }
+
+    .price-item.selected .price-label .radio-dot::after {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--color-white);
+      border-radius: var(--radius-full);
+    }
+
+    .price-value {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-bold);
+      color: var(--color-gray-900);
+    }
+
+    .price-unit {
+      font-size: var(--text-sm);
+      font-weight: var(--font-normal);
+      color: var(--color-gray-500);
+      display: block;
+      margin-top: var(--space-1);
+    }
+
+    .price-item.featured .price-unit {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* Calculation Section */
+    .calc-section {
+      background: var(--color-white);
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      margin-bottom: var(--space-5);
+      animation: slideUp 0.6s ease-out;
+    }
+
+    .calc-header {
+      background: linear-gradient(135deg, rgba(255, 107, 53, 0.05) 0%, rgba(255, 184, 0, 0.05) 100%);
+      padding: var(--space-4) var(--space-5);
+      border-bottom: 1px solid var(--color-gray-100);
+    }
+
+    .calc-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-bold);
+      color: var(--color-gray-800);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .calc-title .icon {
+      width: 20px;
+      height: 20px;
+      color: var(--color-secondary);
+    }
+
+    .calc-body {
+      padding: var(--space-5);
+    }
+
+    /* Form Fields */
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+    }
+
+    .form-row.full {
+      grid-template-columns: 1fr;
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .field-label {
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-gray-700);
+      margin-bottom: var(--space-2);
+    }
+
+    .field-select,
+    .field-input {
+      width: 100%;
+      padding: var(--space-3) var(--space-4);
+      font-family: var(--font-family-body);
+      font-size: var(--text-base);
+      color: var(--color-gray-800);
+      background: var(--color-white);
+      border: 2px solid var(--color-gray-200);
+      border-radius: var(--radius-lg);
+      appearance: none;
+      -webkit-appearance: none;
+      transition: all var(--transition-fast);
+      min-height: 48px;
+    }
+
+    .field-select:focus,
+    .field-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.1);
+    }
+
+    .select-wrap {
+      position: relative;
+    }
+
+    .select-wrap::after {
+      content: '';
+      position: absolute;
+      right: var(--space-4);
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--color-gray-400);
+      pointer-events: none;
+    }
+
+    /* Calculate Button */
+    .calc-btn {
+      width: 100%;
+      padding: var(--space-4) var(--space-6);
+      font-size: var(--text-lg);
+      font-weight: var(--font-bold);
+      color: var(--color-white);
+      background: var(--gradient-orange);
+      border: none;
+      border-radius: var(--radius-xl);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      min-height: 56px;
+      box-shadow: 0 4px 14px rgba(255, 107, 53, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      margin-top: var(--space-4);
+    }
+
+    .calc-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 107, 53, 0.4);
+    }
+
+    .calc-btn svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* Valuation Result Section - Prominent Final Price Display */
+    .valuation-section {
+      background: var(--color-white);
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-xl);
+      overflow: hidden;
+      margin-bottom: var(--space-5);
+      animation: scaleIn 0.5s ease-out;
+    }
+
+    .valuation-header {
+      background: var(--gradient-vibrant);
+      padding: var(--space-5);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .valuation-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 50%);
+      animation: celebratePulse 3s ease-in-out infinite;
+    }
+
+    @keyframes celebratePulse {
+      0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.5; }
+      50% { transform: scale(1.2) rotate(5deg); opacity: 0.3; }
+    }
+
+    .valuation-icon {
+      width: 56px;
+      height: 56px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-3);
+      position: relative;
+      z-index: 1;
+    }
+
+    .valuation-icon svg {
+      width: 28px;
+      height: 28px;
+      color: var(--color-white);
+    }
+
+    .valuation-title {
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+      color: var(--color-white);
+      position: relative;
+      z-index: 1;
+    }
+
+    .valuation-body {
+      padding: var(--space-5);
+    }
+
+    /* Location Info in Result */
+    .valuation-location {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      background: linear-gradient(135deg, rgba(0, 132, 61, 0.05) 0%, rgba(20, 184, 166, 0.05) 100%);
+      border-radius: var(--radius-xl);
+      margin-bottom: var(--space-5);
+      border: 1px solid rgba(0, 132, 61, 0.1);
+    }
+
+    .valuation-location-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--gradient-primary);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--color-white);
+    }
+
+    .valuation-location-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .valuation-location-details h4 {
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      color: var(--color-gray-800);
+      margin-bottom: var(--space-1);
+    }
+
+    .valuation-location-details p {
+      font-size: var(--text-sm);
+      color: var(--color-gray-600);
+      margin: 0;
+    }
+
+    /* Coefficients Breakdown */
+    .coefficients-section {
+      margin-bottom: var(--space-5);
+    }
+
+    .coefficients-title {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--color-gray-700);
+      margin-bottom: var(--space-3);
+    }
+
+    .coefficients-title svg {
+      width: 18px;
+      height: 18px;
+      color: var(--color-primary);
+    }
+
+    .coefficient-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .coefficient-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-gray-50);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-sm);
+    }
+
+    .coefficient-item:nth-child(odd) {
+      background: rgba(0, 132, 61, 0.03);
+    }
+
+    .coefficient-label {
+      color: var(--color-gray-600);
+    }
+
+    .coefficient-value {
+      font-weight: var(--font-semibold);
+      color: var(--color-primary);
+    }
+
+    .coefficient-value.neutral {
+      color: var(--color-gray-500);
+    }
+
+    .coefficient-value.positive {
+      color: var(--color-success);
+    }
+
+    .coefficient-value.negative {
+      color: var(--color-error);
+    }
+
+    /* Adjusted Price Per M2 */
+    .adjusted-price {
+      background: linear-gradient(135deg, rgba(255, 184, 0, 0.1) 0%, rgba(255, 107, 53, 0.1) 100%);
+      border-radius: var(--radius-xl);
+      padding: var(--space-4);
+      margin-bottom: var(--space-5);
+      text-align: center;
+      border: 1px solid rgba(255, 184, 0, 0.2);
+    }
+
+    .adjusted-price-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--color-gray-600);
+      margin-bottom: var(--space-2);
+    }
+
+    .adjusted-price-label svg {
+      width: 18px;
+      height: 18px;
+      color: var(--color-secondary);
+    }
+
+    .adjusted-price-value {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-bold);
+      color: var(--color-secondary);
+    }
+
+    .adjusted-price-unit {
+      font-size: var(--text-sm);
+      color: var(--color-gray-500);
+      margin-top: var(--space-1);
+    }
+
+    /* Area Display */
+    .area-display {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-3);
+      background: var(--color-gray-50);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-5);
+      font-size: var(--text-sm);
+      color: var(--color-gray-600);
+    }
+
+    .area-display svg {
+      width: 18px;
+      height: 18px;
+      color: var(--color-primary);
+    }
+
+    .area-display strong {
+      color: var(--color-gray-800);
+      font-weight: var(--font-semibold);
+    }
+
+    /* Final Total Value - Hero Display */
+    .final-total {
+      background: var(--gradient-vibrant);
+      border-radius: var(--radius-xl);
+      padding: var(--space-6);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: var(--space-5);
+    }
+
+    .final-total::before {
+      content: '';
+      position: absolute;
+      top: -100%;
+      left: -100%;
+      width: 300%;
+      height: 300%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 40%);
+      animation: celebratePulse 4s ease-in-out infinite;
+    }
+
+    .final-total-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto var(--space-3);
+      position: relative;
+      z-index: 1;
+    }
+
+    .final-total-icon svg {
+      width: 24px;
+      height: 24px;
+      color: var(--color-white);
+    }
+
+    .final-total-label {
+      font-size: var(--text-sm);
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: var(--space-2);
+      position: relative;
+      z-index: 1;
+    }
+
+    .final-total-value {
+      font-size: var(--text-4xl);
+      font-weight: var(--font-bold);
+      color: var(--color-white);
+      position: relative;
+      z-index: 1;
+      line-height: 1.2;
+      margin-bottom: var(--space-1);
+    }
+
+    .final-total-currency {
+      font-size: var(--text-lg);
+      color: rgba(255, 255, 255, 0.9);
+      position: relative;
+      z-index: 1;
+    }
+
+    .final-total-words {
+      margin-top: var(--space-4);
+      padding: var(--space-3) var(--space-4);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: var(--radius-lg);
+      font-size: var(--text-sm);
+      color: var(--color-white);
+      font-style: italic;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Valuation Action Buttons */
+    .valuation-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+    }
+
+    .valuation-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-4);
+      border-radius: var(--radius-xl);
+      font-size: var(--text-base);
+      font-weight: var(--font-semibold);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      border: none;
+    }
+
+    .valuation-btn.primary {
+      background: var(--gradient-primary);
+      color: var(--color-white);
+      box-shadow: 0 4px 14px rgba(0, 132, 61, 0.3);
+    }
+
+    .valuation-btn.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 132, 61, 0.4);
+    }
+
+    .valuation-btn.secondary {
+      background: var(--color-gray-100);
+      color: var(--color-gray-700);
+      border: 1px solid var(--color-gray-200);
+    }
+
+    .valuation-btn.secondary:hover {
+      background: var(--color-gray-200);
+    }
+
+    .valuation-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Legacy Result Section (kept for fallback) */
+    .result-section {
+      background: var(--gradient-vibrant);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-6);
+      color: var(--color-white);
+      text-align: center;
+      box-shadow: var(--shadow-xl);
+      position: relative;
+      overflow: hidden;
+      animation: scaleIn 0.4s ease-out;
+    }
+
+    .result-section::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.1); opacity: 0.3; }
+    }
+
+    .result-item {
+      position: relative;
+      z-index: 1;
+      margin-bottom: var(--space-5);
+    }
+
+    .result-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .result-label {
+      font-size: var(--text-sm);
+      opacity: 0.9;
+      margin-bottom: var(--space-2);
+    }
+
+    .result-value {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+    }
+
+    .result-value.large {
+      font-size: var(--text-4xl);
+    }
+
+    .result-text {
+      font-size: var(--text-base);
+      opacity: 0.95;
+      font-style: italic;
+      margin-top: var(--space-2);
+      padding: var(--space-3);
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-lg);
+    }
+
+    .result-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.2);
+      margin: var(--space-4) 0;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-3);
+      margin-top: var(--space-5);
+    }
+
+    .action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+      background: var(--color-white);
+      border: none;
+      border-radius: var(--radius-xl);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .action-btn:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+
+    .action-btn .icon {
+      width: 24px;
+      height: 24px;
+      color: var(--color-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .action-btn span {
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-gray-700);
+    }
+
+    /* Hidden by default */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Animations */
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes scaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="mobile-container">
+    <div class="results-screen">
+      <!-- Header -->
+      <header class="results-header">
+        <div class="header-row">
+          <button class="back-btn" onclick="goBack()">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
+          <div class="header-info">
+            <div class="header-title">Kết Quả Tra Cứu</div>
+            <div class="header-subtitle">Giá đất theo QĐ UBND tỉnh</div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Location Info -->
+      <section class="location-card">
+        <div class="location-info">
+          <div class="location-row">
+            <div class="location-icon">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+            </div>
+            <div class="location-details">
+              <div class="location-name">Đường Nguyễn Thị Minh Khai</div>
+              <div class="location-address">TP. Trà Vinh - Đoạn từ Lý Thường Kiệt đến Trần Phú</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Price Grid -->
+        <section class="price-section">
+          <div class="price-header">
+            <h2 class="price-title">
+              <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Bảng Giá Đất (nghìn đồng/m²)
+            </h2>
+          </div>
+          <div class="price-grid">
+            <div class="price-item" onclick="selectPrice(this, 8500)">
+              <div class="price-label">
+                <span class="radio-dot"></span>
+                Giá UBND tỉnh
+              </div>
+              <div class="price-value">8,500</div>
+              <span class="price-unit">nghìn đồng/m²</span>
+            </div>
+            <div class="price-item" onclick="selectPrice(this, 12000)">
+              <div class="price-label">
+                <span class="radio-dot"></span>
+                Giá thấp nhất
+              </div>
+              <div class="price-value">12,000</div>
+              <span class="price-unit">nghìn đồng/m²</span>
+            </div>
+            <div class="price-item" onclick="selectPrice(this, 25000)">
+              <div class="price-label">
+                <span class="radio-dot"></span>
+                Giá cao nhất
+              </div>
+              <div class="price-value">25,000</div>
+              <span class="price-unit">nghìn đồng/m²</span>
+            </div>
+            <div class="price-item selected" onclick="selectPrice(this, 18500)">
+              <div class="price-label">
+                <span class="radio-dot"></span>
+                Giá trung bình
+              </div>
+              <div class="price-value">18,500</div>
+              <span class="price-unit">nghìn đồng/m²</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Calculation Section -->
+        <section class="calc-section">
+          <div class="calc-header">
+            <h2 class="calc-title">
+              <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+              </svg>
+              Tính Giá Trị Lô Đất
+            </h2>
+          </div>
+          <div class="calc-body">
+            <!-- Land Type -->
+            <div class="form-row">
+              <div class="form-field">
+                <label class="field-label">Loại đất</label>
+                <div class="select-wrap">
+                  <select class="field-select" id="landType">
+                    <option value="tho-cu">Thổ cư</option>
+                    <option value="tmdv">Thương mại DV</option>
+                    <option value="sxkd">Sản xuất KD</option>
+                    <option value="nong-nghiep">Nông nghiệp</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="field-label">Loại vị trí</label>
+                <div class="select-wrap">
+                  <select class="field-select" id="positionType">
+                    <option value="mat-tien">Mặt tiền</option>
+                    <option value="hem-1">Hẻm 1</option>
+                    <option value="hem-2">Hẻm 2</option>
+                    <option value="hem-3">Hẻm 3 xuyệt</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Alley Width & Area -->
+            <div class="form-row">
+              <div class="form-field">
+                <label class="field-label">Độ rộng hẻm</label>
+                <div class="select-wrap">
+                  <select class="field-select" id="alleyWidth">
+                    <option value="mat-tien">Mặt tiền</option>
+                    <option value="4m">Trên 4m</option>
+                    <option value="3-4m">3m - 4m</option>
+                    <option value="2-3m">2m - 3m</option>
+                    <option value="duoi-2m">Dưới 2m</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="field-label">Diện tích (m²)</label>
+                <input type="number" class="field-input" id="area" placeholder="100" value="100">
+              </div>
+            </div>
+
+            <!-- Depth & Feng Shui -->
+            <div class="form-row">
+              <div class="form-field">
+                <label class="field-label">Chiều sâu lô đất</label>
+                <div class="select-wrap">
+                  <select class="field-select" id="depth">
+                    <option value="binh-thuong">Bình thường</option>
+                    <option value="nong">Nông (dưới 5m)</option>
+                    <option value="sau">Sâu (trên 30m)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-field">
+                <label class="field-label">Yếu tố phong thủy</label>
+                <div class="select-wrap">
+                  <select class="field-select" id="fengshui">
+                    <option value="binh-thuong">Bình thường</option>
+                    <option value="tot">Tốt (+5%)</option>
+                    <option value="rat-tot">Rất tốt (+10%)</option>
+                    <option value="xau">Xấu (-5%)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Calculate Button -->
+            <button class="calc-btn" onclick="calculatePrice()">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+              </svg>
+              TÍNH GIÁ
+            </button>
+          </div>
+        </section>
+
+        <!-- Prominent Valuation Result Section (Hidden by default) -->
+        <section class="valuation-section" id="valuationSection" style="display: none;">
+          <!-- Header with Success Indicator -->
+          <div class="valuation-header">
+            <div class="valuation-icon">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+            </div>
+            <h2 class="valuation-title">KET QUA DINH GIA</h2>
+          </div>
+
+          <div class="valuation-body">
+            <!-- Location Summary -->
+            <div class="valuation-location">
+              <div class="valuation-location-icon">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+              </div>
+              <div class="valuation-location-details">
+                <h4 id="resultStreetName">Duong Pham Thai Buong</h4>
+                <p id="resultSegment">Doan: Hung Vuong - Vong xoay Cho Tra Vinh</p>
+              </div>
+            </div>
+
+            <!-- Coefficients Breakdown -->
+            <div class="coefficients-section">
+              <div class="coefficients-title">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                </svg>
+                Cac he so da ap dung:
+              </div>
+              <div class="coefficient-list" id="coefficientList">
+                <div class="coefficient-item">
+                  <span class="coefficient-label">Loai dat: Tho cu</span>
+                  <span class="coefficient-value neutral">x1.0</span>
+                </div>
+                <div class="coefficient-item">
+                  <span class="coefficient-label">Vi tri: Mat tien</span>
+                  <span class="coefficient-value neutral">x1.0</span>
+                </div>
+                <div class="coefficient-item">
+                  <span class="coefficient-label">Do rong hem: -</span>
+                  <span class="coefficient-value neutral">x1.0</span>
+                </div>
+                <div class="coefficient-item">
+                  <span class="coefficient-label">Chieu sau: Binh thuong</span>
+                  <span class="coefficient-value neutral">x1.0</span>
+                </div>
+                <div class="coefficient-item">
+                  <span class="coefficient-label">Phong thuy: Binh thuong</span>
+                  <span class="coefficient-value neutral">x1.0</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Adjusted Price Per M2 -->
+            <div class="adjusted-price">
+              <div class="adjusted-price-label">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                GIA SAU DIEU CHINH
+              </div>
+              <div class="adjusted-price-value" id="adjustedPricePerM2">120,400</div>
+              <div class="adjusted-price-unit">dong/m2</div>
+            </div>
+
+            <!-- Area Display -->
+            <div class="area-display">
+              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>
+              </svg>
+              Dien tich: <strong id="resultArea">100</strong> m2
+            </div>
+
+            <!-- Final Total Value - Hero Display -->
+            <div class="final-total">
+              <div class="final-total-icon">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <div class="final-total-label">TONG GIA TRI BAT DONG SAN</div>
+              <div class="final-total-value" id="finalTotalValue">12,040,000,000</div>
+              <div class="final-total-currency">dong</div>
+              <div class="final-total-words" id="finalTotalWords">
+                (Muoi hai ty khong tram bon muoi trieu dong)
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="valuation-actions">
+              <button class="valuation-btn primary" onclick="saveResult()">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                </svg>
+                Luu ket qua
+              </button>
+              <button class="valuation-btn secondary" onclick="newSearch()">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                </svg>
+                Tinh lai
+              </button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    let selectedBasePrice = 18500; // Default to average price
+
+    function goBack() {
+      window.location.href = '02-home-search.html';
+    }
+
+    function selectPrice(element, price) {
+      // Remove selected from all
+      document.querySelectorAll('.price-item').forEach(item => {
+        item.classList.remove('selected');
+      });
+      // Add selected to clicked
+      element.classList.add('selected');
+      selectedBasePrice = price;
+    }
+
+    function calculatePrice() {
+      const area = parseFloat(document.getElementById('area').value) || 100;
+      const landType = document.getElementById('landType').value;
+      const positionType = document.getElementById('positionType').value;
+      const alleyWidth = document.getElementById('alleyWidth').value;
+      const depth = document.getElementById('depth').value;
+      const fengshui = document.getElementById('fengshui').value;
+
+      // Calculate coefficients and build breakdown
+      let coefficient = 1;
+      const coefficients = [];
+
+      // Land type coefficient and label
+      let landTypeLabel = 'Tho cu';
+      let landTypeCoef = 1.0;
+      switch(landType) {
+        case 'tho-cu': landTypeLabel = 'Tho cu'; landTypeCoef = 1.0; break;
+        case 'tmdv': landTypeLabel = 'Thuong mai DV'; landTypeCoef = 1.2; break;
+        case 'sxkd': landTypeLabel = 'San xuat KD'; landTypeCoef = 0.9; break;
+        case 'nong-nghiep': landTypeLabel = 'Nong nghiep'; landTypeCoef = 0.3; break;
+      }
+      coefficient *= landTypeCoef;
+      coefficients.push({ label: 'Loai dat: ' + landTypeLabel, value: landTypeCoef });
+
+      // Position coefficient and label
+      let positionLabel = 'Mat tien';
+      let positionCoef = 1.0;
+      switch(positionType) {
+        case 'mat-tien': positionLabel = 'Mat tien'; positionCoef = 1; break;
+        case 'hem-1': positionLabel = 'Hem 1'; positionCoef = 0.8; break;
+        case 'hem-2': positionLabel = 'Hem 2'; positionCoef = 0.65; break;
+        case 'hem-3': positionLabel = 'Hem 3 xuyet'; positionCoef = 0.5; break;
+      }
+      coefficient *= positionCoef;
+      coefficients.push({ label: 'Vi tri: ' + positionLabel, value: positionCoef });
+
+      // Alley width coefficient (only for alleys)
+      let alleyLabel = '-';
+      let alleyCoef = 1.0;
+      if (positionType !== 'mat-tien') {
+        switch(alleyWidth) {
+          case '4m': alleyLabel = 'Tren 4m'; alleyCoef = 1; break;
+          case '3-4m': alleyLabel = '3m - 4m'; alleyCoef = 0.95; break;
+          case '2-3m': alleyLabel = '2m - 3m'; alleyCoef = 0.85; break;
+          case 'duoi-2m': alleyLabel = 'Duoi 2m'; alleyCoef = 0.75; break;
+        }
+        coefficient *= alleyCoef;
+      }
+      coefficients.push({ label: 'Do rong hem: ' + alleyLabel, value: alleyCoef });
+
+      // Depth coefficient and label
+      let depthLabel = 'Binh thuong';
+      let depthCoef = 1.0;
+      switch(depth) {
+        case 'binh-thuong': depthLabel = 'Binh thuong (<=30m)'; depthCoef = 1; break;
+        case 'nong': depthLabel = 'Nong (<5m)'; depthCoef = 0.95; break;
+        case 'sau': depthLabel = 'Sau (>30m)'; depthCoef = 0.9; break;
+      }
+      coefficient *= depthCoef;
+      coefficients.push({ label: 'Chieu sau: ' + depthLabel, value: depthCoef });
+
+      // Feng shui coefficient and label
+      let fengshuiLabel = 'Binh thuong';
+      let fengshuiCoef = 1.0;
+      switch(fengshui) {
+        case 'binh-thuong': fengshuiLabel = 'Binh thuong'; fengshuiCoef = 1; break;
+        case 'tot': fengshuiLabel = 'Tot (+5%)'; fengshuiCoef = 1.05; break;
+        case 'rat-tot': fengshuiLabel = 'Rat tot (+10%)'; fengshuiCoef = 1.1; break;
+        case 'xau': fengshuiLabel = 'Xau (-5%)'; fengshuiCoef = 0.95; break;
+      }
+      coefficient *= fengshuiCoef;
+      coefficients.push({ label: 'Phong thuy: ' + fengshuiLabel, value: fengshuiCoef });
+
+      // Calculate final price
+      const pricePerM2 = Math.round(selectedBasePrice * coefficient * 1000);
+      const totalValue = pricePerM2 * area;
+
+      // Update coefficient list in UI
+      const coefficientListEl = document.getElementById('coefficientList');
+      coefficientListEl.innerHTML = coefficients.map(c => {
+        let valueClass = 'neutral';
+        if (c.value > 1) valueClass = 'positive';
+        else if (c.value < 1) valueClass = 'negative';
+        return `
+          <div class="coefficient-item">
+            <span class="coefficient-label">${c.label}</span>
+            <span class="coefficient-value ${valueClass}">x${c.value.toFixed(2)}</span>
+          </div>
+        `;
+      }).join('');
+
+      // Update valuation result section
+      document.getElementById('resultStreetName').textContent = 'Duong Nguyen Thi Minh Khai';
+      document.getElementById('resultSegment').textContent = 'Doan: Ly Thuong Kiet - Tran Phu';
+      document.getElementById('adjustedPricePerM2').textContent = formatNumber(pricePerM2);
+      document.getElementById('resultArea').textContent = formatNumber(area);
+      document.getElementById('finalTotalValue').textContent = formatNumber(totalValue);
+      document.getElementById('finalTotalWords').textContent = '(' + numberToVietnameseWords(totalValue) + ')';
+
+      // Show new valuation section
+      document.getElementById('valuationSection').style.display = 'block';
+
+      // Scroll to result
+      document.getElementById('valuationSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function formatNumber(num) {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    function numberToVietnameseWords(num) {
+      if (num >= 1000000000) {
+        const billions = Math.floor(num / 1000000000);
+        const remainder = num % 1000000000;
+        const millions = Math.floor(remainder / 1000000);
+
+        let result = '';
+        if (billions === 1) {
+          result = 'Một tỷ';
+        } else if (billions === 2) {
+          result = 'Hai tỷ';
+        } else {
+          result = numberToWord(billions) + ' tỷ';
+        }
+
+        if (millions > 0) {
+          result += ' ' + numberToWord(millions) + ' triệu';
+        }
+
+        return result + ' đồng';
+      } else if (num >= 1000000) {
+        const millions = Math.floor(num / 1000000);
+        return numberToWord(millions) + ' triệu đồng';
+      }
+      return formatNumber(num) + ' đồng';
+    }
+
+    function numberToWord(num) {
+      const units = ['', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
+      const tens = ['', 'mười', 'hai mươi', 'ba mươi', 'bốn mươi', 'năm mươi', 'sáu mươi', 'bảy mươi', 'tám mươi', 'chín mươi'];
+      const hundreds = ['', 'một trăm', 'hai trăm', 'ba trăm', 'bốn trăm', 'năm trăm', 'sáu trăm', 'bảy trăm', 'tám trăm', 'chín trăm'];
+
+      if (num < 10) return units[num].charAt(0).toUpperCase() + units[num].slice(1);
+      if (num < 100) {
+        const ten = Math.floor(num / 10);
+        const unit = num % 10;
+        let result = tens[ten];
+        if (unit === 1 && ten > 1) result += ' mốt';
+        else if (unit === 5 && ten > 1) result += ' lăm';
+        else if (unit > 0) result += ' ' + units[unit];
+        return result.charAt(0).toUpperCase() + result.slice(1);
+      }
+      if (num < 1000) {
+        const hundred = Math.floor(num / 100);
+        const remainder = num % 100;
+        let result = hundreds[hundred];
+        if (remainder > 0) {
+          if (remainder < 10) result += ' lẻ ' + units[remainder];
+          else result += ' ' + numberToWord(remainder).toLowerCase();
+        }
+        return result.charAt(0).toUpperCase() + result.slice(1);
+      }
+      return num.toString();
+    }
+
+    function saveResult() {
+      alert('Đã lưu kết quả vào lịch sử tra cứu!');
+    }
+
+    function shareResult() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'Kết quả tra cứu giá đất',
+          text: 'Giá đất đường Nguyễn Thị Minh Khai, TP. Trà Vinh',
+          url: window.location.href
+        });
+      } else {
+        alert('Đã sao chép liên kết vào clipboard!');
+      }
+    }
+
+    function printResult() {
+      window.print();
+    }
+
+    function newSearch() {
+      window.location.href = '02-home-search.html';
+    }
+  </script>
+</body>
+</html>

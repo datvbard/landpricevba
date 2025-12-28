@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#AE1C3E">
+  <title>Đăng Nhập - Agribank Trà Vinh | Tra Cứu Giá Đất</title>
+
+  <!-- Google Fonts - Be Vietnam Pro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Design System -->
+  <link rel="stylesheet" href="css/design-system.css">
+
+  <style>
+    /* Login Page Specific Styles */
+    .login-screen {
+      min-height: 100vh;
+      background: var(--gradient-hero);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Decorative background elements */
+    .login-screen::before {
+      content: '';
+      position: absolute;
+      top: -30%;
+      right: -30%;
+      width: 60%;
+      height: 60%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: float 8s ease-in-out infinite;
+    }
+
+    .login-screen::after {
+      content: '';
+      position: absolute;
+      bottom: -20%;
+      left: -20%;
+      width: 50%;
+      height: 50%;
+      background: radial-gradient(circle, rgba(255,184,0,0.15) 0%, transparent 70%);
+      animation: float 6s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(20px, -20px); }
+    }
+
+    /* Header area with logo */
+    .login-header {
+      flex: 0 0 auto;
+      padding: var(--space-10) var(--space-6) var(--space-8);
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-container {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.8s ease-out;
+    }
+
+    .logo-icon {
+      width: 80px;
+      height: 80px;
+      background: var(--color-white);
+      border-radius: var(--radius-2xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-4);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    }
+
+    .logo-icon svg {
+      width: 50px;
+      height: 50px;
+    }
+
+    .logo-text {
+      color: var(--color-white);
+    }
+
+    .logo-title {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-bold);
+      margin-bottom: var(--space-1);
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo-subtitle {
+      font-size: var(--text-sm);
+      opacity: 0.9;
+      font-weight: var(--font-medium);
+    }
+
+    /* Main login card */
+    .login-card {
+      flex: 1;
+      background: var(--color-white);
+      border-radius: var(--radius-3xl) var(--radius-3xl) 0 0;
+      padding: var(--space-8) var(--space-6);
+      position: relative;
+      z-index: 1;
+      animation: slideUp 0.6s ease-out;
+    }
+
+    .login-title {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-bold);
+      color: var(--color-gray-900);
+      margin-bottom: var(--space-2);
+    }
+
+    .login-description {
+      font-size: var(--text-base);
+      color: var(--color-gray-500);
+      margin-bottom: var(--space-6);
+    }
+
+    /* Form styling */
+    .login-form {
+      margin-bottom: var(--space-6);
+    }
+
+    .input-group {
+      margin-bottom: var(--space-4);
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: var(--space-4);
+      top: 50%;
+      transform: translateY(-50%);
+      width: 22px;
+      height: 22px;
+      color: var(--color-gray-400);
+      pointer-events: none;
+      transition: color var(--transition-fast);
+    }
+
+    .input-wrapper:focus-within .input-icon {
+      color: var(--color-primary);
+    }
+
+    .login-input {
+      width: 100%;
+      padding: var(--space-4) var(--space-4) var(--space-4) var(--space-12);
+      font-family: var(--font-family-body);
+      font-size: var(--text-base);
+      color: var(--color-gray-800);
+      background: var(--color-gray-50);
+      border: 2px solid transparent;
+      border-radius: var(--radius-xl);
+      transition: all var(--transition-fast);
+      min-height: 56px;
+    }
+
+    .login-input:focus {
+      outline: none;
+      background: var(--color-white);
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px rgba(0, 132, 61, 0.1);
+    }
+
+    .login-input::placeholder {
+      color: var(--color-gray-400);
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: var(--space-4);
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--color-gray-400);
+      cursor: pointer;
+      padding: var(--space-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .password-toggle:hover {
+      color: var(--color-gray-600);
+    }
+
+    .password-toggle svg {
+      width: 22px;
+      height: 22px;
+    }
+
+    /* Remember & Forgot */
+    .form-options {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-6);
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      cursor: pointer;
+    }
+
+    .remember-me input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--color-primary);
+      cursor: pointer;
+    }
+
+    .remember-me span {
+      font-size: var(--text-sm);
+      color: var(--color-gray-600);
+    }
+
+    .forgot-link {
+      font-size: var(--text-sm);
+      color: var(--color-primary);
+      font-weight: var(--font-medium);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    .forgot-link:hover {
+      color: var(--color-primary-dark);
+      text-decoration: underline;
+    }
+
+    /* Login button */
+    .login-btn {
+      width: 100%;
+      padding: var(--space-4) var(--space-6);
+      font-size: var(--text-lg);
+      font-weight: var(--font-bold);
+      color: var(--color-white);
+      background: var(--gradient-primary);
+      border: none;
+      border-radius: var(--radius-xl);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      min-height: 56px;
+      box-shadow: var(--shadow-button);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 132, 61, 0.4);
+    }
+
+    .login-btn:active {
+      transform: translateY(0);
+    }
+
+    .login-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Divider */
+    .login-divider {
+      display: flex;
+      align-items: center;
+      margin: var(--space-6) 0;
+    }
+
+    .login-divider::before,
+    .login-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--color-gray-200);
+    }
+
+    .login-divider span {
+      padding: 0 var(--space-4);
+      font-size: var(--text-sm);
+      color: var(--color-gray-400);
+    }
+
+    /* Social login */
+    .social-login {
+      display: flex;
+      gap: var(--space-3);
+    }
+
+    .social-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-white);
+      border: 2px solid var(--color-gray-200);
+      border-radius: var(--radius-xl);
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+      color: var(--color-gray-700);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      min-height: 52px;
+    }
+
+    .social-btn:hover {
+      border-color: var(--color-gray-300);
+      background: var(--color-gray-50);
+    }
+
+    .social-btn svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Footer */
+    .login-footer {
+      text-align: center;
+      margin-top: var(--space-6);
+      padding-top: var(--space-6);
+      border-top: 1px solid var(--color-gray-100);
+    }
+
+    .login-footer p {
+      font-size: var(--text-sm);
+      color: var(--color-gray-500);
+      margin-bottom: var(--space-2);
+    }
+
+    .login-footer a {
+      color: var(--color-primary);
+      font-weight: var(--font-semibold);
+    }
+
+    .version-text {
+      font-size: var(--text-xs);
+      color: var(--color-gray-400);
+      margin-top: var(--space-4);
+    }
+
+    /* App info banner */
+    .app-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-4);
+      background: linear-gradient(135deg, rgba(0, 132, 61, 0.08) 0%, rgba(20, 184, 166, 0.08) 100%);
+      border-radius: var(--radius-xl);
+      margin-bottom: var(--space-6);
+    }
+
+    .app-info-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--gradient-primary);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .app-info-icon svg {
+      width: 24px;
+      height: 24px;
+      color: var(--color-white);
+    }
+
+    .app-info-text {
+      flex: 1;
+    }
+
+    .app-info-title {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--color-gray-800);
+    }
+
+    .app-info-subtitle {
+      font-size: var(--text-xs);
+      color: var(--color-gray-500);
+    }
+  </style>
+</head>
+<body>
+  <div class="mobile-container">
+    <div class="login-screen">
+      <!-- Header with Logo -->
+      <header class="login-header">
+        <div class="logo-container">
+          <div class="logo-icon">
+            <!-- Agribank Logo Simplified -->
+            <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M25 5L40 15V35L25 45L10 35V15L25 5Z" fill="#00843D"/>
+              <path d="M25 12L33 17V27L25 32L17 27V17L25 12Z" fill="#FFB800"/>
+              <path d="M25 18L29 21V27L25 30L21 27V21L25 18Z" fill="white"/>
+            </svg>
+          </div>
+          <div class="logo-text">
+            <h1 class="logo-title">AGRIBANK TRÀ VINH</h1>
+            <p class="logo-subtitle">Tra Cứu Giá Đất</p>
+          </div>
+        </div>
+      </header>
+
+      <!-- Login Card -->
+      <main class="login-card">
+        <h2 class="login-title">Đăng Nhập</h2>
+        <p class="login-description">Chào mừng bạn quay trở lại!</p>
+
+        <!-- App Info Banner -->
+        <div class="app-info">
+          <div class="app-info-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <div class="app-info-text">
+            <div class="app-info-title">Tra cứu giá đất tỉnh Trà Vinh</div>
+            <div class="app-info-subtitle">Cập nhật theo Quyết định UBND tỉnh</div>
+          </div>
+        </div>
+
+        <!-- Login Form -->
+        <form class="login-form" onsubmit="handleLogin(event)">
+          <!-- Phone/Email Input -->
+          <div class="input-group">
+            <div class="input-wrapper">
+              <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+              </svg>
+              <input type="text" class="login-input" placeholder="Số điện thoại hoặc Email" autocomplete="username">
+            </div>
+          </div>
+
+          <!-- Password Input -->
+          <div class="input-group">
+            <div class="input-wrapper">
+              <svg class="input-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+              <input type="password" id="password" class="login-input" placeholder="Mật khẩu" autocomplete="current-password">
+              <button type="button" class="password-toggle" onclick="togglePassword()">
+                <svg id="eye-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Remember & Forgot -->
+          <div class="form-options">
+            <label class="remember-me">
+              <input type="checkbox">
+              <span>Ghi nhớ đăng nhập</span>
+            </label>
+            <a href="#" class="forgot-link">Quên mật khẩu?</a>
+          </div>
+
+          <!-- Login Button -->
+          <button type="submit" class="login-btn">
+            <span>Đăng Nhập</span>
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+          </button>
+        </form>
+
+        <!-- Divider -->
+        <div class="login-divider">
+          <span>hoặc đăng nhập với</span>
+        </div>
+
+        <!-- Social Login -->
+        <div class="social-login">
+          <button type="button" class="social-btn">
+            <svg viewBox="0 0 24 24">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+            Google
+          </button>
+          <button type="button" class="social-btn">
+            <svg viewBox="0 0 24 24" fill="#1877F2">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+            Facebook
+          </button>
+        </div>
+
+        <!-- Footer -->
+        <footer class="login-footer">
+          <p>Chưa có tài khoản? <a href="#">Đăng ký ngay</a></p>
+          <p class="version-text">Phiên bản 1.0.0 | Agribank Trà Vinh</p>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Toggle password visibility
+    function togglePassword() {
+      const passwordInput = document.getElementById('password');
+      const eyeIcon = document.getElementById('eye-icon');
+
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.innerHTML = `
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
+        `;
+      } else {
+        passwordInput.type = 'password';
+        eyeIcon.innerHTML = `
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+        `;
+      }
+    }
+
+    // Handle login form submission
+    function handleLogin(event) {
+      event.preventDefault();
+      // Navigate to home screen (in real app, would validate credentials)
+      window.location.href = '02-home-search.html';
+    }
+  </script>
+</body>
+</html>

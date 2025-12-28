@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#AE1C3E">
+  <title>Cài Đặt Hệ Thống - Agribank Trà Vinh Admin</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Design System -->
+  <link rel="stylesheet" href="css/design-system.css">
+
+  <style>
+    /* Admin Settings Page Specific Styles */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--color-gray-50);
+    }
+
+    .admin-layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--gradient-dark);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      left: 0;
+      top: 0;
+      z-index: var(--z-fixed);
+      transition: transform var(--transition-slow);
+    }
+
+    .sidebar-header {
+      padding: var(--space-6);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .logo-circle {
+      width: 48px;
+      height: 48px;
+      background: var(--color-white);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-circle svg {
+      width: 30px;
+      height: 30px;
+    }
+
+    .brand-name {
+      color: var(--color-white);
+    }
+
+    .brand-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-bold);
+      margin-bottom: 2px;
+    }
+
+    .brand-subtitle {
+      font-size: var(--text-xs);
+      opacity: 0.8;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar-nav {
+      flex: 1;
+      padding: var(--space-4) 0;
+      overflow-y: auto;
+    }
+
+    .nav-group {
+      margin-bottom: var(--space-6);
+    }
+
+    .nav-group-title {
+      padding: 0 var(--space-6);
+      font-size: var(--text-xs);
+      font-weight: var(--font-bold);
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: var(--space-3);
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-6);
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      position: relative;
+    }
+
+    .nav-link:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--color-white);
+    }
+
+    .nav-link.active {
+      background: rgba(174, 28, 62, 0.15);
+      color: var(--color-white);
+      border-left: 3px solid var(--color-primary);
+    }
+
+    .nav-link.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--gradient-vibrant);
+    }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .nav-text {
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 280px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Bar */
+    .topbar {
+      background: var(--color-white);
+      padding: var(--space-4) var(--space-6);
+      border-bottom: 1px solid var(--color-gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    .page-title {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-bold);
+      color: var(--color-gray-900);
+    }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      color: var(--color-gray-500);
+      margin-top: var(--space-1);
+    }
+
+    .breadcrumb-separator {
+      color: var(--color-gray-400);
+    }
+
+    .breadcrumb-link {
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    .breadcrumb-link:hover {
+      color: var(--color-primary-dark);
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+    }
+
+    .topbar-btn {
+      width: 40px;
+      height: 40px;
+      background: var(--color-gray-100);
+      border: none;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      color: var(--color-gray-600);
+    }
+
+    .topbar-btn:hover {
+      background: var(--color-gray-200);
+      color: var(--color-gray-800);
+    }
+
+    .topbar-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .admin-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      background: var(--gradient-vibrant);
+      color: var(--color-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: var(--font-bold);
+      font-size: var(--text-sm);
+      cursor: pointer;
+    }
+
+    /* Content Area */
+    .content-area {
+      flex: 1;
+      padding: var(--space-8);
+    }
+
+    /* Settings Container */
+    .settings-container {
+      max-width: 900px;
+    }
+
+    .settings-header {
+      margin-bottom: var(--space-6);
+    }
+
+    .settings-title {
+      font-size: var(--text-3xl);
+      font-weight: var(--font-bold);
+      color: var(--color-gray-900);
+      margin-bottom: var(--space-2);
+    }
+
+    .settings-description {
+      font-size: var(--text-base);
+      color: var(--color-gray-600);
+    }
+
+    /* Settings Card */
+    .settings-card {
+      background: var(--color-white);
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+      margin-bottom: var(--space-6);
+    }
+
+    .card-header {
+      padding: var(--space-5) var(--space-6);
+      border-bottom: 1px solid var(--color-gray-100);
+      background: linear-gradient(135deg, rgba(174, 28, 62, 0.03) 0%, rgba(212, 175, 55, 0.03) 100%);
+    }
+
+    .card-title {
+      font-size: var(--text-lg);
+      font-weight: var(--font-bold);
+      color: var(--color-gray-900);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .card-title .icon {
+      width: 24px;
+      height: 24px;
+      color: var(--color-primary);
+    }
+
+    .card-subtitle {
+      font-size: var(--text-sm);
+      color: var(--color-gray-500);
+      margin-top: var(--space-1);
+    }
+
+    .card-body {
+      padding: var(--space-6);
+    }
+
+    /* Logo Upload Section */
+    .logo-upload-section {
+      display: flex;
+      gap: var(--space-8);
+      align-items: flex-start;
+    }
+
+    .logo-preview-container {
+      flex-shrink: 0;
+    }
+
+    .logo-preview {
+      width: 160px;
+      height: 160px;
+      background: var(--color-gray-50);
+      border: 2px dashed var(--color-gray-300);
+      border-radius: var(--radius-2xl);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      transition: all var(--transition-normal);
+    }
+
+    .logo-preview:hover {
+      border-color: var(--color-primary);
+      background: rgba(174, 28, 62, 0.02);
+    }
+
+    .logo-preview.has-logo {
+      border-style: solid;
+      border-color: var(--color-gray-200);
+      background: var(--color-white);
+    }
+
+    .logo-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: var(--space-4);
+    }
+
+    .logo-placeholder {
+      text-align: center;
+      color: var(--color-gray-400);
+    }
+
+    .logo-placeholder svg {
+      width: 48px;
+      height: 48px;
+      margin-bottom: var(--space-2);
+    }
+
+    .logo-placeholder-text {
+      font-size: var(--text-sm);
+      font-weight: var(--font-medium);
+    }
+
+    .logo-upload-controls {
+      flex: 1;
+    }
+
+    .upload-info {
+      background: rgba(174, 28, 62, 0.05);
+      border-left: 3px solid var(--color-primary);
+      padding: var(--space-4);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-4);
+    }
+
+    .upload-info-title {
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--color-gray-800);
+      margin-bottom: var(--space-2);
+    }
+
+    .upload-info-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .upload-info-list li {
+      font-size: var(--text-sm);
+      color: var(--color-gray-600);
+      margin-bottom: var(--space-1);
+      padding-left: var(--space-4);
+      position: relative;
+    }
+
+    .upload-info-list li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--color-primary);
+      font-weight: var(--font-bold);
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      margin-bottom: var(--space-3);
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .file-input-label {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-6);
+      background: var(--gradient-primary-solid);
+      color: var(--color-white);
+      border-radius: var(--radius-xl);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      font-weight: var(--font-semibold);
+      font-size: var(--text-sm);
+      box-shadow: var(--shadow-button);
+    }
+
+    .file-input-label:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .file-input-label svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .remove-logo-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      background: transparent;
+      color: var(--color-error);
+      border: 2px solid var(--color-error);
+      border-radius: var(--radius-xl);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      font-weight: var(--font-semibold);
+      font-size: var(--text-sm);
+    }
+
+    .remove-logo-btn:hover {
+      background: var(--color-error);
+      color: var(--color-white);
+    }
+
+    .remove-logo-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Form Controls */
+    .form-field {
+      margin-bottom: var(--space-5);
+    }
+
+    .form-label {
+      display: block;
+      font-size: var(--text-sm);
+      font-weight: var(--font-semibold);
+      color: var(--color-gray-700);
+      margin-bottom: var(--space-2);
+    }
+
+    .form-label-required {
+      color: var(--color-error);
+      margin-left: var(--space-1);
+    }
+
+    .form-input {
+      width: 100%;
+      padding: var(--space-4);
+      font-family: var(--font-family-body);
+      font-size: var(--text-base);
+      color: var(--color-gray-800);
+      background: var(--color-white);
+      border: 2px solid var(--color-gray-200);
+      border-radius: var(--radius-xl);
+      transition: all var(--transition-fast);
+      min-height: 56px;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 4px rgba(174, 28, 62, 0.1);
+    }
+
+    .form-help {
+      font-size: var(--text-sm);
+      color: var(--color-gray-500);
+      margin-top: var(--space-2);
+    }
+
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    /* Action Buttons */
+    .card-footer {
+      padding: var(--space-5) var(--space-6);
+      background: var(--color-gray-50);
+      border-top: 1px solid var(--color-gray-100);
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-3);
+    }
+
+    .btn-cancel {
+      padding: var(--space-3) var(--space-6);
+      background: transparent;
+      color: var(--color-gray-600);
+      border: 2px solid var(--color-gray-300);
+      border-radius: var(--radius-xl);
+      font-weight: var(--font-semibold);
+      font-size: var(--text-base);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      min-height: 48px;
+    }
+
+    .btn-cancel:hover {
+      background: var(--color-gray-100);
+      border-color: var(--color-gray-400);
+    }
+
+    .btn-save {
+      padding: var(--space-3) var(--space-8);
+      background: var(--gradient-primary-solid);
+      color: var(--color-white);
+      border: none;
+      border-radius: var(--radius-xl);
+      font-weight: var(--font-bold);
+      font-size: var(--text-base);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      min-height: 48px;
+      box-shadow: var(--shadow-button);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .btn-save:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .btn-save svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Preview Section */
+    .preview-section {
+      margin-top: var(--space-6);
+    }
+
+    .preview-card {
+      background: linear-gradient(135deg, rgba(174, 28, 62, 0.05) 0%, rgba(212, 175, 55, 0.05) 100%);
+      border: 2px solid var(--color-gray-200);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-6);
+    }
+
+    .preview-title {
+      font-size: var(--text-base);
+      font-weight: var(--font-bold);
+      color: var(--color-gray-800);
+      margin-bottom: var(--space-4);
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .preview-title .icon {
+      width: 20px;
+      height: 20px;
+      color: var(--color-primary);
+    }
+
+    .preview-brand {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      padding: var(--space-5);
+      background: var(--color-white);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .preview-logo {
+      width: 64px;
+      height: 64px;
+      background: var(--color-gray-100);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .preview-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: var(--space-2);
+    }
+
+    .preview-logo svg {
+      width: 40px;
+      height: 40px;
+      color: var(--color-gray-400);
+    }
+
+    .preview-text {
+      flex: 1;
+    }
+
+    .preview-brand-name {
+      font-size: var(--text-xl);
+      font-weight: var(--font-bold);
+      color: var(--color-gray-900);
+      margin-bottom: var(--space-1);
+    }
+
+    .preview-brand-subtitle {
+      font-size: var(--text-sm);
+      color: var(--color-gray-600);
+    }
+
+    /* Success Message */
+    .success-message {
+      position: fixed;
+      top: var(--space-6);
+      right: var(--space-6);
+      background: var(--color-success);
+      color: var(--color-white);
+      padding: var(--space-4) var(--space-6);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all var(--transition-slow);
+      z-index: 9999;
+    }
+
+    .success-message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .success-message svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+
+      .logo-upload-section {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .content-area {
+        padding: var(--space-5);
+      }
+
+      .topbar {
+        padding: var(--space-3) var(--space-4);
+      }
+
+      .page-title {
+        font-size: var(--text-xl);
+      }
+
+      .card-footer {
+        flex-direction: column;
+      }
+
+      .btn-cancel,
+      .btn-save {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Admin Layout -->
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <div class="logo-circle">
+            <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M25 5L40 15V35L25 45L10 35V15L25 5Z" fill="#AE1C3E"/>
+              <path d="M25 12L33 17V27L25 32L17 27V17L25 12Z" fill="#D4AF37"/>
+              <path d="M25 18L29 21V27L25 30L21 27V21L25 18Z" fill="white"/>
+            </svg>
+          </div>
+          <div class="brand-name">
+            <div class="brand-title">AGRIBANK</div>
+            <div class="brand-subtitle">Admin Dashboard</div>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-group">
+          <div class="nav-group-title">Tổng quan</div>
+          <a href="05-admin-dashboard.html" class="nav-link">
+            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+            </svg>
+            <span class="nav-text">Dashboard</span>
+          </a>
+          <a href="#" class="nav-link">
+            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            <span class="nav-text">Thống kê</span>
+          </a>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">Quản lý dữ liệu</div>
+          <a href="#" class="nav-link">
+            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span class="nav-text">Giá đất</span>
+          </a>
+          <a href="#" class="nav-link">
+            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+            </svg>
+            <span class="nav-text">Tuyến đường</span>
+          </a>
+          <a href="#" class="nav-link">
+            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+            </svg>
+            <span class="nav-text">Quận/Huyện</span>
+          </a>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">Người dùng</div>
+          <a href="#" class="nav-link">
+            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+            <span class="nav-text">Người dùng</span>
+          </a>
+          <a href="#" class="nav-link">
+            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <span class="nav-text">Lịch sử tra cứu</span>
+          </a>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">Hệ thống</div>
+          <a href="06-admin-settings.html" class="nav-link active">
+            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span class="nav-text">Cài đặt</span>
+          </a>
+          <a href="#" class="nav-link">
+            <svg class="nav-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <span class="nav-text">Nhật ký</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <div class="topbar">
+        <div class="topbar-left">
+          <div>
+            <h1 class="page-title">Cài Đặt Hệ Thống</h1>
+            <div class="breadcrumb">
+              <a href="05-admin-dashboard.html" class="breadcrumb-link">Dashboard</a>
+              <span class="breadcrumb-separator">/</span>
+              <span>Cài đặt</span>
+            </div>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-btn">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+            </svg>
+          </button>
+          <div class="admin-avatar">AD</div>
+        </div>
+      </div>
+
+      <!-- Content Area -->
+      <div class="content-area">
+        <div class="settings-container">
+          <div class="settings-header">
+            <h2 class="settings-title">Cài Đặt Thương Hiệu</h2>
+            <p class="settings-description">Quản lý thông tin thương hiệu và logo của hệ thống</p>
+          </div>
+
+          <!-- Brand Name Settings -->
+          <div class="settings-card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+                Tên Thương Hiệu
+              </h3>
+              <p class="card-subtitle">Cài đặt tên hiển thị của ngân hàng và chi nhánh</p>
+            </div>
+            <div class="card-body">
+              <div class="form-field">
+                <label class="form-label">
+                  Tên ngân hàng
+                  <span class="form-label-required">*</span>
+                </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="bankName"
+                  value="Agribank Trà Vinh"
+                  placeholder="Nhập tên ngân hàng..."
+                >
+                <p class="form-help">Tên này sẽ hiển thị trên tất cả các trang của ứng dụng</p>
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">
+                  Tên chi nhánh
+                </label>
+                <input
+                  type="text"
+                  class="form-input"
+                  id="branchName"
+                  value="Trà Vinh"
+                  placeholder="Nhập tên chi nhánh..."
+                >
+              </div>
+
+              <div class="form-field">
+                <label class="form-label">
+                  Slogan/Mô tả
+                </label>
+                <textarea
+                  class="form-input form-textarea"
+                  id="slogan"
+                  placeholder="Nhập slogan hoặc mô tả ngắn..."
+                >Tra Cứu Giá Đất</textarea>
+                <p class="form-help">Slogan hiển thị kèm theo tên thương hiệu</p>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button type="button" class="btn-cancel">Hủy</button>
+              <button type="button" class="btn-save" onclick="saveBrandName()">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Lưu thay đổi
+              </button>
+            </div>
+          </div>
+
+          <!-- Logo Upload Settings -->
+          <div class="settings-card">
+            <div class="card-header">
+              <h3 class="card-title">
+                <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+                Logo Thương Hiệu
+              </h3>
+              <p class="card-subtitle">Tải lên và quản lý logo của ngân hàng</p>
+            </div>
+            <div class="card-body">
+              <div class="logo-upload-section">
+                <div class="logo-preview-container">
+                  <div class="logo-preview" id="logoPreview">
+                    <div class="logo-placeholder">
+                      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                      </svg>
+                      <div class="logo-placeholder-text">Chưa có logo</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="logo-upload-controls">
+                  <div class="upload-info">
+                    <div class="upload-info-title">Yêu cầu về logo:</div>
+                    <ul class="upload-info-list">
+                      <li>Định dạng: PNG, JPG, SVG</li>
+                      <li>Kích thước tối đa: 2MB</li>
+                      <li>Kích thước khuyến nghị: 512x512px</li>
+                      <li>Nền trong suốt (PNG) được ưu tiên</li>
+                      <li>Logo hình vuông hoặc gần vuông</li>
+                    </ul>
+                  </div>
+
+                  <div class="file-input-wrapper">
+                    <input
+                      type="file"
+                      id="logoInput"
+                      class="file-input"
+                      accept="image/png,image/jpeg,image/svg+xml"
+                      onchange="handleLogoUpload(event)"
+                    >
+                    <label for="logoInput" class="file-input-label">
+                      <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                      </svg>
+                      Chọn file logo
+                    </label>
+                  </div>
+
+                  <button type="button" class="remove-logo-btn" id="removeLogoBtn" style="display: none;" onclick="removeLogo()">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Xóa logo
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <button type="button" class="btn-cancel">Hủy</button>
+              <button type="button" class="btn-save" onclick="saveLogo()">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                Lưu logo
+              </button>
+            </div>
+          </div>
+
+          <!-- Preview Section -->
+          <div class="preview-section">
+            <div class="preview-card">
+              <h4 class="preview-title">
+                <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+                Xem trước thương hiệu
+              </h4>
+              <div class="preview-brand">
+                <div class="preview-logo" id="previewLogo">
+                  <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M25 5L40 15V35L25 45L10 35V15L25 5Z" fill="#AE1C3E"/>
+                    <path d="M25 12L33 17V27L25 32L17 27V17L25 12Z" fill="#D4AF37"/>
+                    <path d="M25 18L29 21V27L25 30L21 27V21L25 18Z" fill="white"/>
+                  </svg>
+                </div>
+                <div class="preview-text">
+                  <div class="preview-brand-name" id="previewBrandName">Agribank Trà Vinh</div>
+                  <div class="preview-brand-subtitle" id="previewSlogan">Tra Cứu Giá Đất</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Success Message -->
+  <div class="success-message" id="successMessage">
+    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>
+    <span id="successText">Đã lưu thay đổi thành công!</span>
+  </div>
+
+  <script>
+    // Global variables
+    let currentLogoFile = null;
+    let currentLogoUrl = null;
+
+    // Handle logo upload
+    function handleLogoUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // Validate file size (2MB max)
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Kích thước file quá lớn! Vui lòng chọn file nhỏ hơn 2MB.');
+        return;
+      }
+
+      // Validate file type
+      const validTypes = ['image/png', 'image/jpeg', 'image/svg+xml'];
+      if (!validTypes.includes(file.type)) {
+        alert('Định dạng file không hợp lệ! Vui lòng chọn file PNG, JPG hoặc SVG.');
+        return;
+      }
+
+      currentLogoFile = file;
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        currentLogoUrl = e.target.result;
+        const logoPreview = document.getElementById('logoPreview');
+        const previewLogo = document.getElementById('previewLogo');
+
+        logoPreview.classList.add('has-logo');
+        logoPreview.innerHTML = `<img src="${e.target.result}" alt="Logo preview">`;
+        previewLogo.innerHTML = `<img src="${e.target.result}" alt="Logo preview">`;
+
+        document.getElementById('removeLogoBtn').style.display = 'inline-flex';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Remove logo
+    function removeLogo() {
+      currentLogoFile = null;
+      currentLogoUrl = null;
+
+      const logoPreview = document.getElementById('logoPreview');
+      const previewLogo = document.getElementById('previewLogo');
+
+      logoPreview.classList.remove('has-logo');
+      logoPreview.innerHTML = `
+        <div class="logo-placeholder">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+          </svg>
+          <div class="logo-placeholder-text">Chưa có logo</div>
+        </div>
+      `;
+
+      previewLogo.innerHTML = `
+        <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M25 5L40 15V35L25 45L10 35V15L25 5Z" fill="#AE1C3E"/>
+          <path d="M25 12L33 17V27L25 32L17 27V17L25 12Z" fill="#D4AF37"/>
+          <path d="M25 18L29 21V27L25 30L21 27V21L25 18Z" fill="white"/>
+        </svg>
+      `;
+
+      document.getElementById('logoInput').value = '';
+      document.getElementById('removeLogoBtn').style.display = 'none';
+    }
+
+    // Save brand name
+    function saveBrandName() {
+      const bankName = document.getElementById('bankName').value.trim();
+      const branchName = document.getElementById('branchName').value.trim();
+      const slogan = document.getElementById('slogan').value.trim();
+
+      if (!bankName) {
+        alert('Vui lòng nhập tên ngân hàng!');
+        return;
+      }
+
+      // Update preview
+      const fullName = branchName ? `${bankName} ${branchName}` : bankName;
+      document.getElementById('previewBrandName').textContent = fullName;
+      if (slogan) {
+        document.getElementById('previewSlogan').textContent = slogan;
+      }
+
+      // Save to localStorage (in real app, would send to server)
+      localStorage.setItem('brandName', fullName);
+      localStorage.setItem('slogan', slogan);
+
+      showSuccessMessage('Đã lưu tên thương hiệu thành công!');
+    }
+
+    // Save logo
+    function saveLogo() {
+      if (!currentLogoFile && !currentLogoUrl) {
+        alert('Vui lòng chọn logo trước khi lưu!');
+        return;
+      }
+
+      // In real app, would upload to server
+      localStorage.setItem('logoUrl', currentLogoUrl);
+
+      showSuccessMessage('Đã lưu logo thành công!');
+    }
+
+    // Show success message
+    function showSuccessMessage(text) {
+      const successMessage = document.getElementById('successMessage');
+      const successText = document.getElementById('successText');
+
+      successText.textContent = text;
+      successMessage.classList.add('show');
+
+      setTimeout(() => {
+        successMessage.classList.remove('show');
+      }, 3000);
+    }
+
+    // Live preview for brand name
+    document.getElementById('bankName').addEventListener('input', updatePreview);
+    document.getElementById('branchName').addEventListener('input', updatePreview);
+    document.getElementById('slogan').addEventListener('input', updatePreview);
+
+    function updatePreview() {
+      const bankName = document.getElementById('bankName').value.trim();
+      const branchName = document.getElementById('branchName').value.trim();
+      const slogan = document.getElementById('slogan').value.trim();
+
+      const fullName = branchName ? `${bankName} ${branchName}` : bankName;
+      document.getElementById('previewBrandName').textContent = fullName || 'Tên thương hiệu';
+      document.getElementById('previewSlogan').textContent = slogan || 'Slogan';
+    }
+
+    // Load saved data on page load
+    window.addEventListener('DOMContentLoaded', function() {
+      const savedBrandName = localStorage.getItem('brandName');
+      const savedSlogan = localStorage.getItem('slogan');
+      const savedLogoUrl = localStorage.getItem('logoUrl');
+
+      if (savedBrandName) {
+        document.getElementById('bankName').value = savedBrandName.replace(' Trà Vinh', '').trim();
+        document.getElementById('previewBrandName').textContent = savedBrandName;
+      }
+
+      if (savedSlogan) {
+        document.getElementById('slogan').value = savedSlogan;
+        document.getElementById('previewSlogan').textContent = savedSlogan;
+      }
+
+      if (savedLogoUrl) {
+        currentLogoUrl = savedLogoUrl;
+        const logoPreview = document.getElementById('logoPreview');
+        const previewLogo = document.getElementById('previewLogo');
+
+        logoPreview.classList.add('has-logo');
+        logoPreview.innerHTML = `<img src="${savedLogoUrl}" alt="Logo">`;
+        previewLogo.innerHTML = `<img src="${savedLogoUrl}" alt="Logo">`;
+
+        document.getElementById('removeLogoBtn').style.display = 'inline-flex';
+      }
+    });
+  </script>
+</body>
+</html>
