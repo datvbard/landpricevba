@@ -1,0 +1,552 @@
+# Land Price Lookup App - Implementation Plan
+**Brand:** Agribank Trà Vinh
+**Stack:** Next.js 14 + TypeScript + Tailwind + Supabase
+**Approach:** UI-first, incremental, testable phases
+
+---
+
+## Phase 1: Project Setup & Static Login Page ✅ COMPLETED
+**Complexity:** Simple | **Test:** Static login page on localhost
+**Status:** ✅ Completed on 2025-12-28
+**Quality Score:** 100% | **Review:** `plans/reports/code-reviewer-251228-2032-phase1-review.md`
+
+### Tasks:
+1. ✅ Initialize Next.js 14 with TypeScript, Tailwind, App Router
+2. ✅ Configure Tailwind with Agribank design tokens (#AE1C3E)
+3. ✅ Add Be Vietnam Pro font
+4. ✅ Convert `mockup/01-login.html` to `app/login/page.tsx`
+5. ✅ Create components: `Button.tsx`, `Input.tsx`
+
+### Success Criteria:
+- ✅ Login page matches mockup (burgundy branding, gradients)
+- ✅ Responsive on mobile (428px)
+- ✅ Static UI only, no functionality yet
+
+### Critical Files:
+```
+app/layout.tsx - Root layout
+app/login/page.tsx - Login page
+components/ui/Button.tsx
+components/ui/Input.tsx
+tailwind.config.ts - Design tokens
+```
+
+### Build Results:
+- ✅ ESLint: No errors or warnings
+- ✅ TypeScript: Strict mode passed
+- ✅ Build: Successful (90.6 kB login page)
+- ✅ Bundle: 879 KB static assets
+
+### Next Actions:
+1. Deploy to Vercel preview
+2. Optional: Fix 2 accessibility improvements (viewport userScalable, ARIA labels)
+3. Proceed to Phase 2
+
+---
+
+## Phase 2: Static User Pages (Home, Results, History) ✅ COMPLETED
+**Complexity:** Medium | **Test:** Navigate between 3 user pages
+**Status:** ✅ Completed on 2025-12-28
+
+### Tasks:
+1. ✅ Convert `02-home-search.html` → `app/(user)/page.tsx`
+2. ✅ Convert `03-results.html` → `app/(user)/results/page.tsx`
+3. ✅ Convert `04-history.html` → `app/(user)/history/page.tsx`
+4. ✅ Create layout `app/(user)/layout.tsx` with bottom navigation
+5. ✅ Create components: `Select`, `BottomNav` (Cards embedded in pages)
+6. ✅ Add hardcoded mock data (districts, streets, prices)
+
+### Success Criteria:
+- ✅ All pages match mockups pixel-perfectly
+- ✅ Bottom nav works, highlights active page
+- ✅ Dropdowns display mock data
+- ✅ Price cards show 4 levels
+- ✅ Mobile scrolling smooth
+
+### Critical Files:
+```
+app/(user)/layout.tsx - Bottom nav layout
+app/(user)/page.tsx - Home/search
+app/(user)/results/page.tsx - Results
+app/(user)/history/page.tsx - History
+components/ui/select.tsx
+components/bottom-nav.tsx
+```
+
+### Build Results:
+- ✅ ESLint: No errors
+- ✅ TypeScript: Strict mode passed
+- ✅ Build: Successful
+  - / (Home): 3.32 kB
+  - /results: 4.25 kB
+  - /history: 2.33 kB
+
+### Next Actions:
+1. Deploy to Vercel preview
+2. Proceed to Phase 3 (Static Admin Pages)
+
+---
+
+## Phase 3: Static Admin Pages ✅ COMPLETED
+**Complexity:** Medium | **Test:** Admin sidebar + data tables
+**Status:** ✅ Completed on 2025-12-28
+
+### Tasks:
+1. ✅ Convert `05-admin-dashboard.html` → `app/(admin)/dashboard/page.tsx`
+2. ✅ Convert `06-admin-settings.html` → `app/(admin)/settings/page.tsx`
+3. ✅ Create `app/(admin)/layout.tsx` with sidebar
+4. ✅ Create components: `Sidebar`, `DataTable`, `StatCard`, `ActivityItem`
+5. ✅ Add mock data tables (prices, activity, stats)
+
+### Success Criteria:
+- ✅ Admin sidebar on desktop, collapsible on mobile
+- ✅ Data tables render with mock data
+- ✅ CRUD buttons visible (non-functional)
+- ✅ Brand settings form layout complete
+
+### Critical Files:
+```
+app/(admin)/layout.tsx - Sidebar layout
+app/(admin)/dashboard/page.tsx
+app/(admin)/settings/page.tsx
+components/admin/Sidebar.tsx
+components/admin/DataTable.tsx
+components/admin/StatCard.tsx
+components/admin/ActivityItem.tsx
+```
+
+### Build Results:
+- ✅ TypeScript: Strict mode passed
+- ✅ Build: Successful
+  - /dashboard: 3.51 kB
+  - /settings: 3.23 kB
+- ✅ Code Review: 82/100
+
+### Next Actions:
+1. Deploy to Vercel preview
+2. Proceed to Phase 4 (Supabase Setup & Database Schema)
+
+---
+
+## Phase 4: Supabase Setup & Database Schema
+**Complexity:** Medium | **Test:** Query data via Supabase Studio
+
+### Tasks:
+1. Create Supabase project
+2. Design schema (11 tables - see below)
+3. Create tables with foreign keys, indexes
+4. Add Row Level Security policies
+5. Seed with sample data (3 districts, 100+ segments)
+6. Configure Supabase client in Next.js
+
+### Database Schema:
+```sql
+users (id, email, password_hash, role, full_name, created_at)
+districts (id, code, name, sort_order)
+streets (id, district_id, code, name)
+segments (id, street_id, segment_from, segment_to, base_price_min, base_price_max, government_price, adjustment_coef_min, adjustment_coef_max)
+land_type_coefficients (id, name, coefficient)
+location_coefficients (id, name, width_min, width_max, coefficient)
+area_coefficients (id, area_min, area_max, coefficient)
+depth_coefficients (id, depth_min, depth_max, coefficient)
+feng_shui_coefficients (id, name, coefficient)
+search_history (id, user_id, district, street, segment, area, total_price, coefficients_json, created_at)
+brand_settings (id, key, value)
+```
+
+### Success Criteria:
+- All tables created with correct relationships
+- Sample data inserted (viewable in Supabase Studio)
+- Next.js connects to Supabase successfully
+
+### Critical Files:
+```
+supabase/migrations/001_initial_schema.sql
+supabase/seed.sql
+lib/supabase/client.ts
+lib/supabase/database.types.ts
+.env.local (SUPABASE_URL, SUPABASE_ANON_KEY)
+```
+
+**Test locally only (no UI changes)**
+
+---
+
+## Phase 5: Authentication System
+**Complexity:** Medium | **Test:** Login → redirects correctly
+
+### Tasks:
+1. Install Better Auth
+2. Configure email/password authentication
+3. Implement login flow with session
+4. Role-based redirect (admin → `/admin/dashboard`, user → `/`)
+5. Create middleware to protect `/admin/*` routes
+6. Add logout functionality
+7. Display user info in header
+
+### Success Criteria:
+- Login validates credentials, creates session
+- Admin users access admin routes
+- Regular users blocked from admin
+- Logout clears session
+- Protected routes redirect to login
+
+### Critical Files:
+```
+lib/auth/better-auth.ts
+app/api/auth/[...all]/route.ts
+middleware.ts - Route protection
+app/login/actions.ts - Login server action
+hooks/useAuth.ts
+components/Header.tsx - User info display
+```
+
+**Deploy to Vercel preview after this phase**
+
+---
+
+## Phase 6: User Search Flow & Price Calculation
+**Complexity:** Complex | **Test:** Search returns real prices, calculation works
+
+### Tasks:
+1. Implement dynamic dropdowns (district → street → segment)
+2. Fetch segment data on search (4 price levels)
+3. Build calculation engine:
+   ```
+   price = base_price × land_type_coef × location_coef ×
+           area_coef × depth_coef × feng_shui_coef
+   ```
+4. Display coefficient selection dropdowns
+5. Add area input field
+6. Calculate final total price live
+7. Display calculation breakdown
+8. Add "Save to History" button (UI only)
+
+### Success Criteria:
+- Districts load from database
+- Streets filter by selected district
+- Segments filter by selected street
+- Base prices display accurately
+- Coefficient selection updates calculation live
+- Final price matches formula
+- Breakdown shows each coefficient applied
+
+### Critical Files:
+```
+app/(user)/page.tsx - Dynamic dropdowns
+app/(user)/results/page.tsx - Calculation display
+lib/api/search.ts
+lib/calculations/price.ts - Calculation engine
+app/api/districts/route.ts
+app/api/streets/route.ts
+app/api/segments/route.ts
+```
+
+**Deploy to Vercel preview after this phase**
+
+---
+
+## Phase 7: Search History Feature
+**Complexity:** Simple | **Test:** Searches save, history displays
+
+### Tasks:
+1. Save search to `search_history` after calculation
+2. Fetch history on history page (newest first)
+3. Display as cards (location, date, price)
+4. "View Details" restores search parameters
+5. Delete button removes record
+6. Paginate if > 20 records
+
+### Success Criteria:
+- Each search saves to database
+- History page loads user's searches
+- Cards show location, date, price
+- Clicking card restores inputs
+- Delete removes record
+
+### Critical Files:
+```
+app/(user)/history/page.tsx
+lib/api/history.ts
+app/api/history/route.ts
+components/HistoryCard.tsx
+```
+
+**Deploy to Vercel preview after this phase**
+
+---
+
+## Phase 8: Admin User Management
+**Complexity:** Medium | **Test:** Create, edit, delete users
+
+### Tasks:
+1. Create user table UI (name, email, role, actions)
+2. "Create User" modal form
+3. Hash password, insert into `users`
+4. Edit user (name, email, role)
+5. Delete user with confirmation
+6. Search/filter users
+
+### Success Criteria:
+- User table loads from database
+- Create user validates inputs, saves
+- Edit updates user correctly
+- Delete removes user
+- Search filters list
+- Admin cannot delete self
+
+### Critical Files:
+```
+app/(admin)/users/page.tsx
+components/admin/UserForm.tsx
+lib/api/users.ts
+app/api/admin/users/route.ts
+```
+
+**Deploy to Vercel preview after this phase**
+
+---
+
+## Phase 9: Admin Price & Coefficient Management
+**Complexity:** Medium | **Test:** Edit prices and coefficients
+
+### Tasks:
+1. Price table UI (district, street, segment, prices)
+2. Inline editing for prices
+3. Coefficient tabs (5 types: Land Type, Location, Area, Depth, Feng Shui)
+4. Edit coefficient values
+5. Search/filter by district or street
+6. Validate numeric inputs
+
+### Success Criteria:
+- Price table loads all segments
+- Admin edits base/government prices
+- Coefficient tabs load correct data
+- Values update in database
+- Search filters work
+- Validation prevents invalid inputs
+
+### Critical Files:
+```
+app/(admin)/prices/page.tsx
+app/(admin)/coefficients/page.tsx
+lib/api/prices.ts
+lib/api/coefficients.ts
+```
+
+**Deploy to Vercel preview after this phase**
+
+---
+
+## Phase 10: Excel File Upload & Parsing
+**Complexity:** Complex | **Test:** Upload Excel, data imports
+
+### Tasks:
+1. Install `xlsx` library
+2. File upload UI on admin settings
+3. Parse Excel (9 district sheets + 2 coefficient sheets)
+4. Validate structure
+5. Show preview before import
+6. Import to database (upsert logic)
+7. Display progress, success/error messages
+8. Add "Download Template" button
+
+### Success Criteria:
+- Upload accepts .xlsx only
+- File parses 9 + 2 sheets successfully
+- Preview shows first 10 rows per sheet
+- Data inserts/updates in database
+- Duplicates update instead of creating new
+- Progress indicator shows during import
+- Success message shows row counts
+
+### Critical Files:
+```
+app/(admin)/settings/page.tsx - Upload UI
+lib/excel/parser.ts - Excel parsing
+lib/excel/importer.ts - Database import
+app/api/admin/upload/route.ts
+public/template.xlsx - Sample template
+```
+
+**Deploy to Vercel preview after this phase**
+
+---
+
+## Phase 11: Brand Settings Management
+**Complexity:** Simple | **Test:** Update app name and logo
+
+### Tasks:
+1. Brand settings form (app_name, logo_url)
+2. Save to `brand_settings` table
+3. Upload logo to Supabase Storage or URL
+4. Display logo in headers across all pages
+5. Update header/footer with dynamic brand name
+
+### Success Criteria:
+- Form loads current settings
+- Admin changes app name
+- Admin uploads logo or enters URL
+- Changes save to database
+- App name updates in all headers
+- Logo displays in login and headers
+
+### Critical Files:
+```
+app/(admin)/settings/page.tsx
+lib/api/settings.ts
+components/Header.tsx - Dynamic branding
+app/layout.tsx - Brand metadata
+```
+
+**Deploy to Vercel preview after this phase**
+
+---
+
+## Phase 12: Testing, Polish & Production Deployment
+**Complexity:** Medium | **Test:** End-to-end on mobile + production
+
+### Tasks:
+1. **Testing:**
+   - Test all user flows end-to-end
+   - Test admin CRUD operations
+   - Test on mobile devices (responsive, touch)
+   - Test calculation accuracy
+   - Test Excel import with real data
+   - Fix bugs and edge cases
+
+2. **Polish:**
+   - Add loading states for async operations
+   - Add error messages for failed API calls
+   - Add empty states (no history, no results)
+   - Optimize images and fonts
+   - Add meta tags for SEO
+   - Ensure accessibility (keyboard nav, focus)
+
+3. **Deployment:**
+   - Push to GitHub
+   - Connect Vercel to GitHub repo
+   - Configure environment variables
+   - Deploy to production
+   - Test on mobile via production URL
+
+### Success Criteria:
+- All features work without errors
+- Mobile testing confirms responsive design
+- Calculations match expected results
+- Excel import works with real data
+- App deploys to Vercel production
+- No console errors
+- Loading states provide feedback
+- Performance < 3s page loads
+
+### Critical Files:
+```
+.env.local - Environment variables
+vercel.json - Vercel config
+package.json - Dependencies
+README.md - Deployment instructions
+```
+
+---
+
+## Testing Approach Per Phase
+
+After each phase:
+1. **Localhost testing:** `npm run dev` → test functionality in browser
+2. **Vercel preview:** Push to GitHub → Vercel auto-deploys → test on mobile via preview URL
+3. **Feedback loop:** Fix issues → re-test → proceed to next phase
+
+---
+
+## Tech Stack Summary
+
+- **Frontend:** Next.js 14 (App Router), TypeScript, Tailwind CSS
+- **Backend:** Next.js API Routes, Supabase PostgreSQL
+- **Auth:** Better Auth (email/password, role-based)
+- **File Upload:** `xlsx` library for parsing
+- **Hosting:** Vercel (frontend), Supabase (database)
+- **Design:** Custom components based on mockups (Agribank branding)
+
+---
+
+## Critical Files Overview
+
+**Most Important Files to Create:**
+1. `lib/calculations/price.ts` - Core calculation engine
+2. `supabase/migrations/001_initial_schema.sql` - Database schema
+3. `lib/excel/parser.ts` - Excel parsing logic
+4. `app/(user)/results/page.tsx` - Results with calculation UI
+5. `lib/auth/better-auth.ts` - Authentication config
+
+**File Structure:**
+```
+app/
+├── (user)/          # User routes with bottom nav
+├── (admin)/         # Admin routes with sidebar
+├── login/           # Login page
+└── api/             # API routes
+components/
+├── ui/              # Reusable UI components
+└── admin/           # Admin-specific components
+lib/
+├── auth/            # Authentication
+├── supabase/        # Database client
+├── api/             # API functions
+├── calculations/    # Price calculation
+└── excel/           # Excel parsing/import
+supabase/
+├── migrations/      # Database migrations
+└── seed.sql         # Sample data
+```
+
+---
+
+## Environment Variables Required
+
+```env
+# Supabase
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_ANON_KEY=xxx
+SUPABASE_SERVICE_ROLE_KEY=xxx
+
+# Better Auth
+BETTER_AUTH_SECRET=xxx
+
+# App
+NEXT_PUBLIC_APP_URL=https://landprice.vercel.app
+```
+
+---
+
+## Calculation Formula Reference
+
+```typescript
+// Price per m² after adjustments
+pricePerM2 = basePrice ×
+             landTypeCoef ×
+             locationCoef ×
+             areaCoef ×
+             depthCoef ×
+             fengShuiCoef
+
+// Total property value
+totalPrice = pricePerM2 × area
+```
+
+**Coefficient Types:**
+- Land Type: 7 types (1.0 to 0.2)
+- Location: 9 types based on alley depth/width (1.0 to 0.1)
+- Area: 8 tiers based on total area (1.0 to 0.4)
+- Depth: 3 tiers based on lot depth (1.0 to 0.25)
+- Feng Shui: 4 types (0.7 to 0.8)
+
+---
+
+## Notes
+
+- **YAGNI/KISS/DRY:** Keep code simple, avoid over-engineering
+- **Modularization:** Keep files under 200 lines, use kebab-case naming
+- **Testing:** Each phase must be testable independently
+- **Mobile-first:** All UI must work on 428px mobile screens
+- **Vietnamese:** All UI text in Vietnamese language

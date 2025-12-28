@@ -45,6 +45,28 @@
     }
   }
 
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
   @keyframes float {
     0%, 100% {
       transform: translate(0, 0);
@@ -62,11 +84,33 @@
     animation: slideUp 0.6s ease-out;
   }
 
+  .animate-slideUp {
+    animation: slideUp 0.5s ease-out;
+  }
+
+  .animate-fadeInUp {
+    animation: fadeInUp 0.4s ease-out backwards;
+  }
+
+  .animate-scaleIn {
+    animation: scaleIn 0.5s ease-out;
+  }
+
   .animate-float {
     animation: float 8s ease-in-out infinite;
   }
 
   .animate-float-reverse {
     animation: float 6s ease-in-out infinite reverse;
+  }
+
+  /* Hide scrollbar */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 }
