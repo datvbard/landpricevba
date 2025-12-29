@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useRef, ChangeEvent } from 'react'
+import { useState, useRef, ChangeEvent, useEffect, useCallback } from 'react'
 import type { SheetPreview } from '@/lib/excel/parser'
+import { getSettings, updateSettings, uploadLogo, deleteLogo, type BrandSettings } from '@/lib/api/settings'
 
 // Icons
 const TagIcon = () => (
@@ -74,9 +75,13 @@ export default function SettingsPage() {
   const [bankName, setBankName] = useState('Agribank')
   const [branchName, setBranchName] = useState('Trà Vinh')
   const [slogan, setSlogan] = useState('Tra Cứu Giá Đất')
+  const [settingsLoading, setSettingsLoading] = useState(true)
+  const [savingBrand, setSavingBrand] = useState(false)
 
   // Logo state
   const [logoUrl, setLogoUrl] = useState<string | null>(null)
+  const [logoFile, setLogoFile] = useState<File | null>(null) // Selected file before upload
+  const [savingLogo, setSavingLogo] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Excel import state
@@ -89,24 +94,49 @@ export default function SettingsPage() {
   // Toast state
   const [showToast, setShowToast] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
+  const [toastType, setToastType] = useState<'success' | 'error'>('success')
 
-  // Handle logo upload
+  // Fetch settings on mount
+  const fetchSettings = useCallback(async () => {
+    try {
+      setSettingsLoading(true)
+      const data = await getSettings()
+      setBankName(data.app_name || 'Agribank')
+      setBranchName(data.branch_name || '')
+      setSlogan(data.slogan || '')
+      setLogoUrl(data.logo_url)
+    } catch (error) {
+      console.error('Error fetching settings:', error)
+      showToastMessage('Lỗi tải cài đặt', 'error')
+    } finally {
+      setSettingsLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchSettings()
+  }, [fetchSettings])
+
+  // Handle logo file selection (preview only, not uploaded yet)
   const handleLogoUpload = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
     // Validate size (2MB max)
     if (file.size > 2 * 1024 * 1024) {
-      alert('Kích thước file quá lớn! Vui lòng chọn file nhỏ hơn 2MB.')
+      showToastMessage('Kích thước file quá lớn! Tối đa 2MB.', 'error')
       return
     }
 
     // Validate type
-    const validTypes = ['image/png', 'image/jpeg', 'image/svg+xml']
+    const validTypes = ['image/png', 'image/jpeg', 'image/svg+xml', 'image/webp']
     if (!validTypes.includes(file.type)) {
-      alert('Định dạng file không hợp lệ! Vui lòng chọn file PNG, JPG hoặc SVG.')
+      showToastMessage('Định dạng file không hợp lệ! Chỉ chấp nhận PNG, JPG, SVG, WebP.', 'error')
       return
     }
+
+    // Store file for later upload
+    setLogoFile(file)
 
     // Create preview
     const reader = new FileReader()
@@ -117,8 +147,20 @@ export default function SettingsPage() {
   }
 
   // Remove logo
-  const removeLogo = () => {
+  const removeLogo = async () => {
+    if (logoUrl && !logoUrl.startsWith('data:')) {
+      // Delete from server if it's an uploaded logo
+      try {
+        await deleteLogo()
+        showToastMessage('Đã xóa logo thành công!')
+      } catch (error) {
+        console.error('Error deleting logo:', error)
+        showToastMessage('Lỗi khi xóa logo', 'error')
+        return
+      }
+    }
     setLogoUrl(null)
+    setLogoFile(null)
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
@@ -188,7 +230,7 @@ export default function SettingsPage() {
       const data = await res.json()
       setImportResult(data)
       if (data.success) {
-        showSuccessToast('Nhập dữ liệu thành công!')
+        showToastMessage('Nhập dữ liệu thành công!')
       }
     } catch {
       setImportResult({ success: false, stats: null, errors: ['Lỗi kết nối server'] })
@@ -207,29 +249,61 @@ export default function SettingsPage() {
     }
   }
 
-  // Show toast
-  const showSuccessToast = (message: string) => {
+  // Show toast with type
+  const showToastMessage = (message: string, type: 'success' | 'error' = 'success') => {
     setToastMessage(message)
+    setToastType(type)
     setShowToast(true)
     setTimeout(() => setShowToast(false), 3000)
   }
 
   // Save brand name
-  const saveBrandName = () => {
+  const saveBrandName = async () => {
     if (!bankName.trim()) {
-      alert('Vui lòng nhập tên ngân hàng!')
+      showToastMessage('Vui lòng nhập tên ngân hàng!', 'error')
       return
     }
-    showSuccessToast('Đã lưu tên thương hiệu thành công!')
+
+    try {
+      setSavingBrand(true)
+      await updateSettings({
+        app_name: bankName.trim(),
+        branch_name: branchName.trim(),
+        slogan: slogan.trim(),
+      })
+      showToastMessage('Đã lưu tên thương hiệu thành công!')
+    } catch (error) {
+      console.error('Error saving brand name:', error)
+      showToastMessage('Lỗi khi lưu tên thương hiệu', 'error')
+    } finally {
+      setSavingBrand(false)
+    }
   }
 
   // Save logo
-  const saveLogo = () => {
-    if (!logoUrl) {
-      alert('Vui lòng chọn logo trước khi lưu!')
+  const saveLogo = async () => {
+    if (!logoFile && !logoUrl) {
+      showToastMessage('Vui lòng chọn logo trước khi lưu!', 'error')
       return
     }
-    showSuccessToast('Đã lưu logo thành công!')
+
+    // If there's a new file to upload
+    if (logoFile) {
+      try {
+        setSavingLogo(true)
+        const result = await uploadLogo(logoFile)
+        setLogoUrl(result.logo_url)
+        setLogoFile(null) // Clear file after successful upload
+        showToastMessage('Đã lưu logo thành công!')
+      } catch (error) {
+        console.error('Error uploading logo:', error)
+        showToastMessage('Lỗi khi tải lên logo', 'error')
+      } finally {
+        setSavingLogo(false)
+      }
+    } else {
+      showToastMessage('Logo đã được lưu trước đó')
+    }
   }
 
   // Computed preview name
@@ -511,15 +585,32 @@ export default function SettingsPage() {
           </div>
         </div>
         <div className="px-6 py-5 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
-          <button className="px-6 py-3 bg-transparent text-gray-600 border-2 border-gray-300 rounded-xl font-semibold hover:bg-gray-100 hover:border-gray-400 transition-colors">
+          <button
+            onClick={fetchSettings}
+            disabled={savingBrand}
+            className="px-6 py-3 bg-transparent text-gray-600 border-2 border-gray-300 rounded-xl font-semibold hover:bg-gray-100 hover:border-gray-400 transition-colors disabled:opacity-50"
+          >
             Hủy
           </button>
           <button
             onClick={saveBrandName}
-            className="px-8 py-3 bg-gradient-to-r from-primary to-[#C42D4F] text-white rounded-xl font-bold flex items-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
+            disabled={savingBrand || settingsLoading}
+            className="px-8 py-3 bg-gradient-to-r from-primary to-[#C42D4F] text-white rounded-xl font-bold flex items-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
           >
-            <CheckIcon />
-            Lưu thay đổi
+            {savingBrand ? (
+              <>
+                <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                Đang lưu...
+              </>
+            ) : (
+              <>
+                <CheckIcon />
+                Lưu thay đổi
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -601,15 +692,32 @@ export default function SettingsPage() {
           </div>
         </div>
         <div className="px-6 py-5 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
-          <button className="px-6 py-3 bg-transparent text-gray-600 border-2 border-gray-300 rounded-xl font-semibold hover:bg-gray-100 hover:border-gray-400 transition-colors">
-            Hủy
+          <button
+            onClick={removeLogo}
+            disabled={!logoUrl || savingLogo}
+            className="px-6 py-3 bg-transparent text-gray-600 border-2 border-gray-300 rounded-xl font-semibold hover:bg-gray-100 hover:border-gray-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Xóa logo
           </button>
           <button
             onClick={saveLogo}
-            className="px-8 py-3 bg-gradient-to-r from-primary to-[#C42D4F] text-white rounded-xl font-bold flex items-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all"
+            disabled={!logoFile || savingLogo}
+            className="px-8 py-3 bg-gradient-to-r from-primary to-[#C42D4F] text-white rounded-xl font-bold flex items-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
           >
-            <CheckIcon />
-            Lưu logo
+            {savingLogo ? (
+              <>
+                <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                </svg>
+                Đang tải lên...
+              </>
+            ) : (
+              <>
+                <CheckIcon />
+                Lưu logo
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -641,13 +749,18 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Success Toast */}
+      {/* Toast */}
       <div className={`
-        fixed top-6 right-6 bg-green-500 text-white px-6 py-4 rounded-xl shadow-xl flex items-center gap-3 z-50
+        fixed top-6 right-6 text-white px-6 py-4 rounded-xl shadow-xl flex items-center gap-3 z-50
         transition-all duration-300
+        ${toastType === 'success' ? 'bg-green-500' : 'bg-red-500'}
         ${showToast ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-5 pointer-events-none'}
       `}>
-        <SuccessIcon />
+        {toastType === 'success' ? <SuccessIcon /> : (
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        )}
         <span>{toastMessage}</span>
       </div>
     </div>

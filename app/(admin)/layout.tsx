@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks/use-auth'
+import { BrandProvider } from '@/lib/context/brand-context'
 import Sidebar from '@/components/admin/sidebar'
 import { signOut } from '@/lib/auth/auth-client'
 
@@ -80,11 +81,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+    <BrandProvider>
+      <div className="min-h-screen bg-gray-50 flex">
+        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-      {/* Main Content */}
-      <main className="flex-1 lg:ml-[280px] min-h-screen flex flex-col">
+        {/* Main Content */}
+        <main className="flex-1 lg:ml-[280px] min-h-screen flex flex-col">
         {/* Top Bar */}
         <header className="bg-white px-4 lg:px-6 py-4 flex items-center justify-between border-b border-gray-200 sticky top-0 z-30 shadow-sm">
           {/* Mobile menu button + Page title */}
@@ -144,7 +146,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <div className="flex-1 p-4 lg:p-6">
           {children}
         </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </BrandProvider>
   )
 }

@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useAuth } from '@/hooks/use-auth'
+import { BrandProvider } from '@/lib/context/brand-context'
 import BottomNav from '@/components/bottom-nav'
 import Header from '@/components/header'
 
@@ -38,12 +39,14 @@ export default function UserLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header />
-      <div className="mx-auto w-full max-w-[428px] flex-1 flex flex-col">
-        {children}
+    <BrandProvider>
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Header />
+        <div className="mx-auto w-full max-w-[428px] flex-1 flex flex-col">
+          {children}
+        </div>
+        <BottomNav />
       </div>
-      <BottomNav />
-    </div>
+    </BrandProvider>
   )
 }
