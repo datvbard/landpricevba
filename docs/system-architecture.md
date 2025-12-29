@@ -1,53 +1,60 @@
 # Land Price App - System Architecture
 
-**Version:** 1.0.0
-**Last Updated:** 2025-12-28
-**Phase:** Phase 1 - UI Foundation
+**Version:** 2.1.0
+**Last Updated:** 2025-12-29
+**Phase:** Phase 5 - Authentication System Complete
 
 ## Architecture Overview
 
 Land Price App is built on Next.js 14 with App Router architecture, following a component-driven, mobile-first design pattern with server-client boundary clearly defined.
 
 ```
-┌─────────────────────────────────────────────────────┐
-│         Browser / Client Environment                 │
-├─────────────────────────────────────────────────────┤
-│                  Next.js App Router                  │
-│                                                      │
-│  ┌──────────────────────────────────────────────┐   │
-│  │  Pages (Server Components by default)        │   │
-│  │  • app/layout.tsx    (Root)                  │   │
-│  │  • app/page.tsx      (Redirect to /login)    │   │
-│  │  • app/login/page.tsx (Client Component)     │   │
-│  └──────────────────────────────────────────────┘   │
-│                                                      │
-│  ┌──────────────────────────────────────────────┐   │
-│  │  UI Components Library                       │   │
-│  │  • Button (variants: primary, secondary...)  │   │
-│  │  • Input (with icon support)                 │   │
-│  └──────────────────────────────────────────────┘   │
-│                                                      │
-│  ┌──────────────────────────────────────────────┐   │
-│  │  Styling Layer                               │   │
-│  │  • Tailwind CSS (utility-first)              │   │
-│  │  • Custom CSS Animations (fadeInUp, etc)     │   │
-│  │  • Design Tokens (colors, spacing, fonts)    │   │
-│  └──────────────────────────────────────────────┘   │
-│                                                      │
-│  ┌──────────────────────────────────────────────┐   │
-│  │  Build & Dev Tools                           │   │
-│  │  • TypeScript (strict mode)                  │   │
-│  │  • PostCSS + Autoprefixer                    │   │
-│  │  • ESLint (code quality)                     │   │
-│  └──────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────┘
-          ↓ (No backend API in Phase 1)
-┌─────────────────────────────────────────────────────┐
-│  Future: Backend Services (Phase 5+)                │
-│  • Authentication API                               │
-│  • Property Data Service                            │
-│  • Admin Dashboard API                              │
-└─────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│              Browser / Client Environment                    │
+├──────────────────────────────────────────────────────────────┤
+│                    Next.js 14 App Router                     │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  Pages (Server & Client Components)                  │   │
+│  │  • Login, Search, Results, History (User)            │   │
+│  │  • Dashboard, Settings (Admin)                       │   │
+│  └──────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  UI Components Library                               │   │
+│  │  • Button, Input, Select, Card                       │   │
+│  │  • Admin: Sidebar, DataTable, StatCard              │   │
+│  │  • User: BottomNav, PriceCard                        │   │
+│  └──────────────────────────────────────────────────────┘   │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐   │
+│  │  Styling Layer                                       │   │
+│  │  • Tailwind CSS 3.4 (utility-first)                 │   │
+│  │  • Design Tokens: Colors, spacing, animations       │   │
+│  │  • Be Vietnam Pro font (300-700 weights)            │   │
+│  └──────────────────────────────────────────────────────┘   │
+└──────────────────────────────────────────────────────────────┘
+                      ↓ (HTTPS)
+┌──────────────────────────────────────────────────────────────┐
+│              Supabase Client Layer                           │
+├──────────────────────────────────────────────────────────────┤
+│  • lib/supabase/client.ts   (Anon key, public data)         │
+│  • lib/supabase/server.ts   (Service role, admin ops)       │
+│  • Real-time subscriptions                                   │
+│  • Row Level Security (RLS) enforcement                      │
+└──────────────────────────────────────────────────────────────┘
+                      ↓ (REST/GraphQL)
+┌──────────────────────────────────────────────────────────────┐
+│           Supabase PostgreSQL Database                       │
+├──────────────────────────────────────────────────────────────┤
+│  • 11 Tables:                                                │
+│    - users, districts, streets, segments                    │
+│    - 5 coefficient tables (land_type, location, area...)    │
+│    - search_history, brand_settings                         │
+│  • Foreign keys & indexes configured                         │
+│  • RLS policies for data access control                      │
+│  • 9 districts, 60+ segments, sample data seeded            │
+└──────────────────────────────────────────────────────────────┘
 ```
 
 ## Layer Structure
@@ -156,7 +163,42 @@ const beVietnamPro = Be_Vietnam_Pro({
 })
 ```
 
-### 4. Build & Dev Tools
+### 4. Supabase Integration (`lib/supabase/`)
+
+#### Client Configuration (`lib/supabase/client.ts`)
+- Anonymous key for public data access
+- Automatic session refresh
+- Real-time subscription support
+- Browser localStorage for session persistence
+
+#### Server Configuration (`lib/supabase/server.ts`)
+- Service role key for admin operations
+- Server-side authentication
+- User management capabilities
+- Admin CRUD operations on protected tables
+
+#### Database Types (`lib/supabase/database.types.ts`)
+```typescript
+export interface Database {
+  public: {
+    Tables: {
+      users: { Row: User, Insert, Update }
+      districts: { Row: District, Insert, Update }
+      streets: { Row: Street, Insert, Update }
+      segments: { Row: Segment, Insert, Update }
+      land_type_coefficients: { Row, Insert, Update }
+      location_coefficients: { Row, Insert, Update }
+      area_coefficients: { Row, Insert, Update }
+      depth_coefficients: { Row, Insert, Update }
+      feng_shui_coefficients: { Row, Insert, Update }
+      search_history: { Row, Insert, Update }
+      brand_settings: { Row, Insert, Update }
+    }
+  }
+}
+```
+
+### 5. Build & Dev Tools
 
 #### TypeScript Configuration (`tsconfig.json`)
 - **Target:** ES2020
@@ -180,44 +222,102 @@ const beVietnamPro = Be_Vietnam_Pro({
 
 ## Data Flow
 
-### Phase 1 (Current)
+### Authentication Flow (Phase 5)
 
 ```
 User Browser
     ↓
 [Next.js Server]
     ↓
-Root Layout (layout.tsx) - Server Component
+middleware.ts
+    ├─ Check session cookie
+    ├─ Public routes (/login, /api/auth/*) → Allow
+    └─ Protected routes → Require session
     ↓
-Page Router Decision
-    ├─ "/" → Redirect to "/login"
-    └─ "/login" → LoginPage (Client Component)
-
-LoginPage (Client Component)
-    ├─ Renders Button components
-    ├─ Renders Input components
-    ├─ Manages password visibility state
-    └─ Form submission → console.log (TODO)
+Login Page (Client Component)
+    ├─ User enters email/phone + password
+    ├─ Form submission via loginAction (server action)
+    └─ Server validation & Better Auth integration
+    ↓
+Better Auth Authentication
+    ├─ Password verification (scrypt)
+    ├─ Session creation (7 days)
+    ├─ Set secure httpOnly cookie
+    └─ Return user with role
+    ↓
+Role-Based Routing
+    ├─ Admin (role='admin') → /admin/dashboard
+    └─ User (role='user') → / (user search page)
+    ↓
+Protected Layout
+    ├─ Render Header with user info
+    ├─ Check session via useAuth hook
+    └─ Display role badge for admin
+    ↓
+Protected Page
+    ├─ useAuth hook returns user + session
+    ├─ Can access protected data
+    └─ Logout via Header component
 ```
 
-### Future Flow (Phase 5+)
+### Request/Response Flow
 
 ```
-LoginPage
+1. Form Submit
+   Client → POST /api/auth/sign-in/email
+   ├─ Email/Phone: validated
+   ├─ Password: validated
+   └─ User lookup: database
+
+2. Server Action Validation
+   loginAction()
+   ├─ Email/phone format check
+   ├─ Password complexity check
+   ├─ User existence check
+   ├─ User active status check
+   └─ Better Auth credential verification
+
+3. Session Creation
+   Better Auth
+   ├─ Password hash comparison
+   ├─ Session token generation
+   ├─ Cookie secure flags (httpOnly, secure, sameSite)
+   └─ 5-minute cache enabled
+
+4. Response
+   Server → Client
+   ├─ Redirect path (/admin/dashboard or /)
+   └─ Session cookie (automatic, httpOnly)
+
+5. Subsequent Requests
+   Client → Protected Route
+   ├─ middleware.ts checks cookie
+   ├─ No database lookup (cookie cache)
+   └─ Session valid → Allow access
+```
+
+### Protected Route Access
+
+```
+Request → middleware.ts
     ↓
-[Form Submission]
+Session Cookie Check
+    ├─ Session exists → Allow (NextResponse.next())
+    └─ No session → Redirect to /login
+
+Layout Component
     ↓
-Authentication API Endpoint
-    ├─ Validate credentials
-    ├─ Create session/JWT
-    └─ Return user data
+useAuth Hook
+    ├─ Calls getSessionCookie()
+    ├─ Renders loading state
+    └─ Returns user + isAdmin flag
+
+Component
     ↓
-[Redirect to Dashboard]
-    ↓
-App/dashboard/page.tsx
-    ├─ Fetch user data
-    ├─ Render user interface
-    └─ Connect to property service
+Display role-based UI
+    ├─ Admin badge if isAdmin
+    ├─ User name/email
+    └─ Logout button
 ```
 
 ## Mobile-First Responsive Design
@@ -267,6 +367,68 @@ export const viewport: Viewport = {
   </Button>
 </form>
 ```
+
+## Authentication Layer (Phase 5)
+
+### Better Auth Integration
+```
+Application
+    ↓
+lib/auth/auth.ts (Server)
+├─ PostgreSQL/Supabase Pool
+├─ Email/password strategy
+├─ 7-day session expiry
+├─ 5-minute cookie cache
+└─ Custom user fields (role, phone, full_name, is_active)
+
+lib/auth/auth-client.ts (Client)
+├─ createAuthClient()
+├─ signIn/signOut methods
+├─ useSession hook
+└─ Base URL configuration
+
+lib/auth/validators.ts
+├─ Email regex validation
+├─ Vietnamese phone format
+├─ Password complexity rules
+└─ Input normalization
+```
+
+### Session Management
+- **Storage:** Secure httpOnly cookies
+- **Expiration:** 7 days (configurable)
+- **Cache:** 5-minute memory cache for performance
+- **Flags:** httpOnly, secure, sameSite=Strict
+- **Validation:** Middleware checks on every request
+
+### Route Protection Strategy
+```
+middleware.ts (Request Level)
+├─ Parse request pathname
+├─ Check public routes (/login, /api/auth/*)
+├─ Verify session cookie for protected routes
+├─ Redirect to /login if no session
+└─ Fast check (no database query)
+
+Layout Components (Component Level)
+├─ useAuth hook for client state
+├─ Conditional rendering based on isAuthenticated
+├─ Role-based UI rendering (isAdmin flag)
+└─ Loading states during session check
+```
+
+### User Roles
+- **user:** Default role, access to search functionality
+- **admin:** Access to /admin/* routes, user/price management
+- **Role Assignment:** Set at user creation, checked on login
+
+### Security Features
+- **Password Hashing:** Scrypt (Better Auth default)
+- **Password Validation:** Min 8 chars, uppercase, lowercase, number
+- **User Enumeration Prevention:** Generic error messages on login failure
+- **Active Status Check:** Disabled users cannot login
+- **Session Binding:** Cookie tied to user session
+- **CSRF Protection:** Next.js built-in (form action)
 
 ## Performance Characteristics
 
@@ -336,29 +498,40 @@ components/
 
 ## Future Architecture Evolution
 
-### Phase 2: Search & Results
-- Dashboard page with search interface
-- Results display component
-- Price calculation logic
+### Phase 6: Search & Calculation
+- Price calculation engine with coefficients
+- Results display with 4-level pricing
+- Search integration with districts/streets/segments
 
-### Phase 3: Advanced Features
-- Comparison tools
-- Map integration
-- PDF export functionality
+### Phase 7: Search History
+- History persistence to database
+- User search tracking and retrieval
+- History filtering and export
 
-### Phase 4: History & Bookmarks
-- Local storage or IndexedDB for history
-- Bookmark management UI
+### Phase 8: Admin User Management
+- User CRUD operations
+- Role assignment (admin/user)
+- User activation/deactivation
 
-### Phase 5: Authentication
-- Backend authentication service
-- Session management middleware
-- Protected routes
+### Phase 9: Admin Price Management
+- Coefficient CRUD for all types
+- Bulk price updates
+- Price audit trail
 
-### Phase 6: Admin Dashboard
-- Admin layout with sidebar
-- Data management interface
-- Analytics dashboard
+### Phase 10: Excel Upload & Parsing
+- Excel import functionality
+- Data validation and transformation
+- Batch price updates
+
+### Phase 11: Brand Settings
+- App branding customization
+- Settings persistence
+- Feature flags
+
+### Phase 12: Testing & Deployment
+- End-to-end testing suite
+- Performance optimization
+- Vercel deployment configuration
 
 ## Dependencies & Versions
 

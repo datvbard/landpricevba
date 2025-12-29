@@ -1,18 +1,37 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/button'
 import Input from '@/components/ui/input'
+import { loginAction } from './actions'
 
 export default function LoginPage() {
+  const router = useRouter()
+  const [identifier, setIdentifier] = useState('')
+  const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const togglePassword = () => setShowPassword(!showPassword)
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    // TODO: Implement authentication in Phase 5
-    console.log('Login submitted')
+    setIsLoading(true)
+    setError(null)
+
+    const result = await loginAction(identifier, password)
+
+    if (!result.success) {
+      setError(result.error || 'Đã xảy ra lỗi')
+      setIsLoading(false)
+      return
+    }
+
+    // Redirect based on role
+    router.push(result.redirectTo || '/')
+    router.refresh()
   }
 
   return (
@@ -65,6 +84,13 @@ export default function LoginPage() {
             </div>
           </div>
 
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
+
           {/* Login Form */}
           <form className="mb-6" onSubmit={handleLogin}>
             {/* Phone/Email Input */}
@@ -73,6 +99,9 @@ export default function LoginPage() {
                 type="text"
                 placeholder="Số điện thoại hoặc Email"
                 autoComplete="username"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                disabled={isLoading}
                 icon={
                   <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
@@ -87,6 +116,9 @@ export default function LoginPage() {
                 type={showPassword ? 'text' : 'password'}
                 placeholder="Mật khẩu"
                 autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
                 icon={
                   <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
@@ -97,6 +129,7 @@ export default function LoginPage() {
                     type="button"
                     onClick={togglePassword}
                     className="p-2 text-gray-400 hover:text-gray-600 flex items-center justify-center"
+                    disabled={isLoading}
                   >
                     {showPassword ? (
                       <svg className="w-[22px] h-[22px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -119,6 +152,7 @@ export default function LoginPage() {
                 <input
                   type="checkbox"
                   className="w-5 h-5 accent-primary cursor-pointer"
+                  disabled={isLoading}
                 />
                 <span className="text-sm text-gray-600">Ghi nhớ đăng nhập</span>
               </label>
@@ -128,11 +162,23 @@ export default function LoginPage() {
             </div>
 
             {/* Login Button */}
-            <Button type="submit" fullWidth className="text-lg">
-              <span>Đăng Nhập</span>
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-              </svg>
+            <Button type="submit" fullWidth className="text-lg" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                  </svg>
+                  <span>Đang đăng nhập...</span>
+                </>
+              ) : (
+                <>
+                  <span>Đăng Nhập</span>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                  </svg>
+                </>
+              )}
             </Button>
           </form>
 
@@ -145,7 +191,7 @@ export default function LoginPage() {
 
           {/* Social Login */}
           <div className="flex gap-3">
-            <Button type="button" variant="social" fullWidth className="flex-1 text-sm font-medium">
+            <Button type="button" variant="social" fullWidth className="flex-1 text-sm font-medium" disabled={isLoading}>
               <svg className="w-6 h-6" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -154,7 +200,7 @@ export default function LoginPage() {
               </svg>
               Google
             </Button>
-            <Button type="button" variant="social" fullWidth className="flex-1 text-sm font-medium">
+            <Button type="button" variant="social" fullWidth className="flex-1 text-sm font-medium" disabled={isLoading}>
               <svg className="w-6 h-6" viewBox="0 0 24 24" fill="#1877F2">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
               </svg>

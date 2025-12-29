@@ -1,7 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/hooks/use-auth'
 import Sidebar from '@/components/admin/sidebar'
+import { signOut } from '@/lib/auth/auth-client'
 
 // Icons
 const MenuIcon = () => (
@@ -22,9 +25,9 @@ const BellIcon = () => (
   </svg>
 )
 
-const HelpIcon = () => (
-  <svg className="w-[22px] h-[22px]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+const LogoutIcon = () => (
+  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
   </svg>
 )
 
@@ -33,7 +36,48 @@ interface AdminLayoutProps {
 }
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
+  const router = useRouter()
+  const { user, isLoading, isAuthenticated, isAdmin } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  useEffect(() => {
+    if (!isLoading) {
+      if (!isAuthenticated) {
+        router.push('/login')
+      } else if (!isAdmin) {
+        // Non-admin trying to access admin pages
+        router.push('/')
+      }
+    }
+  }, [isLoading, isAuthenticated, isAdmin, router])
+
+  const handleLogout = async () => {
+    await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push('/login')
+          router.refresh()
+        },
+      },
+    })
+  }
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          <span className="text-sm text-gray-500">Đang tải...</span>
+        </div>
+      </div>
+    )
+  }
+
+  // Not authorized
+  if (!isAuthenticated || !isAdmin) {
+    return null
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -57,15 +101,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <div className="flex items-center gap-3">
             {/* Search box - hidden on mobile */}
             <div className="hidden md:block relative w-[300px]">
-              <SearchIcon />
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <SearchIcon />
+              </div>
               <input
                 type="text"
                 placeholder="Tìm kiếm..."
                 className="w-full pl-10 pr-4 py-3 bg-gray-50 border-2 border-transparent rounded-lg text-sm focus:outline-none focus:bg-white focus:border-primary transition-colors"
               />
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <SearchIcon />
-              </div>
             </div>
 
             {/* Notifications */}
@@ -74,9 +117,25 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white" />
             </button>
 
-            {/* Help */}
-            <button className="w-11 h-11 bg-gray-50 rounded-lg flex items-center justify-center text-gray-600 hover:bg-gray-100 hover:text-primary transition-colors">
-              <HelpIcon />
+            {/* User Info */}
+            <div className="hidden sm:flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg">
+              <div className="w-8 h-8 bg-gradient-primary rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-semibold">
+                  {user?.name?.charAt(0) || user?.email?.charAt(0) || 'A'}
+                </span>
+              </div>
+              <span className="text-sm font-medium text-gray-700 max-w-[100px] truncate">
+                {user?.name || user?.email}
+              </span>
+            </div>
+
+            {/* Logout */}
+            <button
+              onClick={handleLogout}
+              className="w-11 h-11 bg-gray-50 rounded-lg flex items-center justify-center text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors"
+              title="Đăng xuất"
+            >
+              <LogoutIcon />
             </button>
           </div>
         </header>
