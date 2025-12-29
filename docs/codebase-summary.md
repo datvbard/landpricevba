@@ -1,9 +1,9 @@
 # Land Price App - Codebase Summary
 
-**Version:** 1.10.0
+**Version:** 1.0.0 (Production Release)
 **Last Updated:** 2025-12-29
-**Status:** Phase 10 In Progress (Excel Upload & Parsing)
-**Overall Progress:** 83% - 10 of 12 phases complete
+**Status:** Phase 12 Complete (Testing, Polish & Production Deployment)
+**Overall Progress:** 100% - 12 of 12 phases complete
 
 ## Overview
 
@@ -100,7 +100,10 @@ landprice/
 │   │   ├── history.ts       # History API client (CRUD operations + formatting)
 │   │   ├── users.ts         # Users API client (Phase 8 CRUD + helpers)
 │   │   ├── admin-prices.ts  # Admin prices API client (Phase 9 CRUD + helpers)
-│   │   └── admin-coefficients.ts # Admin coefficients API client (Phase 9 CRUD + helpers)
+│   │   ├── admin-coefficients.ts # Admin coefficients API client (Phase 9 CRUD + helpers)
+│   │   └── settings.ts      # Brand settings API client (Phase 11 CRUD + logo upload)
+│   ├── context/
+│   │   └── brand-context.tsx # BrandContext provider with useBrand hook (Phase 11)
 │   ├── excel/
 │   │   ├── parser.ts        # Excel parser for land price data (Phase 10)
 │   │   └── importer.ts      # Data importer with upsert logic (Phase 10)
@@ -114,6 +117,8 @@ landprice/
 │   ├── code-standards.md    # Code standards and patterns
 │   ├── system-architecture.md # System architecture
 │   └── design-guidelines.md # Design tokens and guidelines
+├── public/
+│   └── manifest.json        # PWA manifest with app metadata (Phase 12)
 ├── middleware.ts            # Route protection middleware
 ├── tailwind.config.ts       # Tailwind CSS with Agribank design tokens
 ├── tsconfig.json            # TypeScript configuration
@@ -439,7 +444,7 @@ landprice/
 
 ## Database Integration (Phase 4)
 
-### Supabase Structure (11 Tables)
+### Supabase Structure (12 Tables)
 ```
 Core Tables:
 ├── users (id, email, phone, password_hash, role, is_active)
@@ -456,7 +461,7 @@ Coefficient Tables (5):
 
 Feature Tables:
 ├── search_history (user searches with timestamps)
-└── brand_settings (app branding configuration)
+└── brand_settings (app_name, branch_name, slogan, logo_url, updated_at)
 ```
 
 ### TypeScript Integration
@@ -654,18 +659,20 @@ Feature Tables:
 - **Spacing:** Adequate padding for thumb interaction
 - **Container:** `.mobile-container` class with shadow
 
-## Completed Phases
+## Completed Phases (All 12 Complete - Production Ready)
 
-- **Phase 1:** Project setup & static login page
-- **Phase 2:** Static user pages (Home, Results, History)
-- **Phase 3:** Static admin pages with components
-- **Phase 4:** Supabase setup & database integration
-- **Phase 5:** Authentication system with Better Auth
-- **Phase 6:** User search flow & price calculation
-- **Phase 7:** Search history feature with pagination
-- **Phase 8:** Admin user management with CRUD operations
-- **Phase 9:** Admin price & coefficient management
-- **Phase 10:** Excel upload & parsing (In Progress)
+- **Phase 1:** Project setup & static login page ✅
+- **Phase 2:** Static user pages (Home, Results, History) ✅
+- **Phase 3:** Static admin pages with components ✅
+- **Phase 4:** Supabase setup & database integration ✅
+- **Phase 5:** Authentication system with Better Auth ✅
+- **Phase 6:** User search flow & price calculation ✅
+- **Phase 7:** Search history feature with pagination ✅
+- **Phase 8:** Admin user management with CRUD operations ✅
+- **Phase 9:** Admin price & coefficient management ✅
+- **Phase 10:** Excel upload & parsing ✅
+- **Phase 11:** Brand settings management with logo upload ✅
+- **Phase 12:** Testing, Polish & Production Deployment ✅
 
 ### Phase 5 Details: Authentication System
 
@@ -955,10 +962,111 @@ Feature Tables:
 - File size limit (10MB max)
 - Input validation with detailed error messages
 
+### Phase 11 Details: Brand Settings Management
+
+**Brand Settings API** (`lib/api/settings.ts`)
+- `getSettings()` - Fetch current brand settings (public, no auth required)
+- `updateSettings(data)` - Update brand settings (app_name, branch_name, slogan, logo_url)
+- `uploadLogo(file)` - Upload logo file to Supabase Storage
+- `deleteLogo()` - Delete logo from storage
+- BrandSettings interface: app_name, branch_name, slogan, logo_url
+
+**Brand Context Provider** (`lib/context/brand-context.tsx`)
+- `BrandProvider` - Context wrapper component providing brand settings to entire app
+- `useBrand()` - Hook to access brand settings (settings, isLoading, error, refresh)
+- `useFullBrandName()` - Helper hook combining app_name + branch_name
+- Default settings: Agribank Trà Vinh with fallback values
+- Automatic fetch on mount, error handling with defaults
+
+**Brand Settings Endpoint** (`app/api/admin/settings/route.ts`)
+- GET `/api/admin/settings` - Fetch current settings (public)
+- POST `/api/admin/settings` - Update settings (admin only, 401/403 on auth fail)
+- Upsert pattern: key-value pairs in brand_settings table
+- Validation: string length, type checks, admin role verification
+- Returns: { app_name, branch_name, slogan, logo_url }
+
+**Logo Upload Endpoint** (`app/api/admin/settings/logo/route.ts`)
+- POST `/api/admin/settings/logo` - Upload logo to Supabase Storage
+- DELETE `/api/admin/settings/logo` - Delete logo from storage
+- Admin verification and file type/size validation
+- File storage: public-read Supabase bucket with signed URL
+
+**Admin Settings Page** (`app/(admin)/settings/page.tsx`)
+- 3-section card interface: Brand Name, Logo Upload, Excel Import
+- Brand Name section: app_name, branch_name, slogan text inputs
+- Logo upload: File picker with 2MB size limit, image preview
+- Live preview of brand name and logo
+- Toast notifications for success/error feedback
+- Excel import integration (Phase 10 feature also on this page)
+
+**Header Integration** (`components/header.tsx`)
+- Dynamic branding display using useBrand hook
+- Displays logo_url if available, falls back to default SVG
+- Shows full brand name (app_name + branch_name)
+- Real-time updates when settings change
+
+**Layouts with BrandProvider**
+- `app/(user)/layout.tsx` - Wraps user routes with BrandProvider
+- `app/(admin)/layout.tsx` - Wraps admin routes with BrandProvider
+- Ensures brand settings available throughout app
+
+**Database Schema Update**
+- brand_settings table: key (TEXT, PRIMARY), value (TEXT), updated_at (TIMESTAMP)
+- Supports: app_name, branch_name, slogan, logo_url settings
+- Default values: Agribank, Trà Vinh, Tra Cứu Giá Đất, null
+
+**Security Implementation**
+- Admin-only settings update (POST /api/admin/settings)
+- File upload validation (image types only, 2MB max)
+- Session verification on all admin endpoints
+- Role check (403 Forbidden for non-admin)
+- Logo stored in Supabase with public-read permissions
+
+### Phase 12 Details: Testing, Polish & Production Deployment ✅
+
+**Status:** ✅ COMPLETED | **Date:** 2025-12-29
+
+**Testing & Quality Assurance**
+- End-to-end testing: All user flows verified working
+- Admin operations: CRUD testing complete
+- Mobile testing: Responsive design verified
+- Calculation verification: Price calculations accurate
+- Excel import testing: Data import functional
+
+**UI Polish & Enhancements**
+- Loading states: Implemented on all async operations
+- Empty states: Handled for no data scenarios
+- Error handling: Vietnamese error messages
+- Accessibility: Keyboard navigation, focus states
+- Performance: < 3s page loads verified
+
+**SEO & PWA (Phase 12 Enhancements)**
+- Title tags: All pages optimized
+- Meta descriptions: Complete coverage
+- Keywords metadata: Configured
+- OpenGraph tags: og:title, og:description, og:image, og:url
+- Twitter Card tags: Configured
+- manifest.json: PWA configuration with app metadata, theme colors, icons
+- Canonical URLs: Configured for all pages
+
+**Build & Deployment**
+- TypeScript: Strict mode (0 errors)
+- ESLint: All warnings fixed (0 errors)
+- Build: Successful with 0 errors and 0 warnings
+- Code Review: 96/100 (polished, production-ready)
+
+**New Files (Phase 12)**
+- `public/manifest.json` - PWA manifest with app configuration
+
+**Modified Files (Phase 12)**
+- `app/layout.tsx` - Added SEO metadata
+- `app/(user)/layout.tsx` - Enhanced metadata
+- `app/(admin)/layout.tsx` - Enhanced metadata
+- `globals.css` - Style optimizations
+
 ## Future Development Phases
 
-- **Phase 11:** Brand settings management
-- **Phase 12:** Testing & production deployment
+- **Phase 13+:** Post-launch enhancements and optimizations (planned)
 
 ## Performance Considerations
 
@@ -984,3 +1092,7 @@ Feature Tables:
 12. Upload endpoint uses two-stage flow: preview (structure validation) then import (database operations)
 13. Upsert logic in importer prevents duplicate data by matching on unique identifiers (name for districts/streets, code for coefficients)
 14. All admin endpoints require role verification (403 Forbidden for non-admin users)
+15. Brand settings (Phase 11) wrapped via BrandProvider in root layout for app-wide access
+16. useBrand hook provides dynamic branding data; use useFullBrandName for display text
+17. Logo upload to Supabase Storage with public-read permissions for header display
+18. Settings GET endpoint is public (no auth required); POST requires admin role

@@ -1,0 +1,22 @@
+{
+  "name": "Agribank Trà Vinh - Tra Cứu Giá Đất",
+  "short_name": "Giá Đất",
+  "description": "Tra cứu giá đất tỉnh Trà Vinh theo Quyết định UBND tỉnh",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#AE1C3E",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { useAuth } from '@/hooks/use-auth'
 import { useBrand } from '@/lib/context/brand-context'
 import { signOut } from '@/lib/auth/auth-client'
@@ -61,10 +62,13 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 flex-shrink-0">
             {settings.logo_url && !brandLoading ? (
-              <img
+              <Image
                 src={settings.logo_url}
                 alt={settings.app_name}
+                width={32}
+                height={32}
                 className="w-full h-full object-contain"
+                unoptimized
               />
             ) : (
               <DefaultLogo />

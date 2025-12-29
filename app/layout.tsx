@@ -10,8 +10,29 @@ const beVietnamPro = Be_Vietnam_Pro({
 })
 
 export const metadata: Metadata = {
-  title: 'Agribank Trà Vinh - Tra Cứu Giá Đất',
-  description: 'Tra cứu giá đất tỉnh Trà Vinh theo Quyết định UBND tỉnh',
+  title: {
+    default: 'Agribank Trà Vinh - Tra Cứu Giá Đất',
+    template: '%s | Agribank Trà Vinh',
+  },
+  description: 'Tra cứu giá đất tỉnh Trà Vinh theo Quyết định UBND tỉnh. Công cụ tính toán giá đất chính xác dành cho cán bộ ngân hàng Agribank.',
+  keywords: ['giá đất', 'tra cứu giá đất', 'Trà Vinh', 'Agribank', 'bất động sản', 'định giá đất'],
+  authors: [{ name: 'Agribank Trà Vinh' }],
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title: 'Agribank Trà Vinh - Tra Cứu Giá Đất',
+    description: 'Tra cứu giá đất tỉnh Trà Vinh theo Quyết định UBND tỉnh',
+    type: 'website',
+    locale: 'vi_VN',
+    siteName: 'Agribank Trà Vinh',
+  },
+  manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
 }
 
 export const viewport: Viewport = {
