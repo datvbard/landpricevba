@@ -1,9 +1,9 @@
 # Land Price App - Codebase Summary
 
-**Version:** 1.9.0
+**Version:** 1.10.0
 **Last Updated:** 2025-12-29
-**Status:** Phase 9 Complete (Admin Price & Coefficient Management)
-**Overall Progress:** 75% - 9 of 12 phases complete
+**Status:** Phase 10 In Progress (Excel Upload & Parsing)
+**Overall Progress:** 83% - 10 of 12 phases complete
 
 ## Overview
 
@@ -32,10 +32,12 @@ landprice/
 │   │   │   │   ├── route.ts # GET/POST price endpoints (Phase 9)
 │   │   │   │   └── [id]/
 │   │   │   │       └── route.ts # PUT/DELETE price endpoints (Phase 9)
-│   │   │   └── coefficients/
-│   │   │       ├── route.ts # GET/POST coefficient endpoints (Phase 9)
-│   │   │       └── [id]/
-│   │   │           └── route.ts # PUT/DELETE coefficient endpoints (Phase 9)
+│   │   │   ├── coefficients/
+│   │   │   │   ├── route.ts # GET/POST coefficient endpoints (Phase 9)
+│   │   │   │   └── [id]/
+│   │   │   │       └── route.ts # PUT/DELETE coefficient endpoints (Phase 9)
+│   │   │   └── upload/
+│   │   │       └── route.ts # POST Excel file upload & import (Phase 10)
 │   │   ├── districts/
 │   │   │   └── route.ts     # GET districts
 │   │   ├── streets/
@@ -99,6 +101,9 @@ landprice/
 │   │   ├── users.ts         # Users API client (Phase 8 CRUD + helpers)
 │   │   ├── admin-prices.ts  # Admin prices API client (Phase 9 CRUD + helpers)
 │   │   └── admin-coefficients.ts # Admin coefficients API client (Phase 9 CRUD + helpers)
+│   ├── excel/
+│   │   ├── parser.ts        # Excel parser for land price data (Phase 10)
+│   │   └── importer.ts      # Data importer with upsert logic (Phase 10)
 │   ├── calculations/
 │   │   └── price-calculator.ts # Price calculation engine with 5 coefficients
 │   └── mock-data/
@@ -659,6 +664,8 @@ Feature Tables:
 - **Phase 6:** User search flow & price calculation
 - **Phase 7:** Search history feature with pagination
 - **Phase 8:** Admin user management with CRUD operations
+- **Phase 9:** Admin price & coefficient management
+- **Phase 10:** Excel upload & parsing (In Progress)
 
 ### Phase 5 Details: Authentication System
 
@@ -891,9 +898,65 @@ Feature Tables:
 - Vietnamese error messages for validation failures
 - Updated sidebar.tsx with "Quản lý Giá" and "Quản lý Hệ Số" links
 
+### Phase 10 Details: Excel Upload & Parsing
+
+**Excel Parser** (`lib/excel/parser.ts`)
+- `parseExcelPreview(buffer)` - Parse Excel file and return sheet structure for preview
+- `parseExcelFull(buffer)` - Parse Excel file and extract all district and coefficient data
+- Supports both district data sheets and coefficient type sheets
+- Flexible column name detection (Vietnamese & English variations)
+- Error handling with detailed row-level error messages
+
+**Parsed Data Interfaces**
+- `ParsedSegment` - Street name, segment range, base prices, government price, adjustment coefficients
+- `ParsedDistrict` - District name with array of segments
+- `ParsedCoefficient` - Code, name, coefficient value, optional range fields (width, area, depth)
+- `ParsedExcel` - Root interface with districts array and coefficient types (5 types)
+- `SheetPreview` - Sheet metadata for UI preview (name, type, headers, row count)
+- `ExcelPreview` - Preview data with validation status and error list
+
+**Sheet Type Detection**
+- District sheets: Detected by keywords (quận, huyện, district)
+- Coefficient sheets: Detected by type keywords (loại đất, vị trí, diện tích, chiều sâu, phong thủy)
+- Helper functions for flexible column lookup (case-insensitive, multiple name variants)
+
+**Data Importer** (`lib/excel/importer.ts`)
+- `importExcelData(data, onProgress?)` - Main import function with progress tracking
+- Hierarchical import: districts → streets → segments → coefficients
+- Upsert logic: Creates new records or updates existing (matched by name/code)
+
+**Import Process**
+- Districts: Create new or find existing by name, get/create district ID
+- Streets: Group segments by street name, create streets under districts
+- Segments: Upsert segments under streets with street_id matching
+- Coefficients: Upsert into 5 coefficient tables (land_type, location, area, depth, feng_shui)
+- Progress callback: Tracks stage, current/total counts, Vietnamese messages
+
+**Import Statistics**
+- Tracks created vs updated counts for districts, streets, segments
+- Tracks coefficient updates across all 5 types
+- Collects parsing errors from parser and import errors during DB operations
+- Returns success status and all errors for UI feedback
+
+**Admin Upload API** (`app/api/admin/upload/route.ts`)
+- POST `/api/admin/upload` - File upload endpoint (admin only)
+- Form data: `file` (Excel file), `action` ('preview' or 'import')
+- Admin verification: Session check + role verification (403 Forbidden for non-admin)
+- File validation: .xlsx/.xls only, max 10MB
+- Preview mode: Returns sheet structure without importing
+- Import mode: Parses, validates, and imports all data to database
+- Returns: { preview } for preview mode or { success, stats, errors } for import mode
+- Vietnamese error messages for validation failures
+
+**Security Implementation**
+- Admin role verification (403 Forbidden for non-admin)
+- Session verification (401 Unauthorized)
+- File type validation (.xlsx, .xls only)
+- File size limit (10MB max)
+- Input validation with detailed error messages
+
 ## Future Development Phases
 
-- **Phase 10:** Excel upload & parsing
 - **Phase 11:** Brand settings management
 - **Phase 12:** Testing & production deployment
 
@@ -917,3 +980,7 @@ Feature Tables:
 8. Design system is comprehensive; reference `design-guidelines.md` for specifics
 9. Component library pattern established for future expansion
 10. Admin user management (Phase 8) complete with full CRUD operations and scrypt password hashing
+11. Excel parser (Phase 10) supports both Vietnamese and English column names for flexible data formats
+12. Upload endpoint uses two-stage flow: preview (structure validation) then import (database operations)
+13. Upsert logic in importer prevents duplicate data by matching on unique identifiers (name for districts/streets, code for coefficients)
+14. All admin endpoints require role verification (403 Forbidden for non-admin users)
