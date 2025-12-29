@@ -1,27 +1,25 @@
 'use server'
 
-import { auth } from '@/lib/auth/auth'
 import { supabaseAdmin } from '@/lib/supabase/server'
 import { normalizeEmailOrPhone, isValidPassword } from '@/lib/auth/validators'
-import { headers } from 'next/headers'
 
-export type LoginResult = {
+export type ValidationResult = {
   success: boolean
   error?: string
+  email?: string
   redirectTo?: string
 }
 
 /**
- * Server action for user login
+ * Validates login input and returns user email for client-side auth
  * - Validates email/phone format
  * - Checks user exists and is active
- * - Authenticates via Better Auth
- * - Returns redirect path based on role
+ * - Returns email and redirect path
  */
-export async function loginAction(
+export async function validateLoginInput(
   identifier: string,
   password: string
-): Promise<LoginResult> {
+): Promise<ValidationResult> {
   try {
     // Validate inputs
     if (!identifier || !password) {
@@ -38,10 +36,10 @@ export async function loginAction(
       return { success: false, error: 'Email hoặc số điện thoại không đúng định dạng' }
     }
 
-    // Query user from database
+    // Query user from Better Auth 'user' table
     const query = normalized.type === 'email'
-      ? supabaseAdmin.from('users').select('*').eq('email', normalized.value).single()
-      : supabaseAdmin.from('users').select('*').eq('phone', normalized.value).single()
+      ? supabaseAdmin.from('user').select('*').eq('email', normalized.value).single()
+      : supabaseAdmin.from('user').select('*').eq('phone', normalized.value).single()
 
     const { data: user, error: userError } = await query
 
@@ -55,25 +53,28 @@ export async function loginAction(
       return { success: false, error: 'Email/số điện thoại hoặc mật khẩu không chính xác' }
     }
 
-    // Authenticate via Better Auth
-    const result = await auth.api.signInEmail({
-      body: {
-        email: user.email,
-        password: password,
-      },
-      headers: await headers(),
-    })
-
-    if (!result) {
-      return { success: false, error: 'Email/số điện thoại hoặc mật khẩu không chính xác' }
-    }
-
     // Determine redirect based on role
-    const redirectTo = user.role === 'admin' ? '/admin/dashboard' : '/'
+    // Note: (admin) route group doesn't add /admin to URL - it's just /dashboard
+    const redirectTo = user.role === 'admin' ? '/dashboard' : '/'
 
-    return { success: true, redirectTo }
+    return { success: true, email: user.email, redirectTo }
   } catch (error) {
-    console.error('Login error:', error)
+    console.error('Validation error:', error)
     return { success: false, error: 'Đã xảy ra lỗi, vui lòng thử lại' }
   }
+}
+
+/**
+ * Get user by email or phone (for internal use)
+ */
+export async function getUserByIdentifier(identifier: string) {
+  const normalized = normalizeEmailOrPhone(identifier)
+  if (normalized.type === 'invalid') return null
+
+  const query = normalized.type === 'email'
+    ? supabaseAdmin.from('user').select('*').eq('email', normalized.value).single()
+    : supabaseAdmin.from('user').select('*').eq('phone', normalized.value).single()
+
+  const { data } = await query
+  return data
 }

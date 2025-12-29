@@ -1,0 +1,662 @@
+[
+  {
+    "row": 1,
+    "data": [
+      "PHỤ LỤC SỐ 10",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 2,
+    "data": [
+      "HỆ SỐ QUY ĐỔI GIÁ TRỊ CÁC LOẠI ĐẤT, HỆ SỐ ĐIỀU CHỈNH VÀ YẾU TỐ GIẢM TRỪ GIÁ TRỊ",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 3,
+    "data": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 4,
+    "data": [
+      "(Kèm theo Báo cáo tư vấn giá đất số: 304/2025/4148HCM/BCTV/AAVC ngày 08 tháng 12 năm 2025)",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 5,
+    "data": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 6,
+    "data": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 7,
+    "data": [
+      "A. TỶ LỆ ÁP DỤNG",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 8,
+    "data": [
+      "STT",
+      "Yếu tố",
+      "Phân loại",
+      "Tỷ lệ quy đổi",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 9,
+    "data": [
+      "A.1. TỶ LỆ LOẠI ĐẤT (TRONG GCN/ QUY HOẠCH THỰC TẾ)",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 10,
+    "data": [
+      "1",
+      "Loại đất",
+      "Đất thổ cư",
+      "1",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 11,
+    "data": [
+      "2",
+      "",
+      "Đất thổ cư thuộc lộ giới công nhận/ TMDV (Giá đất TMDV theo hệ số so với đất ở: bắt buộc trả tiền 1 lần với thời hạn sử dụng là 50 năm)",
+      "0.8",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 12,
+    "data": [
+      "3",
+      "",
+      "Đất SXKD/ SKC/ KCN (Giá đất SXKD theo hệ số so với đất ở: bắt buộc trả tiền 1 lần với thời hạn sử dụng là 50 năm)",
+      "0.6",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 13,
+    "data": [
+      "4",
+      "",
+      "Đất CLN xen kẽ trong KDC",
+      "0.6",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 14,
+    "data": [
+      "5",
+      "",
+      "Đất CLN",
+      "0.4",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 15,
+    "data": [
+      "6",
+      "",
+      "Đất HNK, LUC, NTS, RSX",
+      "0.2",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 16,
+    "data": [
+      "7",
+      "",
+      "Đất thổ cư thuộc lộ giới không công nhận",
+      "0.4",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 17,
+    "data": [
+      "A.2. TỶ LỆ LOẠI VỊ TRÍ (TRONG GCN/ QUY HOẠCH THỰC TẾ)",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 18,
+    "data": [
+      "1",
+      "Loại vị trí",
+      "Đường chính/ mặt tiền/ khu đô thị",
+      "1",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 19,
+    "data": [
+      "2",
+      "",
+      "Hẻm 01 xuyệt (Nếu hẻm/đường nhánh có độ rộng >5m)",
+      "0.8",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 20,
+    "data": [
+      "",
+      "",
+      "Hẻm 01 xuyệt (Nếu hẻm/đường nhánh có độ rộng 4-5m)",
+      "0.7",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 21,
+    "data": [
+      "",
+      "",
+      "Hẻm 01 xuyệt (Nếu hẻm/đường nhánh có độ rộng <4m)",
+      "0.55",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 22,
+    "data": [
+      "3",
+      "",
+      "Hẻm 02 xuyệt (Nếu hẻm/đường nhánh có độ rộng >5m)",
+      "0.7",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 23,
+    "data": [
+      "",
+      "",
+      "Hẻm 02 xuyệt (Nếu hẻm/đường nhánh có độ rộng 4-5m)",
+      "0.6",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 24,
+    "data": [
+      "",
+      "",
+      "Hẻm 02 xuyệt (Nếu hẻm/đường nhánh có độ rộng <4m)",
+      "0.5",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 25,
+    "data": [
+      "4",
+      "",
+      "Hẻm 03 xuyệt (Nếu hẻm/đường nhánh có độ rộng >5m)",
+      "0.6",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 26,
+    "data": [
+      "",
+      "",
+      " v",
+      "0.5",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 27,
+    "data": [
+      "",
+      "",
+      "Hẻm 03 xuyệt (Nếu hẻm/đường nhánh có độ rộng <4m)",
+      "0.4",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 28,
+    "data": [
+      "5",
+      "",
+      "Giáp sông rạch đường thủy",
+      "0.3",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 29,
+    "data": [
+      "6",
+      "",
+      "Không có đường vào",
+      "0.1",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 30,
+    "data": [
+      "7",
+      "Thuộc quy hoạch khác",
+      "Đối với tất cả các loại đất (ngoại trừ đất thổ cư), loại vị trí khi xác định thuộc lộ giới đường bộ/ đường thủy/ an toàn điện, quy hoạch công trình/ tiện ích công cộng/ hạn chế xây dựng/ không cấp phép xây dựng... sẽ lấy hệ số trên nhân tiếp với tỉ lệ sau",
+      "0.6",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 31,
+    "data": [
+      "Lưu ý: Đối với tất cả các loại Bất động sản thì tỷ lệ trên là bắt buộc áp dụng cho các loại đất/ loại đường khác nhau tại địa phương.",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 32,
+    "data": [
+      "",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 33,
+    "data": [
+      "B. HỆ SỐ ĐIỀU CHỈNH THAM KHẢO",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 34,
+    "data": [
+      "STT",
+      "B.1. HỆ SỐ ĐIỀU CHỈNH THEO QUY MÔ (Không phân lớp)",
+      "",
+      "Hệ số tham khảo",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 35,
+    "data": [
+      "1",
+      "≤ 100m²",
+      "",
+      "1",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 36,
+    "data": [
+      "2",
+      "101m² - ≤ 300m²",
+      "",
+      "0.95",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 37,
+    "data": [
+      "3",
+      "301m² - ≤ 500m²",
+      "",
+      "0.85",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 38,
+    "data": [
+      "4",
+      "501m² - ≤ 1000m²",
+      "",
+      "0.75",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 39,
+    "data": [
+      "5",
+      "1.001m² - ≤ 2.000m²",
+      "",
+      "0.7",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 40,
+    "data": [
+      "6",
+      "2.001m² - ≤ 5.000m²",
+      "",
+      "0.6",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 41,
+    "data": [
+      "7",
+      "5.001m² - ≤ 10.000m²",
+      "",
+      "0.5",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 42,
+    "data": [
+      "8",
+      "> 10.000m²",
+      "",
+      "0.4",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 43,
+    "data": [
+      "\nVD: Tài sản có quy mô 400m² thì:\n- 100m² đầu tiên sử dụng hệ số: 1\n- 101m² – 300m² sử dụng hệ số: 0,95\n- 301m² – 400m² sử dụng hệ số: 0,85",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 44,
+    "data": [
+      "STT",
+      "B.2. HỆ SỐ ĐIỀU CHỈNH THEO ĐỘ RỘNG HẺM/ĐƯỜNG",
+      "",
+      "Hệ số tham khảo",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 45,
+    "data": [
+      "1",
+      "≥ 3m",
+      "",
+      "1",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 46,
+    "data": [
+      "2",
+      "< 3m",
+      "",
+      "0.8",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 47,
+    "data": [
+      "3",
+      "< 2m",
+      "",
+      "0.65",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 48,
+    "data": [
+      "4",
+      "< 1m",
+      "",
+      "0.5",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 49,
+    "data": [
+      "STT",
+      "B.3. HỆ SỐ KHI ĐI THẨM ĐỊNH VỀ CHIỀU SÂU LÔ ĐẤT",
+      "",
+      "Hệ số tham khảo",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 50,
+    "data": [
+      "1",
+      " ≤ 30m",
+      "",
+      "1",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 51,
+    "data": [
+      "2",
+      "31m - 70m",
+      "",
+      "0.5",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 52,
+    "data": [
+      "3",
+      "> 70m",
+      "",
+      "0.25",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 53,
+    "data": [
+      "VD: Tài sản có quy mô: 375m² (5x75m), với giá tại tuyến đường là 10.000.000 đồng/m², thì tính theo mét ngang như sau:\n- 1 mét ngang x 30m đầu = 10.000.000đ x 30m = 300.000.000đ\n- 1 mét ngang x 40m tiếp theo =10.000.000đ x 40m x 0,5 = 200.000.000đ\n-1 mét ngang x 5m cuối = 10.000.000đ x 5m x 0,25 = 12.500.000đ\n=> giá 1 mét ngang = 512.500.000đ",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 54,
+    "data": [
+      "Lưu ý: Đối với các tài sản cụ thể, thì NH cần đi thẩm định thực tế trước khi cho vay và họp thảo luận để áp dụng các hệ số điều chỉnh nào của mục B cho phù hợp theo đúng cơ chế giá thị trường.",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 55,
+    "data": [
+      "C. YẾU TỐ GIẢM TRỪ GIÁ TRỊ",
+      "",
+      "",
+      "",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 56,
+    "data": [
+      "STT",
+      "C.1. HỆ SỐ ĐIỀU CHỈNH THEO PHONG THỦY",
+      "",
+      "Hệ số tham khảo",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 57,
+    "data": [
+      "1",
+      "Trên đất có mồ mả",
+      "",
+      "0.7",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 58,
+    "data": [
+      "2",
+      "Cạnh thửa đất có mồ mả",
+      "",
+      "0.8",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 59,
+    "data": [
+      "3",
+      "Trong nhà có điện thờ",
+      "",
+      "0.8",
+      "",
+      ""
+    ]
+  },
+  {
+    "row": 60,
+    "data": [
+      "4",
+      "Gần bãi rác thải, nơi ô nhiễm",
+      "",
+      "0.8",
+      "",
+      ""
+    ]
+  }
+]

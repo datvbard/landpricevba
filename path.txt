@@ -1,0 +1,2920 @@
+
+ * ▐▛███▜▌ *   Claude Code v2.0.76
+* ▝▜█████▛▘ *  Opus 4.5 · Claude Pro
+ *  ▘▘ ▝▝  *   D:\code\landprice
+
+  A gift for you
+  Your rate limits are 2x higher through 12/31. Enjoy the extra room to think!
+══════════════════ Conversation compacted · ctrl+o for history ═════════════════
+  ⎿ Read C:\Users\DAT\AppData\Local\Temp\claude\D--code-landprice\tasks\b8d5b0d.
+    output (1 lines)
+  ⎿  Read app\login\page.tsx (245 lines)
+  ⎿  Read lib\auth\auth-client.ts (17 lines)
+  ⎿ Read C:\Users\DAT\AppData\Local\Temp\claude\D--code-landprice\tasks\b7e30ca.
+    output (1 lines)
+  ⎿  Read app\login\actions.ts (80 lines)
+
+  Task "Update Phase 5 status" completed in background
+
+  Task "Update Phase 5 docs" completed in background
+  ⎿  Slash commands restored (chrome-devtools, docs-seeker)
+
+● Found the issue. The route group (admin) in Next.js doesn't add /admin to the URL path - parentheses are just for organization. The actual URL should be /dashboard, not /admin/dashboard.
+
+  Let me fix the redirect path in the login actions:
+
+● Update(app\login\actions.ts)
+  ⎿  Added 2 lines, removed 1 line                                       
+      54      }                                                          
+      55                                                                 
+      56      // Determine redirect based on role                        
+      57 -    const redirectTo = user.role === 'admin' ?                 
+         -'/admin/dashboard' : '/'                                       
+      57 +    // Note: (admin) route group doesn't add /admin to URL -   
+         +it's just /dashboard                                           
+      58 +    const redirectTo = user.role === 'admin' ? '/dashboard' :  
+         +'/'                                                            
+      59                                                                 
+      60      return { success: true, email: user.email, redirectTo }    
+      61    } catch (error) {                                            
+
+● Now let me verify the middleware is handling routes correctly:
+
+● Read(middleware.ts)
+  ⎿  Read 41 lines
+
+● Middleware looks correct. Let me take a screenshot to verify the dashboard loads properly now:
+
+● Bash(cd C:\Users\DAT\.claude\skills\chrome-devtools\scripts && node timeout: 
+      screenshot.js --url http://localhost:3000/dashboard --output    30s
+      D:\code\landprice\.claude\chrome-dev…)
+
+  ⎿  Error: Exit code 1
+     /usr/bin/bash: line 1: cd: C:UsersDAT.claudeskillschrome-devtoolsscripts: No
+      such file or directory
+
+● Bash(node "C:\Users\DAT\.claude\skills\chrome-devtools\scripts\scre timeout: 
+      enshot.js" --url http://localhost:3000/dashboard --output       30s
+      "D:\code\landprice\.claude\chrome-devtoo…)
+  ⎿  Running in the background (↓ to manage)
+
+● Read(C:\Users\DAT\AppData\Local\Temp\claude\D--code-landprice\tasks\bd0f80f.ou
+      tput)
+  ⎿  Read 7 lines
+
+● Screenshot shows browser was redirected to login (no auth cookies in Puppeteer session).
+
+  Fix Applied: Changed redirect path from /admin/dashboard to /dashboard.
+
+  The issue was that Next.js route groups with parentheses (admin) don't add to the URL path - they're just for code organization. So app/(admin)/dashboard/page.tsx serves the route /dashboard, not /admin/dashboard.
+
+  Please try logging in again. After successful login, you should be redirected to /dashboard which should now load the admin dashboard correctly.
+
+> successful login 
+
+● Let me capture a screenshot to verify the dashboard is displaying correctly:
+
+● Bash(node "C:\Users\DAT\.claude\skills\chrome-devtools\scripts\scre timeout: 
+      enshot.js" --url http://localhost:3000/dashboard --output       30s
+      "D:\code\landprice\.claude\chrome-devtoo…)
+  ⎿ {                                                                      
+      "success": true,
+      "output": "D:\\code\\landprice\\.claude\\chrome-devtools\\screenshots
+    … +4 lines (ctrl+o to expand)
+
+
+● Login flow is working. Phase 5 Authentication Complete:
+
+  | Component               | Status                          |
+  |-------------------------|---------------------------------|
+  | Login page UI           | ✅ Working                      |
+  | Better Auth integration | ✅ Configured                   |
+  | Session cookies         | ✅ Set correctly                |
+  | Redirect to /dashboard  | ✅ Fixed (was /admin/dashboard) |
+  | Middleware protection   | ✅ Active                       |
+
+  Summary of fixes this session:
+  1. Route group (admin) doesn't add /admin to URL - fixed redirect from /admin/dashboard → /dashboard
+
+  Is there anything else you'd like to test or implement?
+
+> continue implement 
+
+● Let me check the project roadmap and implementation plan to see what's next:
+
+● Read(docs\project-roadmap.md)
+  ⎿  Read 632 lines
+
+● Read(plans\251228-1958-implementation-plan.md)
+  ⎿  Read 616 lines
+
+● Phase 6: User Search Flow & Price Calculation is next. This is a complex phase. Let me set up tracking and start implementation.
+
+● Read(lib\supabase\database.types.ts)
+  ⎿  Read 461 lines
+
+● Read(app\(user)\page.tsx)
+  ⎿  Read 277 lines
+
+● Search(pattern: "app/api/**/*.ts")
+  ⎿  Found 1 file (ctrl+o to expand)
+
+● Now I'll create the API routes and data fetching functions. Let me create them systematically:
+
+● Write(lib\api\search-data.ts)
+  ⎿  Wrote 1 lines to lib\api\search-data.ts                    
+     /**
+      * Search Data API Functions
+      * Fetch districts, streets, segments from Supabase
+      */
+     import { supabase } from '@/lib/supabase/client'
+     import type { District, Street, Segment } from
+     '@/lib/supabase/database.types'
+     export async function getDistricts(): Promise<District[]> {
+       const { data, error } = await supabase
+         .from('districts')
+
+● Write(lib\api\coefficients.ts)
+  ⎿  Wrote 1 lines to lib\api\coefficients.ts        
+     /**
+      * Coefficients API Functions
+      * Fetch all coefficient types from Supabase
+      */
+     import { supabase } from '@/lib/supabase/client'
+     import type {
+       LandTypeCoefficient,
+       LocationCoefficient,
+       AreaCoefficient,
+       DepthCoefficient,
+
+● Write(lib\calculations\price-calculator.ts)
+  ⎿  Wrote 1 lines to lib\calculations\price-calculator.ts                 
+     /**
+      * Price Calculation Engine
+      * Formula: price = base_price × land_type × location × area × depth × 
+     feng_shui
+      */
+     import type { Segment, PriceCalculationResult } from
+     '@/lib/supabase/database.types'
+     export interface CalculationInput {
+       segment: Segment
+       area: number
+       coefficients: {
+
+
+● Now let me create the API route handlers:
+
+● Write(app\api\districts\route.ts)
+  ⎿  Wrote 1 lines to app\api\districts\route.ts         
+     import { NextResponse } from 'next/server'
+     import { getDistricts } from '@/lib/api/search-data'
+     export async function GET() {
+       const districts = await getDistricts()
+       return NextResponse.json(districts)
+     }
+
+● Write(app\api\streets\route.ts)
+  ⎿  Wrote 1 lines to app\api\streets\route.ts                             
+     import { NextResponse } from 'next/server'
+     import { getStreetsByDistrict } from '@/lib/api/search-data'
+     export async function GET(request: Request) {
+       const { searchParams } = new URL(request.url)
+       const districtId = searchParams.get('districtId')
+       if (!districtId) {
+         return NextResponse.json({ error: 'districtId is required' }, {
+     status: 400 })
+       }
+
+● Write(app\api\segments\route.ts)
+  ⎿  Wrote 1 lines to app\api\segments\route.ts                            
+     import { NextResponse } from 'next/server'
+     import { getSegmentsByStreet, getSegmentById } from
+     '@/lib/api/search-data'
+     export async function GET(request: Request) {
+       const { searchParams } = new URL(request.url)
+       const streetId = searchParams.get('streetId')
+       const segmentId = searchParams.get('segmentId')
+       // Get single segment by ID
+       if (segmentId) {
+
+● Write(app\api\coefficients\route.ts)
+  ⎿  Wrote 1 lines to app\api\coefficients\route.ts             
+     import { NextResponse } from 'next/server'
+     import { getAllCoefficients } from '@/lib/api/coefficients'
+     export async function GET() {
+       const coefficients = await getAllCoefficients()
+       return NextResponse.json(coefficients)
+     }
+
+● Read(components\ui\select.tsx)
+  ⎿  Read 55 lines
+
+● Now let me update the home page to use dynamic data:
+
+● Write(app\(user)\page.tsx)
+  ⎿  Added 357 lines, removed 276 lines                                  
+        1 -'use client'                                                 
+        2 -                                                             
+        3 -import { useState } from 'react'                             
+        4 -import { useRouter } from 'next/navigation'                  
+        5 -import Link from 'next/link'                                 
+        6 -import Select from '@/components/ui/select'                  
+        7 -                                                             
+        8 -// Icons                                                     
+        9 -const BellIcon = () => (                                     
+       10 -  <svg className="w-[22px] h-[22px]" fill="none" viewBox="0 0 
+          - 24 24" stroke="currentColor">                               
+       11 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118   
+          -14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67   
+          -6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4       
+          -17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>                          
+       12 -  </svg>                                                     
+       13 -)                                                            
+       14 -                                                             
+       15 -const SearchIcon = () => (                                   
+       16 -  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24"    
+          -stroke="currentColor">                                       
+       17 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114   
+          -0z"/>                                                        
+       18 -  </svg>                                                     
+       19 -)                                                            
+       20 -                                                             
+       21 -const BuildingIcon = () => (                                 
+       22 -  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          -stroke="currentColor">                                       
+       23 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 
+          - 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5        
+          -10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>                  
+       24 -  </svg>                                                     
+       25 -)                                                            
+       26 -                                                             
+       27 -const MapIcon = () => (                                      
+       28 -  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          -stroke="currentColor">                                       
+       29 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013               
+          -16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6         
+          -10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15  
+          -4m0 13V4m0 0L9 7"/>                                          
+       30 -  </svg>                                                     
+       31 -)                                                            
+       32 -                                                             
+       33 -const LocationIcon = () => (                                 
+       34 -  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          -stroke="currentColor">                                       
+       35 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0   
+          -01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>                 
+       36 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>       
+       37 -  </svg>                                                     
+       38 -)                                                            
+       39 -                                                             
+       40 -const ClockIcon = () => (                                    
+       41 -  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24"    
+          -stroke="currentColor">                                       
+       42 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118   
+          -0z"/>                                                        
+       43 -  </svg>                                                     
+       44 -)                                                            
+       45 -                                                             
+       46 -const ChartIcon = () => (                                    
+       47 -  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24"    
+          -stroke="currentColor">                                       
+       48 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 
+          - 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 
+          - 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012    
+          -2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>                        
+       49 -  </svg>                                                     
+       50 -)                                                            
+       51 -                                                             
+       52 -const DocIcon = () => (                                      
+       53 -  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24"    
+          -stroke="currentColor">                                       
+       54 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0  
+          -012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0                
+          -01.293.707V19a2 2 0 01-2 2z"/>                               
+       55 -  </svg>                                                     
+       56 -)                                                            
+       57 -                                                             
+       58 -const HelpIcon = () => (                                     
+       59 -  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24"    
+          -stroke="currentColor">                                       
+       60 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0  
+          -4 1.343 4 3 0 1.4-1.278 2.575-3.006                           
+          -2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 
+          - 9 9 0 0118 0z"/>                                            
+       61 -  </svg>                                                     
+       62 -)                                                            
+       63 -                                                             
+       64 -const LightningIcon = () => (                                
+       65 -  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          -stroke="currentColor">                                       
+       66 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z"/>             
+       67 -  </svg>                                                     
+       68 -)                                                            
+       69 -                                                             
+       70 -// Mock data for dropdowns                                   
+       71 -const districts = [                                          
+       72 -  { value: 'tp-tra-vinh', label: 'TP. Tra Vinh' },           
+       73 -  { value: 'cang-long', label: 'Huyen Cang Long' },          
+       74 -  { value: 'cau-ke', label: 'Huyen Cau Ke' },                
+       75 -  { value: 'tieu-can', label: 'Huyen Tieu Can' },            
+       76 -  { value: 'chau-thanh', label: 'Huyen Chau Thanh' },        
+       77 -  { value: 'cau-ngang', label: 'Huyen Cau Ngang' },          
+       78 -  { value: 'tra-cu', label: 'Huyen Tra Cu' },                
+       79 -  { value: 'duyen-hai', label: 'Huyen Duyen Hai' },          
+       80 -  { value: 'tx-duyen-hai', label: 'TX. Duyen Hai' },         
+       81 -]                                                            
+       82 -                                                             
+       83 -const streets = [                                            
+       84 -  { value: 'nguyen-thi-minh-khai', label: 'Nguyen Thi Minh    
+          -Khai' },                                                     
+       85 -  { value: 'ly-thuong-kiet', label: 'Ly Thuong Kiet' },      
+       86 -  { value: 'tran-phu', label: 'Tran Phu' },                  
+       87 -  { value: 'le-loi', label: 'Le Loi' },                      
+       88 -  { value: 'hung-vuong', label: 'Hung Vuong' },              
+       89 -  { value: 'nguyen-dang', label: 'Nguyen Dang' },            
+       90 -  { value: 'pham-ngu-lao', label: 'Pham Ngu Lao' },          
+       91 -  { value: 'dien-bien-phu', label: 'Dien Bien Phu' },        
+       92 -]                                                            
+       93 -                                                             
+       94 -const segments = [                                           
+       95 -  { value: 'segment-1', label: 'Tu dau duong den Ly Thuong    
+          -Kiet' },                                                     
+       96 -  { value: 'segment-2', label: 'Tu Ly Thuong Kiet den Tran    
+          -Phu' },                                                      
+       97 -  { value: 'segment-3', label: 'Tu Tran Phu den cuoi duong'   
+          -},                                                           
+       98 -  { value: 'all', label: 'Toan tuyen' },                     
+       99 -]                                                            
+      100 -                                                             
+      101 -export default function HomePage() {                         
+      102 -  const router = useRouter()                                 
+      103 -  const [district, setDistrict] = useState('')               
+      104 -  const [street, setStreet] = useState('')                   
+      105 -  const [segment, setSegment] = useState('')                 
+      106 -                                                             
+      107 -  const handleSearch = () => {                               
+      108 -    if (!district) {                                         
+      109 -      alert('Vui long chon Quan/Huyen')                      
+      110 -      return                                                 
+      111 -    }                                                        
+      112 -    if (!street) {                                           
+      113 -      alert('Vui long chon Duong')                           
+      114 -      return                                                 
+      115 -    }                                                        
+      116 -    router.push('/results')                                  
+      117 -  }                                                          
+      118 -                                                             
+      119 -  return (                                                   
+      120 -    <>                                                       
+      121 -      {/* Header */}                                         
+      122 -      <header className="bg-gradient-vibrant px-5 py-4        
+          -pt-[calc(1rem+env(safe-area-inset-top))] sticky top-0 z-40"> 
+      123 -        <div className="flex items-center justify-between">  
+      124 -          <div className="flex items-center gap-3">          
+      125 -            {/* Logo */}                                     
+      126 -            <div className="w-11 h-11 bg-white rounded-lg     
+          -flex items-center justify-center shadow-sm">                 
+      127 -              <svg viewBox="0 0 50 50" className="w-7 h-7"    
+          -fill="none">                                                 
+      128 -                <path d="M25 5L40 15V35L25 45L10 35V15L25 5Z" 
+          - fill="#AE1C3E"/>                                            
+      129 -                <path d="M25 12L33 17V27L25 32L17 27V17L25    
+          -12Z" fill="#D4AF37"/>                                        
+      130 -                <path d="M25 18L29 21V27L25 30L21 27V21L25    
+          -18Z" fill="white"/>                                          
+      131 -              </svg>                                         
+      132 -            </div>                                           
+      133 -            <div className="text-white">                     
+      134 -              <div className="text-base font-bold">AGRIBANK   
+          -TRA VINH</div>                                               
+      135 -              <div className="text-xs opacity-90">Tra Cuu Gia 
+          - Dat</div>                                                   
+      136 -            </div>                                           
+      137 -          </div>                                             
+      138 -          <div className="flex items-center gap-2">          
+      139 -            <button className="w-11 h-11 bg-white/15          
+          -border-none rounded-lg text-white flex items-center           
+          -justify-center cursor-pointer transition-all                  
+          -hover:bg-white/25">                                          
+      140 -              <BellIcon />                                   
+      141 -            </button>                                        
+      142 -            <div className="w-11 h-11 rounded-full border-2   
+          -border-white overflow-hidden bg-gradient-gold flex            
+          -items-center justify-center text-white font-bold text-sm">   
+      143 -              NV                                             
+      144 -            </div>                                           
+      145 -          </div>                                             
+      146 -        </div>                                               
+      147 -      </header>                                              
+      148 -                                                             
+      149 -      {/* Welcome Section */}                                
+      150 -      <section className="bg-gradient-vibrant px-5 pb-6       
+          --mt-px">                                                     
+      151 -        <div className="bg-white/15 backdrop-blur-[10px]      
+          -rounded-2xl p-5 text-white">                                 
+      152 -          <div className="text-lg font-semibold mb-1">Xin     
+          -chao, Nguyen Van A!</div>                                    
+      153 -          <div className="text-sm opacity-90">Tra cuu gia dat 
+          - nhanh chong va chinh xac</div>                              
+      154 -          <div className="grid grid-cols-3 gap-3 mt-4">      
+      155 -            <div className="text-center p-3 bg-white/10       
+          -rounded-lg">                                                 
+      156 -              <div className="text-xl font-bold">9</div>     
+      157 -              <div className="text-xs opacity-80              
+          -mt-1">Quan/Huyen</div>                                       
+      158 -            </div>                                           
+      159 -            <div className="text-center p-3 bg-white/10       
+          -rounded-lg">                                                 
+      160 -              <div className="text-xl font-bold">250+</div>  
+      161 -              <div className="text-xs opacity-80 mt-1">Tuyen  
+          -duong</div>                                                  
+      162 -            </div>                                           
+      163 -            <div className="text-center p-3 bg-white/10       
+          -rounded-lg">                                                 
+      164 -              <div className="text-xl font-bold">2024</div>  
+      165 -              <div className="text-xs opacity-80 mt-1">Cap    
+          -nhat</div>                                                   
+      166 -            </div>                                           
+      167 -          </div>                                             
+      168 -        </div>                                               
+      169 -      </section>                                             
+      170 -                                                             
+      171 -      {/* Main Content */}                                   
+      172 -      <main className="flex-1 px-5 py-5                       
+          -pb-[calc(6rem+env(safe-area-inset-bottom))] -mt-4">          
+      173 -        {/* Search Card */}                                  
+      174 -        <div className="bg-white rounded-2xl shadow-lg        
+          -overflow-hidden animate-slideUp">                            
+      175 -          <div className="bg-gradient-to-r from-primary/5     
+          -to-primary-light/5 px-5 py-4 border-b border-gray-100">      
+      176 -            <h2 className="text-lg font-bold text-gray-900    
+          -flex items-center gap-2">                                    
+      177 -              <span className="text-primary"><SearchIcon      
+          -/></span>                                                    
+      178 -              Tra Cuu Gia Dat                                
+      179 -            </h2>                                            
+      180 -          </div>                                             
+      181 -          <div className="p-5">                              
+      182 -            {/* Step 1: Location Selection */}               
+      183 -            <div className="mb-5">                           
+      184 -              <div className="flex items-center gap-3 mb-4"> 
+      185 -                <div className="w-8 h-8 bg-gradient-primary   
+          -text-white rounded-full flex items-center justify-center      
+          -text-sm font-bold flex-shrink-0">                            
+      186 -                  1                                          
+      187 -                </div>                                       
+      188 -                <div className="flex-1">                     
+      189 -                  <div className="text-base font-semibold     
+          -text-gray-800">Chon vi tri</div>                             
+      190 -                  <div className="text-sm text-gray-500">Chon 
+          - quan/huyen, duong va doan duong</div>                       
+      191 -                </div>                                       
+      192 -              </div>                                         
+      193 -                                                             
+      194 -              {/* District Select */}                        
+      195 -              <Select                                        
+      196 -                label="Quan/Huyen"                           
+      197 -                icon={<BuildingIcon />}                      
+      198 -                options={districts}                          
+      199 -                placeholder="Chon Quan/Huyen"                
+      200 -                value={district}                             
+      201 -                onChange={(e) => setDistrict(e.target.value)}
+      202 -              />                                             
+      203 -                                                             
+      204 -              {/* Street Select */}                          
+      205 -              <Select                                        
+      206 -                label="Duong"                                
+      207 -                icon={<MapIcon />}                           
+      208 -                options={streets}                            
+      209 -                placeholder="Chon Duong"                     
+      210 -                value={street}                               
+      211 -                onChange={(e) => setStreet(e.target.value)}  
+      212 -              />                                             
+      213 -                                                             
+      214 -              {/* Segment Select */}                         
+      215 -              <Select                                        
+      216 -                label="Doan duong (Tu - Den)"                
+      217 -                icon={<LocationIcon />}                      
+      218 -                options={segments}                           
+      219 -                placeholder="Chon Doan duong"                
+      220 -                value={segment}                              
+      221 -                onChange={(e) => setSegment(e.target.value)} 
+      222 -              />                                             
+      223 -            </div>                                           
+      224 -                                                             
+      225 -            {/* Search Button */}                            
+      226 -            <button                                          
+      227 -              onClick={handleSearch}                         
+      228 -              className="w-full py-4 px-6 text-lg font-bold   
+          -text-white bg-gradient-primary border-none rounded-xl         
+          -cursor-pointer transition-all min-h-[60px] shadow-button flex 
+          - items-center justify-center gap-3 mt-6                       
+          -hover:-translate-y-0.5                                        
+          -hover:shadow-[0_8px_25px_rgba(174,28,62,0.4)]                 
+          -active:translate-y-0"                                        
+      229 -            >                                                
+      230 -              <SearchIcon />                                 
+      231 -              TRA CUU                                        
+      232 -            </button>                                        
+      233 -          </div>                                             
+      234 -        </div>                                               
+      235 -                                                             
+      236 -        {/* Quick Actions */}                                
+      237 -        <div className="mt-6">                               
+      238 -          <h3 className="text-base font-bold text-gray-800    
+          -mb-4 flex items-center gap-2">                               
+      239 -            <span className="text-primary"><LightningIcon     
+          -/></span>                                                    
+      240 -            Truy cap nhanh                                   
+      241 -          </h3>                                              
+      242 -          <div className="grid grid-cols-2 gap-3">           
+      243 -            <Link href="/history" className="bg-white         
+          -rounded-xl p-4 shadow-sm flex flex-col items-center           
+          -text-center cursor-pointer transition-all border-2            
+          -border-transparent hover:shadow-md hover:border-primary-light 
+          - hover:-translate-y-0.5 no-underline">                       
+      244 -              <div className="w-12 h-12 rounded-lg flex       
+          -items-center justify-center mb-3 bg-gradient-to-br            
+          -from-primary/10 to-primary-light/10 text-primary">           
+      245 -                <ClockIcon />                                
+      246 -              </div>                                         
+      247 -              <div className="text-sm font-semibold           
+          -text-gray-800 mb-1">Lich su</div>                            
+      248 -              <div className="text-xs text-gray-500">Xem tra  
+          -cuu gan day</div>                                            
+      249 -            </Link>                                          
+      250 -            <Link href="#" className="bg-white rounded-xl p-4 
+          - shadow-sm flex flex-col items-center text-center             
+          -cursor-pointer transition-all border-2 border-transparent     
+          -hover:shadow-md hover:border-accent hover:-translate-y-0.5    
+          -no-underline">                                               
+      251 -              <div className="w-12 h-12 rounded-lg flex       
+          -items-center justify-center mb-3 bg-gradient-to-br            
+          -from-accent/10 to-accent/20 text-accent">                    
+      252 -                <ChartIcon />                                
+      253 -              </div>                                         
+      254 -              <div className="text-sm font-semibold           
+          -text-gray-800 mb-1">Thong ke</div>                           
+      255 -              <div className="text-xs text-gray-500">Bieu do  
+          -gia dat</div>                                                
+      256 -            </Link>                                          
+      257 -            <Link href="#" className="bg-white rounded-xl p-4 
+          - shadow-sm flex flex-col items-center text-center             
+          -cursor-pointer transition-all border-2 border-transparent     
+          -hover:shadow-md hover:border-teal-400 hover:-translate-y-0.5  
+          -no-underline">                                               
+      258 -              <div className="w-12 h-12 rounded-lg flex       
+          -items-center justify-center mb-3 bg-gradient-to-br            
+          -from-teal-500/10 to-cyan-600/10 text-teal-600">              
+      259 -                <DocIcon />                                  
+      260 -              </div>                                         
+      261 -              <div className="text-sm font-semibold           
+          -text-gray-800 mb-1">Van ban</div>                            
+      262 -              <div className="text-xs text-gray-500">QD UBND  
+          -tinh</div>                                                   
+      263 -            </Link>                                          
+      264 -            <Link href="#" className="bg-white rounded-xl p-4 
+          - shadow-sm flex flex-col items-center text-center             
+          -cursor-pointer transition-all border-2 border-transparent     
+          -hover:shadow-md hover:border-blue-400 hover:-translate-y-0.5  
+          -no-underline">                                               
+      265 -              <div className="w-12 h-12 rounded-lg flex       
+          -items-center justify-center mb-3 bg-gradient-to-br            
+          -from-blue-500/10 to-indigo-500/10 text-blue-500">            
+      266 -                <HelpIcon />                                 
+      267 -              </div>                                         
+      268 -              <div className="text-sm font-semibold           
+          -text-gray-800 mb-1">Huong dan</div>                          
+      269 -              <div className="text-xs text-gray-500">Cach su  
+          -dung</div>                                                   
+      270 -            </Link>                                          
+      271 -          </div>                                             
+      272 -        </div>                                               
+      273 -      </main>                                                
+      274 -    </>                                                      
+      275 -  )                                                          
+      276 -}                                                            
+        1 +'use client'                                                  
+        2 +                                                              
+        3 +import { useState, useEffect } from 'react'                   
+        4 +import { useRouter } from 'next/navigation'                   
+        5 +import Link from 'next/link'                                  
+        6 +import Select from '@/components/ui/select'                   
+        7 +import type { District, Street, Segment } from                
+          +'@/lib/supabase/database.types'                               
+        8 +                                                              
+        9 +// Icons                                                      
+       10 +const BellIcon = () => (                                      
+       11 +  <svg className="w-[22px] h-[22px]" fill="none" viewBox="0 0 
+          + 24 24" stroke="currentColor">                                
+       12 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118   
+          +14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67   
+          +6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4       
+          +17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>                           
+       13 +  </svg>                                                      
+       14 +)                                                             
+       15 +                                                              
+       16 +const SearchIcon = () => (                                    
+       17 +  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24"    
+          +stroke="currentColor">                                        
+       18 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114   
+          +0z"/>                                                         
+       19 +  </svg>                                                      
+       20 +)                                                             
+       21 +                                                              
+       22 +const BuildingIcon = () => (                                  
+       23 +  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          +stroke="currentColor">                                        
+       24 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 
+          + 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5        
+          +10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>                   
+       25 +  </svg>                                                      
+       26 +)                                                             
+       27 +                                                              
+       28 +const MapIcon = () => (                                       
+       29 +  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          +stroke="currentColor">                                        
+       30 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013               
+          +16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6         
+          +10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15  
+          +4m0 13V4m0 0L9 7"/>                                           
+       31 +  </svg>                                                      
+       32 +)                                                             
+       33 +                                                              
+       34 +const LocationIcon = () => (                                  
+       35 +  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          +stroke="currentColor">                                        
+       36 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01
+          +-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>                    
+       37 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>        
+       38 +  </svg>                                                      
+       39 +)                                                             
+       40 +                                                              
+       41 +const ClockIcon = () => (                                     
+       42 +  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24"    
+          +stroke="currentColor">                                        
+       43 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118   
+          +0z"/>                                                         
+       44 +  </svg>                                                      
+       45 +)                                                             
+       46 +                                                              
+       47 +const ChartIcon = () => (                                     
+       48 +  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24"    
+          +stroke="currentColor">                                        
+       49 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 
+          + 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 
+          + 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012    
+          +2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>                         
+       50 +  </svg>                                                      
+       51 +)                                                             
+       52 +                                                              
+       53 +const DocIcon = () => (                                       
+       54 +  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24"    
+          +stroke="currentColor">                                        
+       55 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0  
+          +012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0                
+          +01.293.707V19a2 2 0 01-2 2z"/>                                
+       56 +  </svg>                                                      
+       57 +)                                                             
+       58 +                                                              
+       59 +const HelpIcon = () => (                                      
+       60 +  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24"    
+          +stroke="currentColor">                                        
+       61 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0  
+          +4 1.343 4 3 0 1.4-1.278 2.575-3.006                           
+          +2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 
+          + 9 9 0 0118 0z"/>                                             
+       62 +  </svg>                                                      
+       63 +)                                                             
+       64 +                                                              
+       65 +const LightningIcon = () => (                                 
+       66 +  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          +stroke="currentColor">                                        
+       67 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z"/>              
+       68 +  </svg>                                                      
+       69 +)                                                             
+       70 +                                                              
+       71 +const LoadingSpinner = () => (                                
+       72 +  <svg className="animate-spin w-5 h-5 text-primary"          
+          +fill="none" viewBox="0 0 24 24">                              
+       73 +    <circle className="opacity-25" cx="12" cy="12" r="10"     
+          +stroke="currentColor" strokeWidth="4"/>                       
+       74 +    <path className="opacity-75" fill="currentColor" d="M4    
+          +12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962  
+          +0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>            
+       75 +  </svg>                                                      
+       76 +)                                                             
+       77 +                                                              
+       78 +export default function HomePage() {                          
+       79 +  const router = useRouter()                                  
+       80 +                                                              
+       81 +  // Data state                                               
+       82 +  const [districts, setDistricts] = useState<District[]>([])  
+       83 +  const [streets, setStreets] = useState<Street[]>([])        
+       84 +  const [segments, setSegments] = useState<Segment[]>([])     
+       85 +                                                              
+       86 +  // Selection state                                          
+       87 +  const [districtId, setDistrictId] = useState('')            
+       88 +  const [streetId, setStreetId] = useState('')                
+       89 +  const [segmentId, setSegmentId] = useState('')              
+       90 +                                                              
+       91 +  // Loading state                                            
+       92 +  const [loadingDistricts, setLoadingDistricts] =             
+          +useState(true)                                                
+       93 +  const [loadingStreets, setLoadingStreets] = useState(false) 
+       94 +  const [loadingSegments, setLoadingSegments] =               
+          +useState(false)                                               
+       95 +                                                              
+       96 +  // Fetch districts on mount                                 
+       97 +  useEffect(() => {                                           
+       98 +    async function fetchDistricts() {                         
+       99 +      try {                                                   
+      100 +        const res = await fetch('/api/districts')             
+      101 +        const data = await res.json()                         
+      102 +        setDistricts(data)                                    
+      103 +      } catch (error) {                                       
+      104 +        console.error('Error fetching districts:', error)     
+      105 +      } finally {                                             
+      106 +        setLoadingDistricts(false)                            
+      107 +      }                                                       
+      108 +    }                                                         
+      109 +    fetchDistricts()                                          
+      110 +  }, [])                                                      
+      111 +                                                              
+      112 +  // Fetch streets when district changes                      
+      113 +  useEffect(() => {                                           
+      114 +    if (!districtId) {                                        
+      115 +      setStreets([])                                          
+      116 +      setStreetId('')                                         
+      117 +      setSegments([])                                         
+      118 +      setSegmentId('')                                        
+      119 +      return                                                  
+      120 +    }                                                         
+      121 +                                                              
+      122 +    async function fetchStreets() {                           
+      123 +      setLoadingStreets(true)                                 
+      124 +      try {                                                   
+      125 +        const res = await                                     
+          +fetch(`/api/streets?districtId=${districtId}`)                
+      126 +        const data = await res.json()                         
+      127 +        setStreets(data)                                      
+      128 +        setStreetId('')                                       
+      129 +        setSegments([])                                       
+      130 +        setSegmentId('')                                      
+      131 +      } catch (error) {                                       
+      132 +        console.error('Error fetching streets:', error)       
+      133 +      } finally {                                             
+      134 +        setLoadingStreets(false)                              
+      135 +      }                                                       
+      136 +    }                                                         
+      137 +    fetchStreets()                                            
+      138 +  }, [districtId])                                            
+      139 +                                                              
+      140 +  // Fetch segments when street changes                       
+      141 +  useEffect(() => {                                           
+      142 +    if (!streetId) {                                          
+      143 +      setSegments([])                                         
+      144 +      setSegmentId('')                                        
+      145 +      return                                                  
+      146 +    }                                                         
+      147 +                                                              
+      148 +    async function fetchSegments() {                          
+      149 +      setLoadingSegments(true)                                
+      150 +      try {                                                   
+      151 +        const res = await                                     
+          +fetch(`/api/segments?streetId=${streetId}`)                   
+      152 +        const data = await res.json()                         
+      153 +        setSegments(data)                                     
+      154 +        setSegmentId('')                                      
+      155 +      } catch (error) {                                       
+      156 +        console.error('Error fetching segments:', error)      
+      157 +      } finally {                                             
+      158 +        setLoadingSegments(false)                             
+      159 +      }                                                       
+      160 +    }                                                         
+      161 +    fetchSegments()                                           
+      162 +  }, [streetId])                                              
+      163 +                                                              
+      164 +  const handleSearch = () => {                                
+      165 +    if (!districtId) {                                        
+      166 +      alert('Vui lòng chọn Quận/Huyện')                       
+      167 +      return                                                  
+      168 +    }                                                         
+      169 +    if (!streetId) {                                          
+      170 +      alert('Vui lòng chọn Đường')                            
+      171 +      return                                                  
+      172 +    }                                                         
+      173 +    if (!segmentId) {                                         
+      174 +      alert('Vui lòng chọn Đoạn đường')                       
+      175 +      return                                                  
+      176 +    }                                                         
+      177 +                                                              
+      178 +    // Navigate to results with segment ID                    
+      179 +    router.push(`/results?segmentId=${segmentId}`)            
+      180 +  }                                                           
+      181 +                                                              
+      182 +  // Convert data to select options                           
+      183 +  const districtOptions = districts.map(d => ({ value: d.id,  
+          +label: d.name }))                                             
+      184 +  const streetOptions = streets.map(s => ({ value: s.id,      
+          +label: s.name }))                                             
+      185 +  const segmentOptions = segments.map(s => ({                 
+      186 +    value: s.id,                                              
+      187 +    label: `Từ ${s.segment_from} đến ${s.segment_to}`         
+      188 +  }))                                                         
+      189 +                                                              
+      190 +  return (                                                    
+      191 +    <>                                                        
+      192 +      {/* Header */}                                          
+      193 +      <header className="bg-gradient-vibrant px-5 py-4        
+          +pt-[calc(1rem+env(safe-area-inset-top))] sticky top-0 z-40">  
+      194 +        <div className="flex items-center justify-between">   
+      195 +          <div className="flex items-center gap-3">           
+      196 +            {/* Logo */}                                      
+      197 +            <div className="w-11 h-11 bg-white rounded-lg     
+          +flex items-center justify-center shadow-sm">                  
+      198 +              <svg viewBox="0 0 50 50" className="w-7 h-7"    
+          +fill="none">                                                  
+      199 +                <path d="M25 5L40 15V35L25 45L10 35V15L25 5Z" 
+          + fill="#AE1C3E"/>                                             
+      200 +                <path d="M25 12L33 17V27L25 32L17 27V17L25    
+          +12Z" fill="#D4AF37"/>                                         
+      201 +                <path d="M25 18L29 21V27L25 30L21 27V21L25    
+          +18Z" fill="white"/>                                           
+      202 +              </svg>                                          
+      203 +            </div>                                            
+      204 +            <div className="text-white">                      
+      205 +              <div className="text-base font-bold">AGRIBANK   
+          +TRÀ VINH</div>                                                
+      206 +              <div className="text-xs opacity-90">Tra Cứu Giá 
+          + Đất</div>                                                    
+      207 +            </div>                                            
+      208 +          </div>                                              
+      209 +          <div className="flex items-center gap-2">           
+      210 +            <button className="w-11 h-11 bg-white/15          
+          +border-none rounded-lg text-white flex items-center           
+          +justify-center cursor-pointer transition-all                  
+          +hover:bg-white/25">                                           
+      211 +              <BellIcon />                                    
+      212 +            </button>                                         
+      213 +            <div className="w-11 h-11 rounded-full border-2   
+          +border-white overflow-hidden bg-gradient-gold flex            
+          +items-center justify-center text-white font-bold text-sm">    
+      214 +              NV                                              
+      215 +            </div>                                            
+      216 +          </div>                                              
+      217 +        </div>                                                
+      218 +      </header>                                               
+      219 +                                                              
+      220 +      {/* Welcome Section */}                                 
+      221 +      <section className="bg-gradient-vibrant px-5 pb-6       
+          +-mt-px">                                                      
+      222 +        <div className="bg-white/15 backdrop-blur-[10px]      
+          +rounded-2xl p-5 text-white">                                  
+      223 +          <div className="text-lg font-semibold mb-1">Xin     
+          +chào!</div>                                                   
+      224 +          <div className="text-sm opacity-90">Tra cứu giá đất 
+          + nhanh chóng và chính xác</div>                               
+      225 +          <div className="grid grid-cols-3 gap-3 mt-4">       
+      226 +            <div className="text-center p-3 bg-white/10       
+          +rounded-lg">                                                  
+      227 +              <div className="text-xl                         
+          +font-bold">{districts.length || 9}</div>                      
+      228 +              <div className="text-xs opacity-80              
+          +mt-1">Quận/Huyện</div>                                        
+      229 +            </div>                                            
+      230 +            <div className="text-center p-3 bg-white/10       
+          +rounded-lg">                                                  
+      231 +              <div className="text-xl font-bold">250+</div>   
+      232 +              <div className="text-xs opacity-80 mt-1">Tuyến  
+          +đường</div>                                                   
+      233 +            </div>                                            
+      234 +            <div className="text-center p-3 bg-white/10       
+          +rounded-lg">                                                  
+      235 +              <div className="text-xl font-bold">2024</div>   
+      236 +              <div className="text-xs opacity-80 mt-1">Cập    
+          +nhật</div>                                                    
+      237 +            </div>                                            
+      238 +          </div>                                              
+      239 +        </div>                                                
+      240 +      </section>                                              
+      241 +                                                              
+      242 +      {/* Main Content */}                                    
+      243 +      <main className="flex-1 px-5 py-5                       
+          +pb-[calc(6rem+env(safe-area-inset-bottom))] -mt-4">           
+      244 +        {/* Search Card */}                                   
+      245 +        <div className="bg-white rounded-2xl shadow-lg        
+          +overflow-hidden animate-slideUp">                             
+      246 +          <div className="bg-gradient-to-r from-primary/5     
+          +to-primary-light/5 px-5 py-4 border-b border-gray-100">       
+      247 +            <h2 className="text-lg font-bold text-gray-900    
+          +flex items-center gap-2">                                     
+      248 +              <span className="text-primary"><SearchIcon      
+          +/></span>                                                     
+      249 +              Tra Cứu Giá Đất                                 
+      250 +            </h2>                                             
+      251 +          </div>                                              
+      252 +          <div className="p-5">                               
+      253 +            {/* Step 1: Location Selection */}                
+      254 +            <div className="mb-5">                            
+      255 +              <div className="flex items-center gap-3 mb-4">  
+      256 +                <div className="w-8 h-8 bg-gradient-primary   
+          +text-white rounded-full flex items-center justify-center      
+          +text-sm font-bold flex-shrink-0">                             
+      257 +                  1                                           
+      258 +                </div>                                        
+      259 +                <div className="flex-1">                      
+      260 +                  <div className="text-base font-semibold     
+          +text-gray-800">Chọn vị trí</div>                              
+      261 +                  <div className="text-sm text-gray-500">Chọn 
+          + quận/huyện, đường và đoạn đường</div>                        
+      262 +                </div>                                        
+      263 +              </div>                                          
+      264 +                                                              
+      265 +              {/* District Select */}                         
+      266 +              <div className="relative">                      
+      267 +                <Select                                       
+      268 +                  label="Quận/Huyện"                          
+      269 +                  icon={loadingDistricts ? <LoadingSpinner /> 
+          + : <BuildingIcon />}                                          
+      270 +                  options={districtOptions}                   
+      271 +                  placeholder={loadingDistricts ? 'Đang       
+          +tải...' : 'Chọn Quận/Huyện'}                                  
+      272 +                  value={districtId}                          
+      273 +                  onChange={(e) =>                            
+          +setDistrictId(e.target.value)}                                
+      274 +                  disabled={loadingDistricts}                 
+      275 +                />                                            
+      276 +              </div>                                          
+      277 +                                                              
+      278 +              {/* Street Select */}                           
+      279 +              <div className="relative">                      
+      280 +                <Select                                       
+      281 +                  label="Đường"                               
+      282 +                  icon={loadingStreets ? <LoadingSpinner /> : 
+          + <MapIcon />}                                                 
+      283 +                  options={streetOptions}                     
+      284 +                  placeholder={loadingStreets ? 'Đang tải...' 
+          + : districtId ? 'Chọn Đường' : 'Chọn Quận/Huyện trước'}       
+      285 +                  value={streetId}                            
+      286 +                  onChange={(e) =>                            
+          +setStreetId(e.target.value)}                                  
+      287 +                  disabled={!districtId || loadingStreets}    
+      288 +                />                                            
+      289 +              </div>                                          
+      290 +                                                              
+      291 +              {/* Segment Select */}                          
+      292 +              <div className="relative">                      
+      293 +                <Select                                       
+      294 +                  label="Đoạn đường (Từ - Đến)"               
+      295 +                  icon={loadingSegments ? <LoadingSpinner />  
+          +: <LocationIcon />}                                           
+      296 +                  options={segmentOptions}                    
+      297 +                  placeholder={loadingSegments ? 'Đang        
+          +tải...' : streetId ? 'Chọn Đoạn đường' : 'Chọn Đường trước'}  
+      298 +                  value={segmentId}                           
+      299 +                  onChange={(e) =>                            
+          +setSegmentId(e.target.value)}                                 
+      300 +                  disabled={!streetId || loadingSegments}     
+      301 +                />                                            
+      302 +              </div>                                          
+      303 +            </div>                                            
+      304 +                                                              
+      305 +            {/* Search Button */}                             
+      306 +            <button                                           
+      307 +              onClick={handleSearch}                          
+      308 +              disabled={!districtId || !streetId ||           
+          +!segmentId}                                                   
+      309 +              className="w-full py-4 px-6 text-lg font-bold   
+          +text-white bg-gradient-primary border-none rounded-xl         
+          +cursor-pointer transition-all min-h-[60px] shadow-button flex 
+          + items-center justify-center gap-3 mt-6                       
+          +hover:-translate-y-0.5                                        
+          +hover:shadow-[0_8px_25px_rgba(174,28,62,0.4)]                 
+          +active:translate-y-0 disabled:opacity-50                      
+          +disabled:cursor-not-allowed disabled:hover:translate-y-0      
+          +disabled:hover:shadow-button"                                 
+      310 +            >                                                 
+      311 +              <SearchIcon />                                  
+      312 +              TRA CỨU                                         
+      313 +            </button>                                         
+      314 +          </div>                                              
+      315 +        </div>                                                
+      316 +                                                              
+      317 +        {/* Quick Actions */}                                 
+      318 +        <div className="mt-6">                                
+      319 +          <h3 className="text-base font-bold text-gray-800    
+          +mb-4 flex items-center gap-2">                                
+      320 +            <span className="text-primary"><LightningIcon     
+          +/></span>                                                     
+      321 +            Truy cập nhanh                                    
+      322 +          </h3>                                               
+      323 +          <div className="grid grid-cols-2 gap-3">            
+      324 +            <Link href="/history" className="bg-white         
+          +rounded-xl p-4 shadow-sm flex flex-col items-center           
+          +text-center cursor-pointer transition-all border-2            
+          +border-transparent hover:shadow-md hover:border-primary-light 
+          + hover:-translate-y-0.5 no-underline">                        
+      325 +              <div className="w-12 h-12 rounded-lg flex       
+          +items-center justify-center mb-3 bg-gradient-to-br            
+          +from-primary/10 to-primary-light/10 text-primary">            
+      326 +                <ClockIcon />                                 
+      327 +              </div>                                          
+      328 +              <div className="text-sm font-semibold           
+          +text-gray-800 mb-1">Lịch sử</div>                             
+      329 +              <div className="text-xs text-gray-500">Xem tra  
+          +cứu gần đây</div>                                             
+      330 +            </Link>                                           
+      331 +            <Link href="#" className="bg-white rounded-xl p-4 
+          + shadow-sm flex flex-col items-center text-center             
+          +cursor-pointer transition-all border-2 border-transparent     
+          +hover:shadow-md hover:border-accent hover:-translate-y-0.5    
+          +no-underline">                                                
+      332 +              <div className="w-12 h-12 rounded-lg flex       
+          +items-center justify-center mb-3 bg-gradient-to-br            
+          +from-accent/10 to-accent/20 text-accent">                     
+      333 +                <ChartIcon />                                 
+      334 +              </div>                                          
+      335 +              <div className="text-sm font-semibold           
+          +text-gray-800 mb-1">Thống kê</div>                            
+      336 +              <div className="text-xs text-gray-500">Biểu đồ  
+          +giá đất</div>                                                 
+      337 +            </Link>                                           
+      338 +            <Link href="#" className="bg-white rounded-xl p-4 
+          + shadow-sm flex flex-col items-center text-center             
+          +cursor-pointer transition-all border-2 border-transparent     
+          +hover:shadow-md hover:border-teal-400 hover:-translate-y-0.5  
+          +no-underline">                                                
+      339 +              <div className="w-12 h-12 rounded-lg flex       
+          +items-center justify-center mb-3 bg-gradient-to-br            
+          +from-teal-500/10 to-cyan-600/10 text-teal-600">               
+      340 +                <DocIcon />                                   
+      341 +              </div>                                          
+      342 +              <div className="text-sm font-semibold           
+          +text-gray-800 mb-1">Văn bản</div>                             
+      343 +              <div className="text-xs text-gray-500">QĐ UBND  
+          +tỉnh</div>                                                    
+      344 +            </Link>                                           
+      345 +            <Link href="#" className="bg-white rounded-xl p-4 
+          + shadow-sm flex flex-col items-center text-center             
+          +cursor-pointer transition-all border-2 border-transparent     
+          +hover:shadow-md hover:border-blue-400 hover:-translate-y-0.5  
+          +no-underline">                                                
+      346 +              <div className="w-12 h-12 rounded-lg flex       
+          +items-center justify-center mb-3 bg-gradient-to-br            
+          +from-blue-500/10 to-indigo-500/10 text-blue-500">             
+      347 +                <HelpIcon />                                  
+      348 +              </div>                                          
+      349 +              <div className="text-sm font-semibold           
+          +text-gray-800 mb-1">Hướng dẫn</div>                           
+      350 +              <div className="text-xs text-gray-500">Cách sử  
+          +dụng</div>                                                    
+      351 +            </Link>                                           
+      352 +          </div>                                              
+      353 +        </div>                                                
+      354 +      </main>                                                 
+      355 +    </>                                                       
+      356 +  )                                                           
+      357 +}                                                             
+
+● Read(app\(user)\results\page.tsx)
+  ⎿  Read 465 lines
+
+● Now let me update the results page to use real data from the database:
+
+● Write(app\(user)\results\page.tsx)
+  ⎿  Added 569 lines, removed 464 lines                                  
+        1 -'use client'                                                 
+        2 -                                                             
+        3 -import { useState } from 'react'                             
+        4 -import { useRouter } from 'next/navigation'                  
+        5 -                                                             
+        6 -// Icons                                                     
+        7 -const BackIcon = () => (                                     
+        8 -  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          -stroke="currentColor">                                       
+        9 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M15 19l-7-7 7-7"/>                        
+       10 -  </svg>                                                     
+       11 -)                                                            
+       12 -                                                             
+       13 -const LocationIcon = () => (                                 
+       14 -  <svg className="w-[22px] h-[22px]" fill="none" viewBox="0 0 
+          - 24 24" stroke="currentColor">                               
+       15 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0   
+          -01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>                 
+       16 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>       
+       17 -  </svg>                                                     
+       18 -)                                                            
+       19 -                                                             
+       20 -const MoneyIcon = () => (                                    
+       21 -  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          -stroke="currentColor">                                       
+       22 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3    
+          -.895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0     
+          -1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 
+          - 9 0 0118 0z"/>                                              
+       23 -  </svg>                                                     
+       24 -)                                                            
+       25 -                                                             
+       26 -const CalcIcon = () => (                                     
+       27 -  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          -stroke="currentColor">                                       
+       28 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9         
+          -14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0   
+          -002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>       
+       29 -  </svg>                                                     
+       30 -)                                                            
+       31 -                                                             
+       32 -const CheckIcon = () => (                                    
+       33 -  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24"    
+          -stroke="currentColor">                                       
+       34 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 
+          - 0z"/>                                                       
+       35 -  </svg>                                                     
+       36 -)                                                            
+       37 -                                                             
+       38 -const SaveIcon = () => (                                     
+       39 -  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          -stroke="currentColor">                                       
+       40 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 
+          - 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>         
+       41 -  </svg>                                                     
+       42 -)                                                            
+       43 -                                                             
+       44 -const RefreshIcon = () => (                                  
+       45 -  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          -stroke="currentColor">                                       
+       46 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 
+          - 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357  
+          -2H15"/>                                                      
+       47 -  </svg>                                                     
+       48 -)                                                            
+       49 -                                                             
+       50 -const AreaIcon = () => (                                     
+       51 -  <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 
+          - 24 24" stroke="currentColor">                               
+       52 -    <path strokeLinecap="round" strokeLinejoin="round"        
+          -strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0    
+          -01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 
+          - 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011    
+          -1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>                      
+       53 -  </svg>                                                     
+       54 -)                                                            
+       55 -                                                             
+       56 -// Mock price data                                           
+       57 -const priceData = [                                          
+       58 -  { id: 'gov', label: 'Gia UBND tinh', price: 8500 },        
+       59 -  { id: 'min', label: 'Gia thap nhat', price: 12000 },       
+       60 -  { id: 'max', label: 'Gia cao nhat', price: 25000 },        
+       61 -  { id: 'avg', label: 'Gia trung binh', price: 18500 },      
+       62 -]                                                            
+       63 -                                                             
+       64 -// Coefficient options                                       
+       65 -const landTypes = [                                          
+       66 -  { value: 'tho-cu', label: 'Tho cu', coef: 1.0 },           
+       67 -  { value: 'tmdv', label: 'Thuong mai DV', coef: 1.2 },      
+       68 -  { value: 'sxkd', label: 'San xuat KD', coef: 0.9 },        
+       69 -  { value: 'nong-nghiep', label: 'Nong nghiep', coef: 0.3 }, 
+       70 -]                                                            
+       71 -                                                             
+       72 -const positionTypes = [                                      
+       73 -  { value: 'mat-tien', label: 'Mat tien', coef: 1.0 },       
+       74 -  { value: 'hem-1', label: 'Hem 1', coef: 0.8 },             
+       75 -  { value: 'hem-2', label: 'Hem 2', coef: 0.65 },            
+       76 -  { value: 'hem-3', label: 'Hem 3 xuyet', coef: 0.5 },       
+       77 -]                                                            
+       78 -                                                             
+       79 -const alleyWidths = [                                        
+       80 -  { value: 'mat-tien', label: 'Mat tien', coef: 1.0 },       
+       81 -  { value: '4m', label: 'Tren 4m', coef: 1.0 },              
+       82 -  { value: '3-4m', label: '3m - 4m', coef: 0.95 },           
+       83 -  { value: '2-3m', label: '2m - 3m', coef: 0.85 },           
+       84 -  { value: 'duoi-2m', label: 'Duoi 2m', coef: 0.75 },        
+       85 -]                                                            
+       86 -                                                             
+       87 -const depths = [                                             
+       88 -  { value: 'binh-thuong', label: 'Binh thuong', coef: 1.0 }, 
+       89 -  { value: 'nong', label: 'Nong (duoi 5m)', coef: 0.95 },    
+       90 -  { value: 'sau', label: 'Sau (tren 30m)', coef: 0.9 },      
+       91 -]                                                            
+       92 -                                                             
+       93 -const fengshuiOptions = [                                    
+       94 -  { value: 'binh-thuong', label: 'Binh thuong', coef: 1.0 }, 
+       95 -  { value: 'tot', label: 'Tot (+5%)', coef: 1.05 },          
+       96 -  { value: 'rat-tot', label: 'Rat tot (+10%)', coef: 1.1 },  
+       97 -  { value: 'xau', label: 'Xau (-5%)', coef: 0.95 },          
+       98 -]                                                            
+       99 -                                                             
+      100 -// Format number with commas                                 
+      101 -function formatNumber(num: number): string {                 
+      102 -  return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      103 -}                                                            
+      104 -                                                             
+      105 -// Convert number to Vietnamese words                        
+      106 -function numberToVietnameseWords(num: number): string {      
+      107 -  if (num >= 1000000000) {                                   
+      108 -    const billions = Math.floor(num / 1000000000)            
+      109 -    const remainder = num % 1000000000                       
+      110 -    const millions = Math.floor(remainder / 1000000)         
+      111 -    let result = billions === 1 ? 'Mot ty' : billions === 2 ? 
+          - 'Hai ty' : `${billions} ty`                                 
+      112 -    if (millions > 0) {                                      
+      113 -      result += ` ${millions} trieu`                         
+      114 -    }                                                        
+      115 -    return result + ' dong'                                  
+      116 -  } else if (num >= 1000000) {                               
+      117 -    const millions = Math.floor(num / 1000000)               
+      118 -    return `${millions} trieu dong`                          
+      119 -  }                                                          
+      120 -  return formatNumber(num) + ' dong'                         
+      121 -}                                                            
+      122 -                                                             
+      123 -export default function ResultsPage() {                      
+      124 -  const router = useRouter()                                 
+      125 -  const [selectedPrice, setSelectedPrice] = useState('avg')  
+      126 -  const [showResult, setShowResult] = useState(false)        
+      127 -                                                             
+      128 -  // Form state                                              
+      129 -  const [landType, setLandType] = useState('tho-cu')         
+      130 -  const [positionType, setPositionType] =                     
+          -useState('mat-tien')                                         
+      131 -  const [alleyWidth, setAlleyWidth] = useState('mat-tien')   
+      132 -  const [depth, setDepth] = useState('binh-thuong')          
+      133 -  const [fengshui, setFengshui] = useState('binh-thuong')    
+      134 -  const [area, setArea] = useState('100')                    
+      135 -                                                             
+      136 -  const getCoef = <T extends { value: string; coef: number    
+          -}>(arr: T[], val: string) =>                                 
+      137 -    arr.find(item => item.value === val)?.coef ?? 1          
+      138 -                                                             
+      139 -  const getLabel = <T extends { value: string; label: string  
+          -}>(arr: T[], val: string) =>                                 
+      140 -    arr.find(item => item.value === val)?.label ?? ''        
+      141 -                                                             
+      142 -  const calculatePrice = () => {                             
+      143 -    const basePrice = priceData.find(p => p.id ===            
+          -selectedPrice)?.price ?? 18500                               
+      144 -    const areaNum = parseFloat(area) || 100                  
+      145 -                                                             
+      146 -    // Calculate coefficients                                
+      147 -    const landTypeCoef = getCoef(landTypes, landType)        
+      148 -    const positionCoef = getCoef(positionTypes, positionType)
+      149 -    const alleyCoef = positionType === 'mat-tien' ? 1 :       
+          -getCoef(alleyWidths, alleyWidth)                             
+      150 -    const depthCoef = getCoef(depths, depth)                 
+      151 -    const fengshuiCoef = getCoef(fengshuiOptions, fengshui)  
+      152 -                                                             
+      153 -    const totalCoef = landTypeCoef * positionCoef * alleyCoef 
+          - * depthCoef * fengshuiCoef                                  
+      154 -    const pricePerM2 = Math.round(basePrice * totalCoef *     
+          -1000)                                                        
+      155 -    const totalValue = pricePerM2 * areaNum                  
+      156 -                                                             
+      157 -    return { pricePerM2, totalValue, areaNum, coefficients: [
+      158 -      { label: `Loai dat: ${getLabel(landTypes, landType)}`,  
+          -value: landTypeCoef },                                       
+      159 -      { label: `Vi tri: ${getLabel(positionTypes,             
+          -positionType)}`, value: positionCoef },                      
+      160 -      { label: `Do rong hem: ${positionType === 'mat-tien' ?  
+          -'-' : getLabel(alleyWidths, alleyWidth)}`, value: alleyCoef   
+          -},                                                           
+      161 -      { label: `Chieu sau: ${getLabel(depths, depth)}`,       
+          -value: depthCoef },                                          
+      162 -      { label: `Phong thuy: ${getLabel(fengshuiOptions,       
+          -fengshui)}`, value: fengshuiCoef },                          
+      163 -    ]}                                                       
+      164 -  }                                                          
+      165 -                                                             
+      166 -  const handleCalculate = () => {                            
+      167 -    setShowResult(true)                                      
+      168 -    setTimeout(() => {                                       
+      169 -                                                              
+          -document.getElementById('valuation-result')?.scrollIntoView({ 
+          - behavior: 'smooth' })                                       
+      170 -    }, 100)                                                  
+      171 -  }                                                          
+      172 -                                                             
+      173 -  const result = calculatePrice()                            
+      174 -                                                             
+      175 -  return (                                                   
+      176 -    <>                                                       
+      177 -      {/* Header */}                                         
+      178 -      <header className="bg-gradient-vibrant px-5 py-4        
+          -pt-[calc(1rem+env(safe-area-inset-top))] sticky top-0 z-40"> 
+      179 -        <div className="flex items-center gap-3">            
+      180 -          <button                                            
+      181 -            onClick={() => router.back()}                    
+      182 -            className="w-10 h-10 bg-white/15 border-none      
+          -rounded-lg text-white flex items-center justify-center        
+          -cursor-pointer transition-all hover:bg-white/25               
+          -flex-shrink-0"                                               
+      183 -          >                                                  
+      184 -            <BackIcon />                                     
+      185 -          </button>                                          
+      186 -          <div className="flex-1 text-white">                
+      187 -            <div className="text-lg font-bold">Ket Qua Tra    
+          -Cuu</div>                                                    
+      188 -            <div className="text-sm opacity-90">Gia dat theo  
+          -QD UBND tinh</div>                                           
+      189 -          </div>                                             
+      190 -        </div>                                               
+      191 -      </header>                                              
+      192 -                                                             
+      193 -      {/* Location Info */}                                  
+      194 -      <section className="bg-gradient-vibrant px-5 pb-6       
+          --mt-px">                                                     
+      195 -        <div className="bg-white/15 backdrop-blur-[10px]      
+          -rounded-xl p-4 text-white">                                  
+      196 -          <div className="flex items-start gap-3">           
+      197 -            <div className="w-10 h-10 bg-white/20 rounded-lg  
+          -flex items-center justify-center flex-shrink-0">             
+      198 -              <LocationIcon />                               
+      199 -            </div>                                           
+      200 -            <div className="flex-1">                         
+      201 -              <div className="text-base font-semibold         
+          -mb-1">Duong Nguyen Thi Minh Khai</div>                       
+      202 -              <div className="text-sm opacity-90">TP. Tra     
+          -Vinh - Doan tu Ly Thuong Kiet den Tran Phu</div>             
+      203 -            </div>                                           
+      204 -          </div>                                             
+      205 -        </div>                                               
+      206 -      </section>                                             
+      207 -                                                             
+      208 -      {/* Main Content */}                                   
+      209 -      <main className="flex-1 px-5 py-5 pb-8 -mt-4">         
+      210 -        {/* Price Grid */}                                   
+      211 -        <section className="bg-white rounded-2xl shadow-lg    
+          -overflow-hidden mb-5 animate-slideUp">                       
+      212 -          <div className="bg-gradient-to-r from-primary/5     
+          -to-primary-light/5 px-5 py-4 border-b border-gray-100">      
+      213 -            <h2 className="text-base font-bold text-gray-800  
+          -flex items-center gap-2">                                    
+      214 -              <span className="text-primary"><MoneyIcon       
+          -/></span>                                                    
+      215 -              Bang Gia Dat (nghin dong/m2)                   
+      216 -            </h2>                                            
+      217 -          </div>                                             
+      218 -          <div className="grid grid-cols-2 gap-px             
+          -bg-gray-100">                                                
+      219 -            {priceData.map((item) => (                       
+      220 -              <button                                        
+      221 -                key={item.id}                                
+      222 -                onClick={() => setSelectedPrice(item.id)}    
+      223 -                className={`bg-white p-4 text-center          
+          -transition-all cursor-pointer border-none ${                 
+      224 -                  selectedPrice === item.id                  
+      225 -                    ? 'bg-gradient-to-br from-primary/10      
+          -to-primary-light/10'                                         
+      226 -                    : 'hover:bg-primary/5'                   
+      227 -                }`}                                          
+      228 -              >                                              
+      229 -                <div className="text-sm text-gray-500 mb-2    
+          -flex items-center justify-center gap-1">                     
+      230 -                  <span className={`w-4 h-4 border-2          
+          -rounded-full inline-flex items-center justify-center          
+          -transition-all ${                                            
+      231 -                    selectedPrice === item.id                
+      232 -                      ? 'border-primary bg-primary'          
+      233 -                      : 'border-gray-300'                    
+      234 -                  }`}>                                       
+      235 -                    {selectedPrice === item.id && (          
+      236 -                      <span className="w-1.5 h-1.5 bg-white   
+          -rounded-full" />                                             
+      237 -                    )}                                       
+      238 -                  </span>                                    
+      239 -                  {item.label}                               
+      240 -                </div>                                       
+      241 -                <div className="text-2xl font-bold            
+          -text-gray-900">{formatNumber(item.price)}</div>              
+      242 -                <span className="text-sm font-normal          
+          -text-gray-500 block mt-1">nghin dong/m2</span>               
+      243 -              </button>                                      
+      244 -            ))}                                              
+      245 -          </div>                                             
+      246 -        </section>                                           
+      247 -                                                             
+      248 -        {/* Calculation Section */}                          
+      249 -        <section className="bg-white rounded-2xl shadow-lg    
+          -overflow-hidden mb-5 animate-slideUp" style={{                
+          -animationDelay: '0.1s' }}>                                   
+      250 -          <div className="bg-gradient-to-r from-accent/5      
+          -to-accent/10 px-5 py-4 border-b border-gray-100">            
+      251 -            <h2 className="text-base font-bold text-gray-800  
+          -flex items-center gap-2">                                    
+      252 -              <span className="text-accent"><CalcIcon         
+          -/></span>                                                    
+      253 -              Tinh Gia Tri Lo Dat                            
+      254 -            </h2>                                            
+      255 -          </div>                                             
+      256 -          <div className="p-5">                              
+      257 -            {/* Form Fields */}                              
+      258 -            <div className="grid grid-cols-2 gap-3 mb-4">    
+      259 -              <div className="flex flex-col">                
+      260 -                <label className="text-sm font-medium         
+          -text-gray-700 mb-2">Loai dat</label>                         
+      261 -                <div className="relative">                   
+      262 -                  <select                                    
+      263 -                    value={landType}                         
+      264 -                    onChange={(e) =>                          
+          -setLandType(e.target.value)}                                 
+      265 -                    className="w-full py-3 px-4 text-base     
+          -text-gray-800 bg-white border-2 border-gray-200 rounded-lg    
+          -appearance-none cursor-pointer transition-all min-h-[48px]    
+          -focus:outline-none focus:border-primary focus:ring-4          
+          -focus:ring-primary/10"                                       
+      266 -                  >                                          
+      267 -                    {landTypes.map(opt => (                  
+      268 -                      <option key={opt.value}                 
+          -value={opt.value}>{opt.label}</option>                       
+      269 -                    ))}                                      
+      270 -                  </select>                                  
+      271 -                  <div className="absolute right-4 top-1/2    
+          --translate-y-1/2 w-0 h-0 border-l-[5px] border-l-transparent  
+          -border-r-[5px] border-r-transparent border-t-[6px]            
+          -border-t-gray-400 pointer-events-none" />                    
+      272 -                </div>                                       
+      273 -              </div>                                         
+      274 -              <div className="flex flex-col">                
+      275 -                <label className="text-sm font-medium         
+          -text-gray-700 mb-2">Loai vi tri</label>                      
+      276 -                <div className="relative">                   
+      277 -                  <select                                    
+      278 -                    value={positionType}                     
+      279 -                    onChange={(e) =>                          
+          -setPositionType(e.target.value)}                             
+      280 -                    className="w-full py-3 px-4 text-base     
+          -text-gray-800 bg-white border-2 border-gray-200 rounded-lg    
+          -appearance-none cursor-pointer transition-all min-h-[48px]    
+          -focus:outline-none focus:border-primary focus:ring-4          
+          -focus:ring-primary/10"                                       
+      281 -                  >                                          
+      282 -                    {positionTypes.map(opt => (              
+      283 -                      <option key={opt.value}                 
+          -value={opt.value}>{opt.label}</option>                       
+      284 -                    ))}                                      
+      285 -                  </select>                                  
+      286 -                  <div className="absolute right-4 top-1/2    
+          --translate-y-1/2 w-0 h-0 border-l-[5px] border-l-transparent  
+          -border-r-[5px] border-r-transparent border-t-[6px]            
+          -border-t-gray-400 pointer-events-none" />                    
+      287 -                </div>                                       
+      288 -              </div>                                         
+      289 -            </div>                                           
+      290 -                                                             
+      291 -            <div className="grid grid-cols-2 gap-3 mb-4">    
+      292 -              <div className="flex flex-col">                
+      293 -                <label className="text-sm font-medium         
+          -text-gray-700 mb-2">Do rong hem</label>                      
+      294 -                <div className="relative">                   
+      295 -                  <select                                    
+      296 -                    value={alleyWidth}                       
+      297 -                    onChange={(e) =>                          
+          -setAlleyWidth(e.target.value)}                               
+      298 -                    className="w-full py-3 px-4 text-base     
+          -text-gray-800 bg-white border-2 border-gray-200 rounded-lg    
+          -appearance-none cursor-pointer transition-all min-h-[48px]    
+          -focus:outline-none focus:border-primary focus:ring-4          
+          -focus:ring-primary/10"                                       
+      299 -                  >                                          
+      300 -                    {alleyWidths.map(opt => (                
+      301 -                      <option key={opt.value}                 
+          -value={opt.value}>{opt.label}</option>                       
+      302 -                    ))}                                      
+      303 -                  </select>                                  
+      304 -                  <div className="absolute right-4 top-1/2    
+          --translate-y-1/2 w-0 h-0 border-l-[5px] border-l-transparent  
+          -border-r-[5px] border-r-transparent border-t-[6px]            
+          -border-t-gray-400 pointer-events-none" />                    
+      305 -                </div>                                       
+      306 -              </div>                                         
+      307 -              <div className="flex flex-col">                
+      308 -                <label className="text-sm font-medium         
+          -text-gray-700 mb-2">Dien tich (m2)</label>                   
+      309 -                <input                                       
+      310 -                  type="number"                              
+      311 -                  value={area}                               
+      312 -                  onChange={(e) => setArea(e.target.value)}  
+      313 -                  placeholder="100"                          
+      314 -                  className="w-full py-3 px-4 text-base       
+          -text-gray-800 bg-white border-2 border-gray-200 rounded-lg    
+          -transition-all min-h-[48px] focus:outline-none                
+          -focus:border-primary focus:ring-4 focus:ring-primary/10"     
+      315 -                />                                           
+      316 -              </div>                                         
+      317 -            </div>                                           
+      318 -                                                             
+      319 -            <div className="grid grid-cols-2 gap-3 mb-4">    
+      320 -              <div className="flex flex-col">                
+      321 -                <label className="text-sm font-medium         
+          -text-gray-700 mb-2">Chieu sau lo dat</label>                 
+      322 -                <div className="relative">                   
+      323 -                  <select                                    
+      324 -                    value={depth}                            
+      325 -                    onChange={(e) =>                          
+          -setDepth(e.target.value)}                                    
+      326 -                    className="w-full py-3 px-4 text-base     
+          -text-gray-800 bg-white border-2 border-gray-200 rounded-lg    
+          -appearance-none cursor-pointer transition-all min-h-[48px]    
+          -focus:outline-none focus:border-primary focus:ring-4          
+          -focus:ring-primary/10"                                       
+      327 -                  >                                          
+      328 -                    {depths.map(opt => (                     
+      329 -                      <option key={opt.value}                 
+          -value={opt.value}>{opt.label}</option>                       
+      330 -                    ))}                                      
+      331 -                  </select>                                  
+      332 -                  <div className="absolute right-4 top-1/2    
+          --translate-y-1/2 w-0 h-0 border-l-[5px] border-l-transparent  
+          -border-r-[5px] border-r-transparent border-t-[6px]            
+          -border-t-gray-400 pointer-events-none" />                    
+      333 -                </div>                                       
+      334 -              </div>                                         
+      335 -              <div className="flex flex-col">                
+      336 -                <label className="text-sm font-medium         
+          -text-gray-700 mb-2">Yeu to phong thuy</label>                
+      337 -                <div className="relative">                   
+      338 -                  <select                                    
+      339 -                    value={fengshui}                         
+      340 -                    onChange={(e) =>                          
+          -setFengshui(e.target.value)}                                 
+      341 -                    className="w-full py-3 px-4 text-base     
+          -text-gray-800 bg-white border-2 border-gray-200 rounded-lg    
+          -appearance-none cursor-pointer transition-all min-h-[48px]    
+          -focus:outline-none focus:border-primary focus:ring-4          
+          -focus:ring-primary/10"                                       
+      342 -                  >                                          
+      343 -                    {fengshuiOptions.map(opt => (            
+      344 -                      <option key={opt.value}                 
+          -value={opt.value}>{opt.label}</option>                       
+      345 -                    ))}                                      
+      346 -                  </select>                                  
+      347 -                  <div className="absolute right-4 top-1/2    
+          --translate-y-1/2 w-0 h-0 border-l-[5px] border-l-transparent  
+          -border-r-[5px] border-r-transparent border-t-[6px]            
+          -border-t-gray-400 pointer-events-none" />                    
+      348 -                </div>                                       
+      349 -              </div>                                         
+      350 -            </div>                                           
+      351 -                                                             
+      352 -            {/* Calculate Button */}                         
+      353 -            <button                                          
+      354 -              onClick={handleCalculate}                      
+      355 -              className="w-full py-4 px-6 text-lg font-bold   
+          -text-white bg-gradient-gold border-none rounded-xl            
+          -cursor-pointer transition-all min-h-[56px]                    
+          -shadow-[0_4px_14px_rgba(212,175,55,0.3)] flex items-center    
+          -justify-center gap-2 mt-4 hover:-translate-y-0.5              
+          -hover:shadow-[0_8px_25px_rgba(212,175,55,0.4)]                
+          -active:translate-y-0"                                        
+      356 -            >                                                
+      357 -              <CalcIcon />                                   
+      358 -              TINH GIA                                       
+      359 -            </button>                                        
+      360 -          </div>                                             
+      361 -        </section>                                           
+      362 -                                                             
+      363 -        {/* Valuation Result Section */}                     
+      364 -        {showResult && (                                     
+      365 -          <section id="valuation-result" className="bg-white  
+          -rounded-2xl shadow-xl overflow-hidden mb-5 animate-scaleIn"> 
+      366 -            {/* Header with Success Indicator */}            
+      367 -            <div className="bg-gradient-vibrant p-5           
+          -text-center relative overflow-hidden">                       
+      368 -              <div className="absolute -top-1/2 -left-1/2     
+          -w-[200%] h-[200%] bg-[radial-gradient(circle,rgba(255,255,255 
+          -,0.15)_0%,transparent_50%)] animate-pulse" />                
+      369 -              <div className="w-14 h-14 bg-white/20           
+          -rounded-full flex items-center justify-center mx-auto mb-3    
+          -relative z-10">                                              
+      370 -                <span className="text-white"><CheckIcon       
+          -/></span>                                                    
+      371 -              </div>                                         
+      372 -              <h2 className="text-xl font-bold text-white     
+          -relative z-10">KET QUA DINH GIA</h2>                         
+      373 -            </div>                                           
+      374 -                                                             
+      375 -            <div className="p-5">                            
+      376 -              {/* Location Summary */}                       
+      377 -              <div className="flex items-start gap-3 p-4      
+          -bg-gradient-to-br from-primary/5 to-primary-light/5           
+          -rounded-xl mb-5 border border-primary/10">                   
+      378 -                <div className="w-10 h-10 bg-gradient-primary 
+          - rounded-lg flex items-center justify-center flex-shrink-0    
+          -text-white">                                                 
+      379 -                  <LocationIcon />                           
+      380 -                </div>                                       
+      381 -                <div>                                        
+      382 -                  <h4 className="text-base font-semibold      
+          -text-gray-800 mb-1">Duong Nguyen Thi Minh Khai</h4>          
+      383 -                  <p className="text-sm text-gray-600         
+          -m-0">Doan: Ly Thuong Kiet - Tran Phu</p>                     
+      384 -                </div>                                       
+      385 -              </div>                                         
+      386 -                                                             
+      387 -              {/* Coefficients Breakdown */}                 
+      388 -              <div className="mb-5">                         
+      389 -                <div className="flex items-center gap-2       
+          -text-sm font-semibold text-gray-700 mb-3">                   
+      390 -                  <span className="text-primary"><CalcIcon    
+          -/></span>                                                    
+      391 -                  Cac he so da ap dung:                      
+      392 -                </div>                                       
+      393 -                <div className="flex flex-col gap-2">        
+      394 -                  {result.coefficients.map((coef, idx) => (  
+      395 -                    <div key={idx} className={`flex           
+          -items-center justify-between p-3 rounded-lg text-sm ${       
+      396 -                      idx % 2 === 0 ? 'bg-primary/5' :        
+          -'bg-gray-50'                                                 
+      397 -                    }`}>                                     
+      398 -                      <span                                   
+          -className="text-gray-600">{coef.label}</span>                
+      399 -                      <span className={`font-semibold ${     
+      400 -                        coef.value > 1 ? 'text-green-600' :   
+          -coef.value < 1 ? 'text-red-500' : 'text-gray-500'            
+      401 -                      }`}>                                   
+      402 -                        x{coef.value.toFixed(2)}             
+      403 -                      </span>                                
+      404 -                    </div>                                   
+      405 -                  ))}                                        
+      406 -                </div>                                       
+      407 -              </div>                                         
+      408 -                                                             
+      409 -              {/* Adjusted Price Per M2 */}                  
+      410 -              <div className="bg-gradient-to-br               
+          -from-accent/10 to-accent/20 rounded-xl p-4 mb-5 text-center   
+          -border border-accent/20">                                    
+      411 -                <div className="flex items-center             
+          -justify-center gap-2 text-sm text-gray-600 mb-2">            
+      412 -                  <span className="text-accent"><MoneyIcon    
+          -/></span>                                                    
+      413 -                  GIA SAU DIEU CHINH                         
+      414 -                </div>                                       
+      415 -                <div className="text-2xl font-bold            
+          -text-accent">{formatNumber(result.pricePerM2)}</div>         
+      416 -                <div className="text-sm text-gray-500         
+          -mt-1">dong/m2</div>                                          
+      417 -              </div>                                         
+      418 -                                                             
+      419 -              {/* Area Display */}                           
+      420 -              <div className="flex items-center               
+          -justify-center gap-2 p-3 bg-gray-50 rounded-lg mb-5 text-sm   
+          -text-gray-600">                                              
+      421 -                <span className="text-primary"><AreaIcon      
+          -/></span>                                                    
+      422 -                Dien tich: <strong className="text-gray-800   
+          -font-semibold">{formatNumber(result.areaNum)}</strong> m2    
+      423 -              </div>                                         
+      424 -                                                             
+      425 -              {/* Final Total Value */}                      
+      426 -              <div className="bg-gradient-vibrant rounded-xl  
+          -p-6 text-center relative overflow-hidden mb-5">              
+      427 -                <div className="absolute -top-full -left-full 
+          - w-[300%] h-[300%] bg-[radial-gradient(circle,rgba(255,255,25 
+          -5,0.1)_0%,transparent_40%)] animate-pulse" style={{           
+          -animationDuration: '4s' }} />                                
+      428 -                <div className="w-12 h-12 bg-white/20         
+          -rounded-full flex items-center justify-center mx-auto mb-3    
+          -relative z-10">                                              
+      429 -                  <span className="text-white"><MoneyIcon     
+          -/></span>                                                    
+      430 -                </div>                                       
+      431 -                <div className="text-sm text-white/90 mb-2    
+          -relative z-10">TONG GIA TRI BAT DONG SAN</div>               
+      432 -                <div className="text-4xl font-bold text-white 
+          - relative z-10 leading-tight mb-1">                          
+      433 -                  {formatNumber(result.totalValue)}          
+      434 -                </div>                                       
+      435 -                <div className="text-lg text-white/90         
+          -relative z-10">dong</div>                                    
+      436 -                <div className="mt-4 py-3 px-4 bg-white/15    
+          -backdrop-blur-[10px] rounded-lg text-sm text-white italic     
+          -relative z-10">                                              
+      437 -                                                              
+          -({numberToVietnameseWords(result.totalValue)})               
+      438 -                </div>                                       
+      439 -              </div>                                         
+      440 -                                                             
+      441 -              {/* Action Buttons */}                         
+      442 -              <div className="grid grid-cols-2 gap-3">       
+      443 -                <button                                      
+      444 -                  onClick={() => alert('Da luu ket qua vao    
+          -lich su tra cuu!')}                                          
+      445 -                  className="flex items-center justify-center 
+          - gap-2 p-4 rounded-xl text-base font-semibold cursor-pointer  
+          -transition-all border-none bg-gradient-primary text-white     
+          -shadow-button hover:-translate-y-0.5                          
+          -hover:shadow-[0_8px_25px_rgba(174,28,62,0.4)]"               
+      446 -                >                                            
+      447 -                  <SaveIcon />                               
+      448 -                  Luu ket qua                                
+      449 -                </button>                                    
+      450 -                <button                                      
+      451 -                  onClick={() => router.push('/')}           
+      452 -                  className="flex items-center justify-center 
+          - gap-2 p-4 rounded-xl text-base font-semibold cursor-pointer  
+          -transition-all bg-gray-100 text-gray-700 border               
+          -border-gray-200 hover:bg-gray-200"                           
+      453 -                >                                            
+      454 -                  <RefreshIcon />                            
+      455 -                  Tinh lai                                   
+      456 -                </button>                                    
+      457 -              </div>                                         
+      458 -            </div>                                           
+      459 -          </section>                                         
+      460 -        )}                                                   
+      461 -      </main>                                                
+      462 -    </>                                                      
+      463 -  )                                                          
+      464 -}                                                            
+        1 +'use client'                                                  
+        2 +                                                              
+        3 +import { useState, useEffect, Suspense } from 'react'         
+        4 +import { useRouter, useSearchParams } from 'next/navigation'  
+        5 +import type {                                                 
+        6 +  Segment,                                                    
+        7 +  LandTypeCoefficient,                                        
+        8 +  LocationCoefficient,                                        
+        9 +  AreaCoefficient,                                            
+       10 +  DepthCoefficient,                                           
+       11 +  FengShuiCoefficient                                         
+       12 +} from '@/lib/supabase/database.types'                        
+       13 +import type { AllCoefficients } from '@/lib/api/coefficients' 
+       14 +import { calculatePrice, formatPrice, formatPricePerM2 } from 
+          + '@/lib/calculations/price-calculator'                        
+       15 +                                                              
+       16 +// Icons                                                      
+       17 +const BackIcon = () => (                                      
+       18 +  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          +stroke="currentColor">                                        
+       19 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M15 19l-7-7 7-7"/>                         
+       20 +  </svg>                                                      
+       21 +)                                                             
+       22 +                                                              
+       23 +const LocationIcon = () => (                                  
+       24 +  <svg className="w-[22px] h-[22px]" fill="none" viewBox="0 0 
+          + 24 24" stroke="currentColor">                                
+       25 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0   
+          +01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>                  
+       26 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>        
+       27 +  </svg>                                                      
+       28 +)                                                             
+       29 +                                                              
+       30 +const MoneyIcon = () => (                                     
+       31 +  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          +stroke="currentColor">                                        
+       32 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3    
+          +.895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0     
+          +1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 
+          + 9 0 0118 0z"/>                                               
+       33 +  </svg>                                                      
+       34 +)                                                             
+       35 +                                                              
+       36 +const CalcIcon = () => (                                      
+       37 +  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          +stroke="currentColor">                                        
+       38 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9         
+          +14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0   
+          +002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>        
+       39 +  </svg>                                                      
+       40 +)                                                             
+       41 +                                                              
+       42 +const CheckIcon = () => (                                     
+       43 +  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24"    
+          +stroke="currentColor">                                        
+       44 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 
+          + 0z"/>                                                        
+       45 +  </svg>                                                      
+       46 +)                                                             
+       47 +                                                              
+       48 +const SaveIcon = () => (                                      
+       49 +  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          +stroke="currentColor">                                        
+       50 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 
+          + 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>          
+       51 +  </svg>                                                      
+       52 +)                                                             
+       53 +                                                              
+       54 +const RefreshIcon = () => (                                   
+       55 +  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24"    
+          +stroke="currentColor">                                        
+       56 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 
+          + 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357  
+          +2H15"/>                                                       
+       57 +  </svg>                                                      
+       58 +)                                                             
+       59 +                                                              
+       60 +const AreaIcon = () => (                                      
+       61 +  <svg className="w-[18px] h-[18px]" fill="none" viewBox="0 0 
+          + 24 24" stroke="currentColor">                                
+       62 +    <path strokeLinecap="round" strokeLinejoin="round"        
+          +strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0    
+          +01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 
+          + 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011    
+          +1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/>                       
+       63 +  </svg>                                                      
+       64 +)                                                             
+       65 +                                                              
+       66 +const LoadingSpinner = () => (                                
+       67 +  <div className="flex items-center justify-center p-8">      
+       68 +    <svg className="animate-spin w-8 h-8 text-primary"        
+          +fill="none" viewBox="0 0 24 24">                              
+       69 +      <circle className="opacity-25" cx="12" cy="12" r="10"   
+          +stroke="currentColor" strokeWidth="4"/>                       
+       70 +      <path className="opacity-75" fill="currentColor" d="M4  
+          +12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962  
+          +0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>            
+       71 +    </svg>                                                    
+       72 +  </div>                                                      
+       73 +)                                                             
+       74 +                                                              
+       75 +function formatNumber(num: number): string {                  
+       76 +  return num.toLocaleString('vi-VN')                          
+       77 +}                                                             
+       78 +                                                              
+       79 +function numberToVietnameseWords(num: number): string {       
+       80 +  if (num >= 1_000_000_000) {                                 
+       81 +    const billions = Math.floor(num / 1_000_000_000)          
+       82 +    const remainder = num % 1_000_000_000                     
+       83 +    const millions = Math.floor(remainder / 1_000_000)        
+       84 +    let result = billions === 1 ? 'Một tỷ' : `${billions} tỷ` 
+       85 +    if (millions > 0) {                                       
+       86 +      result += ` ${millions} triệu`                          
+       87 +    }                                                         
+       88 +    return result + ' đồng'                                   
+       89 +  } else if (num >= 1_000_000) {                              
+       90 +    const millions = Math.floor(num / 1_000_000)              
+       91 +    return `${millions} triệu đồng`                           
+       92 +  }                                                           
+       93 +  return formatNumber(num) + ' đồng'                          
+       94 +}                                                             
+       95 +                                                              
+       96 +function ResultsContent() {                                   
+       97 +  const router = useRouter()                                  
+       98 +  const searchParams = useSearchParams()                      
+       99 +  const segmentId = searchParams.get('segmentId')             
+      100 +                                                              
+      101 +  // Data state                                               
+      102 +  const [segment, setSegment] = useState<Segment |            
+          +null>(null)                                                   
+      103 +  const [coefficients, setCoefficients] =                     
+          +useState<AllCoefficients | null>(null)                        
+      104 +  const [loading, setLoading] = useState(true)                
+      105 +  const [error, setError] = useState<string | null>(null)     
+      106 +                                                              
+      107 +  // Selection state                                          
+      108 +  const [selectedPriceType, setSelectedPriceType] =           
+          +useState<'gov' | 'min' | 'max' | 'avg'>('avg')                
+      109 +  const [landTypeId, setLandTypeId] = useState('')            
+      110 +  const [locationId, setLocationId] = useState('')            
+      111 +  const [areaCoefId, setAreaCoefId] = useState('')            
+      112 +  const [depthId, setDepthId] = useState('')                  
+      113 +  const [fengShuiId, setFengShuiId] = useState('')            
+      114 +  const [area, setArea] = useState('100')                     
+      115 +  const [showResult, setShowResult] = useState(false)         
+      116 +                                                              
+      117 +  // Fetch segment and coefficients                           
+      118 +  useEffect(() => {                                           
+      119 +    if (!segmentId) {                                         
+      120 +      setError('Không tìm thấy thông tin đoạn đường')         
+      121 +      setLoading(false)                                       
+      122 +      return                                                  
+      123 +    }                                                         
+      124 +                                                              
+      125 +    async function fetchData() {                              
+      126 +      try {                                                   
+      127 +        const [segmentRes, coefsRes] = await Promise.all([    
+      128 +          fetch(`/api/segments?segmentId=${segmentId}`),      
+      129 +          fetch('/api/coefficients')                          
+      130 +        ])                                                    
+      131 +                                                              
+      132 +        if (!segmentRes.ok) {                                 
+      133 +          throw new Error('Không tìm thấy đoạn đường')        
+      134 +        }                                                     
+      135 +                                                              
+      136 +        const [segmentData, coefsData] = await Promise.all([  
+      137 +          segmentRes.json(),                                  
+      138 +          coefsRes.json()                                     
+      139 +        ])                                                    
+      140 +                                                              
+      141 +        setSegment(segmentData)                               
+      142 +        setCoefficients(coefsData)                            
+      143 +                                                              
+      144 +        // Set default selections (first option of each)      
+      145 +        if (coefsData.landTypes?.length)                      
+          +setLandTypeId(coefsData.landTypes[0].id)                      
+      146 +        if (coefsData.locations?.length)                      
+          +setLocationId(coefsData.locations[0].id)                      
+      147 +        if (coefsData.areas?.length)                          
+          +setAreaCoefId(coefsData.areas[0].id)                          
+      148 +        if (coefsData.depths?.length)                         
+          +setDepthId(coefsData.depths[0].id)                            
+      149 +        if (coefsData.fengShuis?.length)                      
+          +setFengShuiId(coefsData.fengShuis[0].id)                      
+      150 +      } catch (err) {                                         
+      151 +        setError(err instanceof Error ? err.message : 'Đã xảy 
+          + ra lỗi')                                                     
+      152 +      } finally {                                             
+      153 +        setLoading(false)                                     
+      154 +      }                                                       
+      155 +    }                                                         
+      156 +                                                              
+      157 +    fetchData()                                               
+      158 +  }, [segmentId])                                             
+      159 +                                                              
+      160 +  // Get selected coefficients                                
+      161 +  const getSelectedCoef = <T extends { id: string;            
+          +coefficient: number }>(                                       
+      162 +    arr: T[] | undefined,                                     
+      163 +    id: string                                                
+      164 +  ): number => arr?.find(c => c.id === id)?.coefficient ?? 1  
+      165 +                                                              
+      166 +  const getSelectedItem = <T extends { id: string }>(         
+      167 +    arr: T[] | undefined,                                     
+      168 +    id: string                                                
+      169 +  ): T | undefined => arr?.find(c => c.id === id)             
+      170 +                                                              
+      171 +  // Price data based on segment                              
+      172 +  const priceData = segment ? [                               
+      173 +    { id: 'gov' as const, label: 'Giá UBND tỉnh', price:      
+          +segment.government_price },                                   
+      174 +    { id: 'min' as const, label: 'Giá thấp nhất', price:      
+          +segment.base_price_min },                                     
+      175 +    { id: 'max' as const, label: 'Giá cao nhất', price:       
+          +segment.base_price_max },                                     
+      176 +    { id: 'avg' as const, label: 'Giá trung bình', price:     
+          +(segment.base_price_min + segment.base_price_max) / 2 },      
+      177 +  ] : []                                                      
+      178 +                                                              
+      179 +  const handleCalculate = () => {                             
+      180 +    setShowResult(true)                                       
+      181 +    setTimeout(() => {                                        
+      182 +                                                              
+          +document.getElementById('valuation-result')?.scrollIntoView({ 
+          + behavior: 'smooth' })                                        
+      183 +    }, 100)                                                   
+      184 +  }                                                           
+      185 +                                                              
+      186 +  // Calculate result                                         
+      187 +  const getResult = () => {                                   
+      188 +    if (!segment || !coefficients) return null                
+      189 +                                                              
+      190 +    const areaNum = parseFloat(area) || 100                   
+      191 +    const selectedLandType =                                  
+          +getSelectedItem(coefficients.landTypes, landTypeId)           
+      192 +    const selectedLocation =                                  
+          +getSelectedItem(coefficients.locations, locationId)           
+      193 +    const selectedAreaCoef =                                  
+          +getSelectedItem(coefficients.areas, areaCoefId)               
+      194 +    const selectedDepth =                                     
+          +getSelectedItem(coefficients.depths, depthId)                 
+      195 +    const selectedFengShui =                                  
+          +getSelectedItem(coefficients.fengShuis, fengShuiId)           
+      196 +                                                              
+      197 +    const result = calculatePrice({                           
+      198 +      segment,                                                
+      199 +      area: areaNum,                                          
+      200 +      coefficients: {                                         
+      201 +        landType: getSelectedCoef(coefficients.landTypes,     
+          +landTypeId),                                                  
+      202 +        location: getSelectedCoef(coefficients.locations,     
+          +locationId),                                                  
+      203 +        area: getSelectedCoef(coefficients.areas,             
+          +areaCoefId),                                                  
+      204 +        depth: getSelectedCoef(coefficients.depths, depthId), 
+      205 +        fengShui: getSelectedCoef(coefficients.fengShuis,     
+          +fengShuiId),                                                  
+      206 +      }                                                       
+      207 +    })                                                        
+      208 +                                                              
+      209 +    // Add labels for display                                 
+      210 +    return {                                                  
+      211 +      ...result,                                              
+      212 +      areaNum,                                                
+      213 +      coefficientDetails: [                                   
+      214 +        {                                                     
+      215 +          label: `Loại đất: ${selectedLandType?.name ||       
+          +'-'}`,                                                        
+      216 +          value: result.coefficients.landType                 
+      217 +        },                                                    
+      218 +        {                                                     
+      219 +          label: `Vị trí: ${selectedLocation?.name || '-'}`,  
+      220 +          value: result.coefficients.location                 
+      221 +        },                                                    
+      222 +        {                                                     
+      223 +          label: `Hệ số diện tích: ${selectedAreaCoef?.name   
+          +|| '-'}`,                                                     
+      224 +          value: result.coefficients.area                     
+      225 +        },                                                    
+      226 +        {                                                     
+      227 +          label: `Chiều sâu: ${selectedDepth?.name || '-'}`,  
+      228 +          value: result.coefficients.depth                    
+      229 +        },                                                    
+      230 +        {                                                     
+      231 +          label: `Phong thủy: ${selectedFengShui?.name ||     
+          +'-'}`,                                                        
+      232 +          value: result.coefficients.fengShui                 
+      233 +        },                                                    
+      234 +      ]                                                       
+      235 +    }                                                         
+      236 +  }                                                           
+      237 +                                                              
+      238 +  if (loading) {                                              
+      239 +    return (                                                  
+      240 +      <div className="min-h-screen bg-gray-50 flex            
+          +items-center justify-center">                                 
+      241 +        <LoadingSpinner />                                    
+      242 +      </div>                                                  
+      243 +    )                                                         
+      244 +  }                                                           
+      245 +                                                              
+      246 +  if (error || !segment) {                                    
+      247 +    return (                                                  
+      248 +      <div className="min-h-screen bg-gray-50 flex flex-col   
+          +items-center justify-center p-5">                             
+      249 +        <div className="text-center">                         
+      250 +          <div className="text-red-500 text-lg font-semibold  
+          +mb-4">{error || 'Không tìm thấy dữ liệu'}</div>               
+      251 +          <button                                             
+      252 +            onClick={() => router.push('/')}                  
+      253 +            className="px-6 py-3 bg-primary text-white        
+          +rounded-lg font-semibold"                                     
+      254 +          >                                                   
+      255 +            Quay lại trang chủ                                
+      256 +          </button>                                           
+      257 +        </div>                                                
+      258 +      </div>                                                  
+      259 +    )                                                         
+      260 +  }                                                           
+      261 +                                                              
+      262 +  const result = getResult()                                  
+      263 +                                                              
+      264 +  return (                                                    
+      265 +    <>                                                        
+      266 +      {/* Header */}                                          
+      267 +      <header className="bg-gradient-vibrant px-5 py-4        
+          +pt-[calc(1rem+env(safe-area-inset-top))] sticky top-0 z-40">  
+      268 +        <div className="flex items-center gap-3">             
+      269 +          <button                                             
+      270 +            onClick={() => router.back()}                     
+      271 +            className="w-10 h-10 bg-white/15 border-none      
+          +rounded-lg text-white flex items-center justify-center        
+          +cursor-pointer transition-all hover:bg-white/25               
+          +flex-shrink-0"                                                
+      272 +          >                                                   
+      273 +            <BackIcon />                                      
+      274 +          </button>                                           
+      275 +          <div className="flex-1 text-white">                 
+      276 +            <div className="text-lg font-bold">Kết Quả Tra    
+          +Cứu</div>                                                     
+      277 +            <div className="text-sm opacity-90">Giá đất theo  
+          +QĐ UBND tỉnh</div>                                            
+      278 +          </div>                                              
+      279 +        </div>                                                
+      280 +      </header>                                               
+      281 +                                                              
+      282 +      {/* Location Info */}                                   
+      283 +      <section className="bg-gradient-vibrant px-5 pb-6       
+          +-mt-px">                                                      
+      284 +        <div className="bg-white/15 backdrop-blur-[10px]      
+          +rounded-xl p-4 text-white">                                   
+      285 +          <div className="flex items-start gap-3">            
+      286 +            <div className="w-10 h-10 bg-white/20 rounded-lg  
+          +flex items-center justify-center flex-shrink-0">              
+      287 +              <LocationIcon />                                
+      288 +            </div>                                            
+      289 +            <div className="flex-1">                          
+      290 +              <div className="text-base font-semibold mb-1">  
+      291 +                Từ {segment.segment_from} đến                 
+          +{segment.segment_to}                                          
+      292 +              </div>                                          
+      293 +              <div className="text-sm opacity-90">Đoạn đường  
+          +đã chọn</div>                                                 
+      294 +            </div>                                            
+      295 +          </div>                                              
+      296 +        </div>                                                
+      297 +      </section>                                              
+      298 +                                                              
+      299 +      {/* Main Content */}                                    
+      300 +      <main className="flex-1 px-5 py-5 pb-8 -mt-4">          
+      301 +        {/* Price Grid */}                                    
+      302 +        <section className="bg-white rounded-2xl shadow-lg    
+          +overflow-hidden mb-5 animate-slideUp">                        
+      303 +          <div className="bg-gradient-to-r from-primary/5     
+          +to-primary-light/5 px-5 py-4 border-b border-gray-100">       
+      304 +            <h2 className="text-base font-bold text-gray-800  
+          +flex items-center gap-2">                                     
+      305 +              <span className="text-primary"><MoneyIcon       
+          +/></span>                                                     
+      306 +              Bảng Giá Đất (nghìn đồng/m²)                    
+      307 +            </h2>                                             
+      308 +          </div>                                              
+      309 +          <div className="grid grid-cols-2 gap-px             
+          +bg-gray-100">                                                 
+      310 +            {priceData.map((item) => (                        
+      311 +              <button                                         
+      312 +                key={item.id}                                 
+      313 +                onClick={() => setSelectedPriceType(item.id)} 
+      314 +                className={`bg-white p-4 text-center          
+          +transition-all cursor-pointer border-none ${                  
+      315 +                  selectedPriceType === item.id               
+      316 +                    ? 'bg-gradient-to-br from-primary/10      
+          +to-primary-light/10'                                          
+      317 +                    : 'hover:bg-primary/5'                    
+      318 +                }`}                                           
+      319 +              >                                               
+      320 +                <div className="text-sm text-gray-500 mb-2    
+          +flex items-center justify-center gap-1">                      
+      321 +                  <span className={`w-4 h-4 border-2          
+          +rounded-full inline-flex items-center justify-center          
+          +transition-all ${                                             
+      322 +                    selectedPriceType === item.id             
+      323 +                      ? 'border-primary bg-primary'           
+      324 +                      : 'border-gray-300'                     
+      325 +                  }`}>                                        
+      326 +                    {selectedPriceType === item.id && (       
+      327 +                      <span className="w-1.5 h-1.5 bg-white   
+          +rounded-full" />                                              
+      328 +                    )}                                        
+      329 +                  </span>                                     
+      330 +                  {item.label}                                
+      331 +                </div>                                        
+      332 +                <div className="text-2xl font-bold            
+          +text-gray-900">{formatNumber(item.price)}</div>               
+      333 +                <span className="text-sm font-normal          
+          +text-gray-500 block mt-1">nghìn đồng/m²</span>                
+      334 +              </button>                                       
+      335 +            ))}                                               
+      336 +          </div>                                              
+      337 +        </section>                                            
+      338 +                                                              
+      339 +        {/* Calculation Section */}                           
+      340 +        <section className="bg-white rounded-2xl shadow-lg    
+          +overflow-hidden mb-5 animate-slideUp" style={{                
+          +animationDelay: '0.1s' }}>                                    
+      341 +          <div className="bg-gradient-to-r from-accent/5      
+          +to-accent/10 px-5 py-4 border-b border-gray-100">             
+      342 +            <h2 className="text-base font-bold text-gray-800  
+          +flex items-center gap-2">                                     
+      343 +              <span className="text-accent"><CalcIcon         
+          +/></span>                                                     
+      344 +              Tính Giá Trị Lô Đất                             
+      345 +            </h2>                                             
+      346 +          </div>                                              
+      347 +          <div className="p-5">                               
+      348 +            {/* Form Fields */}                               
+      349 +            <div className="grid grid-cols-2 gap-3 mb-4">     
+      350 +              <div className="flex flex-col">                 
+      351 +                <label className="text-sm font-medium         
+          +text-gray-700 mb-2">Loại đất</label>                          
+      352 +                <div className="relative">                    
+      353 +                  <select                                     
+      354 +                    value={landTypeId}                        
+      355 +                    onChange={(e) =>                          
+          +setLandTypeId(e.target.value)}                                
+      356 +                    className="w-full py-3 px-4 text-base     
+          +text-gray-800 bg-white border-2 border-gray-200 rounded-lg    
+          +appearance-none cursor-pointer transition-all min-h-[48px]    
+          +focus:outline-none focus:border-primary focus:ring-4          
+          +focus:ring-primary/10"                                        
+      357 +                  >                                           
+      358 +                    {coefficients?.landTypes?.map(opt => (    
+      359 +                      <option key={opt.id}                    
+          +value={opt.id}>{opt.name} (x{opt.coefficient})</option>       
+      360 +                    ))}                                       
+      361 +                  </select>                                   
+      362 +                  <div className="absolute right-4 top-1/2    
+          +-translate-y-1/2 w-0 h-0 border-l-[5px] border-l-transparent  
+          +border-r-[5px] border-r-transparent border-t-[6px]            
+          +border-t-gray-400 pointer-events-none" />                     
+      363 +                </div>                                        
+      364 +              </div>                                          
+      365 +              <div className="flex flex-col">                 
+      366 +                <label className="text-sm font-medium         
+          +text-gray-700 mb-2">Vị trí</label>                            
+      367 +                <div className="relative">                    
+      368 +                  <select                                     
+      369 +                    value={locationId}                        
+      370 +                    onChange={(e) =>                          
+          +setLocationId(e.target.value)}                                
+      371 +                    className="w-full py-3 px-4 text-base     
+          +text-gray-800 bg-white border-2 border-gray-200 rounded-lg    
+          +appearance-none cursor-pointer transition-all min-h-[48px]    
+          +focus:outline-none focus:border-primary focus:ring-4          
+          +focus:ring-primary/10"                                        
+      372 +                  >                                           
+      373 +                    {coefficients?.locations?.map(opt => (    
+      374 +                      <option key={opt.id}                    
+          +value={opt.id}>{opt.name} (x{opt.coefficient})</option>       
+      375 +                    ))}                                       
+      376 +                  </select>                                   
+      377 +                  <div className="absolute right-4 top-1/2    
+          +-translate-y-1/2 w-0 h-0 border-l-[5px] border-l-transparent  
+          +border-r-[5px] border-r-transparent border-t-[6px]            
+          +border-t-gray-400 pointer-events-none" />                     
+      378 +                </div>                                        
+      379 +              </div>                                          
+      380 +            </div>                                            
+      381 +                                                              
+      382 +            <div className="grid grid-cols-2 gap-3 mb-4">     
+      383 +              <div className="flex flex-col">                 
+      384 +                <label className="text-sm font-medium         
+          +text-gray-700 mb-2">Hệ số diện tích</label>                   
+      385 +                <div className="relative">                    
+      386 +                  <select                                     
+      387 +                    value={areaCoefId}                        
+      388 +                    onChange={(e) =>                          
+          +setAreaCoefId(e.target.value)}                                
+      389 +                    className="w-full py-3 px-4 text-base     
+          +text-gray-800 bg-white border-2 border-gray-200 rounded-lg    
+          +appearance-none cursor-pointer transition-all min-h-[48px]    
+          +focus:outline-none focus:border-primary focus:ring-4          
+          +focus:ring-primary/10"                                        
+      390 +                  >                                           
+      391 +                    {coefficients?.areas?.map(opt => (        
+      392 +                      <option key={opt.id}                    
+          +value={opt.id}>{opt.name} (x{opt.coefficient})</option>       
+      393 +                    ))}                                       
+      394 +                  </select>                                   
+      395 +                  <div className="absolute right-4 top-1/2    
+          +-translate-y-1/2 w-0 h-0 border-l-[5px] border-l-transparent  
+          +border-r-[5px] border-r-transparent border-t-[6px]            
+          +border-t-gray-400 pointer-events-none" />                     
+      396 +                </div>                                        
+      397 +              </div>                                          
+      398 +              <div className="flex flex-col">                 
+      399 +                <label className="text-sm font-medium         
+          +text-gray-700 mb-2">Diện tích (m²)</label>                    
+      400 +                <input                                        
+      401 +                  type="number"                               
+      402 +                  value={area}                                
+      403 +                  onChange={(e) => setArea(e.target.value)}   
+      404 +                  placeholder="100"                           
+      405 +                  className="w-full py-3 px-4 text-base       
+          +text-gray-800 bg-white border-2 border-gray-200 rounded-lg    
+          +transition-all min-h-[48px] focus:outline-none                
+          +focus:border-primary focus:ring-4 focus:ring-primary/10"      
+      406 +                />                                            
+      407 +              </div>                                          
+      408 +            </div>                                            
+      409 +                                                              
+      410 +            <div className="grid grid-cols-2 gap-3 mb-4">     
+      411 +              <div className="flex flex-col">                 
+      412 +                <label className="text-sm font-medium         
+          +text-gray-700 mb-2">Chiều sâu lô đất</label>                  
+      413 +                <div className="relative">                    
+      414 +                  <select                                     
+      415 +                    value={depthId}                           
+      416 +                    onChange={(e) =>                          
+          +setDepthId(e.target.value)}                                   
+      417 +                    className="w-full py-3 px-4 text-base     
+          +text-gray-800 bg-white border-2 border-gray-200 rounded-lg    
+          +appearance-none cursor-pointer transition-all min-h-[48px]    
+          +focus:outline-none focus:border-primary focus:ring-4          
+          +focus:ring-primary/10"                                        
+      418 +                  >                                           
+      419 +                    {coefficients?.depths?.map(opt => (       
+      420 +                      <option key={opt.id}                    
+          +value={opt.id}>{opt.name} (x{opt.coefficient})</option>       
+      421 +                    ))}                                       
+      422 +                  </select>                                   
+      423 +                  <div className="absolute right-4 top-1/2    
+          +-translate-y-1/2 w-0 h-0 border-l-[5px] border-l-transparent  
+          +border-r-[5px] border-r-transparent border-t-[6px]            
+          +border-t-gray-400 pointer-events-none" />                     
+      424 +                </div>                                        
+      425 +              </div>                                          
+      426 +              <div className="flex flex-col">                 
+      427 +                <label className="text-sm font-medium         
+          +text-gray-700 mb-2">Yếu tố phong thủy</label>                 
+      428 +                <div className="relative">                    
+      429 +                  <select                                     
+      430 +                    value={fengShuiId}                        
+      431 +                    onChange={(e) =>                          
+          +setFengShuiId(e.target.value)}                                
+      432 +                    className="w-full py-3 px-4 text-base     
+          +text-gray-800 bg-white border-2 border-gray-200 rounded-lg    
+          +appearance-none cursor-pointer transition-all min-h-[48px]    
+          +focus:outline-none focus:border-primary focus:ring-4          
+          +focus:ring-primary/10"                                        
+      433 +                  >                                           
+      434 +                    {coefficients?.fengShuis?.map(opt => (    
+      435 +                      <option key={opt.id}                    
+          +value={opt.id}>{opt.name} (x{opt.coefficient})</option>       
+      436 +                    ))}                                       
+      437 +                  </select>                                   
+      438 +                  <div className="absolute right-4 top-1/2    
+          +-translate-y-1/2 w-0 h-0 border-l-[5px] border-l-transparent  
+          +border-r-[5px] border-r-transparent border-t-[6px]            
+          +border-t-gray-400 pointer-events-none" />                     
+      439 +                </div>                                        
+      440 +              </div>                                          
+      441 +            </div>                                            
+      442 +                                                              
+      443 +            {/* Calculate Button */}                          
+      444 +            <button                                           
+      445 +              onClick={handleCalculate}                       
+      446 +              className="w-full py-4 px-6 text-lg font-bold   
+          +text-white bg-gradient-gold border-none rounded-xl            
+          +cursor-pointer transition-all min-h-[56px]                    
+          +shadow-[0_4px_14px_rgba(212,175,55,0.3)] flex items-center    
+          +justify-center gap-2 mt-4 hover:-translate-y-0.5              
+          +hover:shadow-[0_8px_25px_rgba(212,175,55,0.4)]                
+          +active:translate-y-0"                                         
+      447 +            >                                                 
+      448 +              <CalcIcon />                                    
+      449 +              TÍNH GIÁ                                        
+      450 +            </button>                                         
+      451 +          </div>                                              
+      452 +        </section>                                            
+      453 +                                                              
+      454 +        {/* Valuation Result Section */}                      
+      455 +        {showResult && result && (                            
+      456 +          <section id="valuation-result" className="bg-white  
+          +rounded-2xl shadow-xl overflow-hidden mb-5 animate-scaleIn">  
+      457 +            {/* Header with Success Indicator */}             
+      458 +            <div className="bg-gradient-vibrant p-5           
+          +text-center relative overflow-hidden">                        
+      459 +              <div className="absolute -top-1/2 -left-1/2     
+          +w-[200%] h-[200%] bg-[radial-gradient(circle,rgba(255,255,255 
+          +,0.15)_0%,transparent_50%)] animate-pulse" />                 
+      460 +              <div className="w-14 h-14 bg-white/20           
+          +rounded-full flex items-center justify-center mx-auto mb-3    
+          +relative z-10">                                               
+      461 +                <span className="text-white"><CheckIcon       
+          +/></span>                                                     
+      462 +              </div>                                          
+      463 +              <h2 className="text-xl font-bold text-white     
+          +relative z-10">KẾT QUẢ ĐỊNH GIÁ</h2>                          
+      464 +            </div>                                            
+      465 +                                                              
+      466 +            <div className="p-5">                             
+      467 +              {/* Location Summary */}                        
+      468 +              <div className="flex items-start gap-3 p-4      
+          +bg-gradient-to-br from-primary/5 to-primary-light/5           
+          +rounded-xl mb-5 border border-primary/10">                    
+      469 +                <div className="w-10 h-10 bg-gradient-primary 
+          + rounded-lg flex items-center justify-center flex-shrink-0    
+          +text-white">                                                  
+      470 +                  <LocationIcon />                            
+      471 +                </div>                                        
+      472 +                <div>                                         
+      473 +                  <h4 className="text-base font-semibold      
+          +text-gray-800 mb-1">                                          
+      474 +                    Từ {segment.segment_from} đến             
+          +{segment.segment_to}                                          
+      475 +                  </h4>                                       
+      476 +                  <p className="text-sm text-gray-600         
+          +m-0">Đoạn đường đã chọn</p>                                   
+      477 +                </div>                                        
+      478 +              </div>                                          
+      479 +                                                              
+      480 +              {/* Coefficients Breakdown */}                  
+      481 +              <div className="mb-5">                          
+      482 +                <div className="flex items-center gap-2       
+          +text-sm font-semibold text-gray-700 mb-3">                    
+      483 +                  <span className="text-primary"><CalcIcon    
+          +/></span>                                                     
+      484 +                  Các hệ số đã áp dụng:                       
+      485 +                </div>                                        
+      486 +                <div className="flex flex-col gap-2">         
+      487 +                  {result.coefficientDetails.map((coef, idx)  
+          +=> (                                                          
+      488 +                    <div key={idx} className={`flex           
+          +items-center justify-between p-3 rounded-lg text-sm ${        
+      489 +                      idx % 2 === 0 ? 'bg-primary/5' :        
+          +'bg-gray-50'                                                  
+      490 +                    }`}>                                      
+      491 +                      <span                                   
+          +className="text-gray-600">{coef.label}</span>                 
+      492 +                      <span className={`font-semibold ${      
+      493 +                        coef.value > 1 ? 'text-green-600' :   
+          +coef.value < 1 ? 'text-red-500' : 'text-gray-500'             
+      494 +                      }`}>                                    
+      495 +                        x{coef.value.toFixed(2)}              
+      496 +                      </span>                                 
+      497 +                    </div>                                    
+      498 +                  ))}                                         
+      499 +                  <div className="flex items-center           
+          +justify-between p-3 rounded-lg text-sm bg-accent/10 border    
+          +border-accent/20">                                            
+      500 +                    <span className="text-gray-700            
+          +font-medium">Tổng hệ số</span>                                
+      501 +                    <span className="font-bold                
+          +text-accent">x{result.coefficients.total.toFixed(4)}</span>   
+      502 +                  </div>                                      
+      503 +                </div>                                        
+      504 +              </div>                                          
+      505 +                                                              
+      506 +              {/* Adjusted Price Per M2 */}                   
+      507 +              <div className="bg-gradient-to-br               
+          +from-accent/10 to-accent/20 rounded-xl p-4 mb-5 text-center   
+          +border border-accent/20">                                     
+      508 +                <div className="flex items-center             
+          +justify-center gap-2 text-sm text-gray-600 mb-2">             
+      509 +                  <span className="text-accent"><MoneyIcon    
+          +/></span>                                                     
+      510 +                  GIÁ SAU ĐIỀU CHỈNH                          
+      511 +                </div>                                        
+      512 +                <div className="text-2xl font-bold            
+          +text-accent">{formatNumber(result.pricePerM2.avg)}</div>      
+      513 +                <div className="text-sm text-gray-500         
+          +mt-1">đồng/m²</div>                                           
+      514 +              </div>                                          
+      515 +                                                              
+      516 +              {/* Area Display */}                            
+      517 +              <div className="flex items-center               
+          +justify-center gap-2 p-3 bg-gray-50 rounded-lg mb-5 text-sm   
+          +text-gray-600">                                               
+      518 +                <span className="text-primary"><AreaIcon      
+          +/></span>                                                     
+      519 +                Diện tích: <strong className="text-gray-800   
+          +font-semibold">{formatNumber(result.areaNum)}</strong> m²     
+      520 +              </div>                                          
+      521 +                                                              
+      522 +              {/* Final Total Value */}                       
+      523 +              <div className="bg-gradient-vibrant rounded-xl  
+          +p-6 text-center relative overflow-hidden mb-5">               
+      524 +                <div className="absolute -top-full -left-full 
+          + w-[300%] h-[300%] bg-[radial-gradient(circle,rgba(255,255,25 
+          +5,0.1)_0%,transparent_40%)] animate-pulse" style={{           
+          +animationDuration: '4s' }} />                                 
+      525 +                <div className="w-12 h-12 bg-white/20         
+          +rounded-full flex items-center justify-center mx-auto mb-3    
+          +relative z-10">                                               
+      526 +                  <span className="text-white"><MoneyIcon     
+          +/></span>                                                     
+      527 +                </div>                                        
+      528 +                <div className="text-sm text-white/90 mb-2    
+          +relative z-10">TỔNG GIÁ TRỊ BẤT ĐỘNG SẢN</div>                
+      529 +                <div className="text-4xl font-bold text-white 
+          + relative z-10 leading-tight mb-1">                           
+      530 +                  {formatNumber(result.totalPrice.avg)}       
+      531 +                </div>                                        
+      532 +                <div className="text-lg text-white/90         
+          +relative z-10">đồng</div>                                     
+      533 +                <div className="mt-4 py-3 px-4 bg-white/15    
+          +backdrop-blur-[10px] rounded-lg text-sm text-white italic     
+          +relative z-10">                                               
+      534 +                                                              
+          +({numberToVietnameseWords(result.totalPrice.avg)})            
+      535 +                </div>                                        
+      536 +              </div>                                          
+      537 +                                                              
+      538 +              {/* Action Buttons */}                          
+      539 +              <div className="grid grid-cols-2 gap-3">        
+      540 +                <button                                       
+      541 +                  onClick={() => alert('Đã lưu kết quả vào    
+          +lịch sử tra cứu!')}                                           
+      542 +                  className="flex items-center justify-center 
+          + gap-2 p-4 rounded-xl text-base font-semibold cursor-pointer  
+          +transition-all border-none bg-gradient-primary text-white     
+          +shadow-button hover:-translate-y-0.5                          
+          +hover:shadow-[0_8px_25px_rgba(174,28,62,0.4)]"                
+      543 +                >                                             
+      544 +                  <SaveIcon />                                
+      545 +                  Lưu kết quả                                 
+      546 +                </button>                                     
+      547 +                <button                                       
+      548 +                  onClick={() => router.push('/')}            
+      549 +                  className="flex items-center justify-center 
+          + gap-2 p-4 rounded-xl text-base font-semibold cursor-pointer  
+          +transition-all bg-gray-100 text-gray-700 border               
+          +border-gray-200 hover:bg-gray-200"                            
+      550 +                >                                             
+      551 +                  <RefreshIcon />                             
+      552 +                  Tính lại                                    
+      553 +                </button>                                     
+      554 +              </div>                                          
+      555 +            </div>                                            
+      556 +          </section>                                          
+      557 +        )}                                                    
+      558 +      </main>                                                 
+      559 +    </>                                                       
+      560 +  )                                                           
+      561 +}                                                             
+      562 +                                                              
+      563 +export default function ResultsPage() {                       
+      564 +  return (                                                    
+      565 +    <Suspense fallback={<LoadingSpinner />}>                  
+      566 +      <ResultsContent />                                      
+      567 +    </Suspense>                                               
+      568 +  )                                                           
+      569 +}                                                             
+
+● Let me run a build to check for any TypeScript errors:
+
+● Bash(npm run build 2>&1 | head -100)
+  ⎿  > landprice-agribank@1.0.0 build
+     > next build
+     … +95 lines (ctrl+o to expand)
+
+● Build succeeded but there are database schema mismatches. Let me check the actual migration file:
+
+● Search(pattern: "supabase/**/*.sql")
+  ⎿  Found 3 files (ctrl+o to expand)
+
+● Read(supabase\migrations\001_initial_schema.sql)
+  ⎿  Read 233 lines
+
+● The build succeeded. The database warnings indicate migrations haven't been run on Supabase yet. Let me update the todo list:
+
+● Phase 6: User Search Flow & Price Calculation - Complete
+
+  | Component         | Status | Files                                                                          |
+  |-------------------|--------|--------------------------------------------------------------------------------|
+  | API Routes        | ✅     | api/districts, api/streets, api/segments, api/coefficients                     |
+  | Data Fetching     | ✅     | lib/api/search-data.ts, lib/api/coefficients.ts                                |
+  | Price Calculator  | ✅     | lib/calculations/price-calculator.ts                                           |
+  | Dynamic Dropdowns | ✅     | app/(user)/page.tsx (cascading district → street → segment)                    |
+  | Results Page      | ✅     | app/(user)/results/page.tsx with coefficient selection + calculation breakdown |
+
+  Build: ✅ Successful (91.3 kB total)
+
+  Important: The database needs migration to be run. Please run this in Supabase SQL Editor:
+  1. Go to Supabase Dashboard → SQL Editor
+  2. Run the contents of supabase/migrations/001_initial_schema.sql
+  3. Run the contents of supabase/seed.sql for sample data
+
+  Files Created:
+  - lib/api/search-data.ts - District/street/segment fetching
+  - lib/api/coefficients.ts - All coefficient types fetching
+  - lib/calculations/price-calculator.ts - Price calculation engine
+  - app/api/districts/route.ts - Districts API
+  - app/api/streets/route.ts - Streets by district API
+  - app/api/segments/route.ts - Segments by street API
+  - app/api/coefficients/route.ts - All coefficients API
+
+  Files Updated:
+  - app/(user)/page.tsx - Dynamic dropdown loading
+  - app/(user)/results/page.tsx - Real data + calculation
+
+  Ready for testing once database is migrated.
+
+> Error: Failed to run sql query: ERROR: 42703: column "sort_order" does not
+ exist 
+
+● The districts table already exists but is missing the sort_order column. Run this ALTER statement first:
+
+  -- Add missing column to districts table
+  ALTER TABLE districts ADD COLUMN IF NOT EXISTS sort_order INT DEFAULT 0;
+  CREATE INDEX IF NOT EXISTS idx_districts_sort ON districts(sort_order);
+
+  After that, if the coefficient tables don't exist yet, run this to create them:
+
+  -- Create coefficient tables if they don't exist
+  CREATE TABLE IF NOT EXISTS land_type_coefficients (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    code VARCHAR(20) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    coefficient DECIMAL(5,2) NOT NULL DEFAULT 1.0,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS location_coefficients (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    code VARCHAR(20) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    width_min DECIMAL(5,2) DEFAULT 0,
+    width_max DECIMAL(5,2) DEFAULT 999,
+    coefficient DECIMAL(5,2) NOT NULL DEFAULT 1.0,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS area_coefficients (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    code VARCHAR(20) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    area_min DECIMAL(10,2) NOT NULL DEFAULT 0,
+    area_max DECIMAL(10,2) NOT NULL DEFAULT 999999,
+    coefficient DECIMAL(5,2) NOT NULL DEFAULT 1.0,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS depth_coefficients (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    code VARCHAR(20) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    depth_min DECIMAL(5,2) NOT NULL DEFAULT 0,
+    depth_max DECIMAL(5,2) NOT NULL DEFAULT 999,
+    coefficient DECIMAL(5,2) NOT NULL DEFAULT 1.0,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS feng_shui_coefficients (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    code VARCHAR(20) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    coefficient DECIMAL(5,2) NOT NULL DEFAULT 1.0,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  -- Enable RLS and add policies
+  ALTER TABLE land_type_coefficients ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE location_coefficients ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE area_coefficients ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE depth_coefficients ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE feng_shui_coefficients ENABLE ROW LEVEL SECURITY;
+
+  CREATE POLICY "Public read land_type_coefficients" ON land_type_coefficients FOR SELECT USING (true);
+  CREATE POLICY "Public read location_coefficients" ON location_coefficients FOR SELECT USING (true);
+  CREATE POLICY "Public read area_coefficients" ON area_coefficients FOR SELECT USING (true);
+  CREATE POLICY "Public read depth_coefficients" ON depth_coefficients FOR SELECT USING (true);
+  CREATE POLICY "Public read feng_shui_coefficients" ON feng_shui_coefficients FOR SELECT USING (true);
+
+  Run each block separately in Supabase SQL Editor.
+
+> seed.sql: Error: Failed to run sql query: ERROR: 42P01: relation 
+"brand_settings" does not exist LINE 8: INSERT INTO brand_settings (key, 
+value) VALUES ^ 
+
+● Create the missing tables first. Run this:
+
+  -- Create segments table if not exists
+  CREATE TABLE IF NOT EXISTS segments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    street_id UUID NOT NULL REFERENCES streets(id) ON DELETE CASCADE,
+    segment_from VARCHAR(200) NOT NULL,
+    segment_to VARCHAR(200) NOT NULL,
+    base_price_min DECIMAL(15,2) NOT NULL DEFAULT 0,
+    base_price_max DECIMAL(15,2) NOT NULL DEFAULT 0,
+    government_price DECIMAL(15,2) NOT NULL DEFAULT 0,
+    adjustment_coef_min DECIMAL(5,2) DEFAULT 1.0,
+    adjustment_coef_max DECIMAL(5,2) DEFAULT 1.0,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_segments_street ON segments(street_id);
+
+  -- Create search_history table if not exists
+  CREATE TABLE IF NOT EXISTS search_history (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID,
+    district_name VARCHAR(100),
+    street_name VARCHAR(200),
+    segment_desc VARCHAR(400),
+    area DECIMAL(10,2),
+    total_price DECIMAL(15,2),
+    coefficients_json JSONB,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  -- Create brand_settings table
+  CREATE TABLE IF NOT EXISTS brand_settings (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    key VARCHAR(50) UNIQUE NOT NULL,
+    value TEXT,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  -- Enable RLS
+  ALTER TABLE segments ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE search_history ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE brand_settings ENABLE ROW LEVEL SECURITY;
+
+  -- Add policies
+  CREATE POLICY "Public read segments" ON segments FOR SELECT USING (true);
+  CREATE POLICY "Public read brand_settings" ON brand_settings FOR SELECT USING (true);
+
+  Then run seed.sql again.
+
+> Error: Failed to run sql query: ERROR: 42804: foreign key constraint 
+"segments_street_id_fkey" cannot be implemented DETAIL: Key columns 
+"street_id" and "id" are of incompatible types: uuid and integer. 
+
+● The existing tables use integer IDs, not UUIDs. Let me provide compatible SQL:
+
+  -- Create segments table with integer foreign key
+  CREATE TABLE IF NOT EXISTS segments (
+    id SERIAL PRIMARY KEY,
+    street_id INTEGER NOT NULL REFERENCES streets(id) ON DELETE CASCADE,
+    segment_from VARCHAR(200) NOT NULL,
+    segment_to VARCHAR(200) NOT NULL,
+    base_price_min DECIMAL(15,2) NOT NULL DEFAULT 0,
+    base_price_max DECIMAL(15,2) NOT NULL DEFAULT 0,
+    government_price DECIMAL(15,2) NOT NULL DEFAULT 0,
+    adjustment_coef_min DECIMAL(5,2) DEFAULT 1.0,
+    adjustment_coef_max DECIMAL(5,2) DEFAULT 1.0,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_segments_street ON segments(street_id);
+
+  -- Create search_history table
+  CREATE TABLE IF NOT EXISTS search_history (
+    id SERIAL PRIMARY KEY,
+    user_id TEXT,
+    district_name VARCHAR(100),
+    street_name VARCHAR(200),
+    segment_desc VARCHAR(400),
+    area DECIMAL(10,2),
+    total_price DECIMAL(15,2),
+    coefficients_json JSONB,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  -- Create brand_settings table
+  CREATE TABLE IF NOT EXISTS brand_settings (
+    id SERIAL PRIMARY KEY,
+    key VARCHAR(50) UNIQUE NOT NULL,
+    value TEXT,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  -- Create coefficient tables with integer IDs
+  CREATE TABLE IF NOT EXISTS land_type_coefficients (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(20) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    coefficient DECIMAL(5,2) NOT NULL DEFAULT 1.0,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS location_coefficients (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(20) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    width_min DECIMAL(5,2) DEFAULT 0,
+    width_max DECIMAL(5,2) DEFAULT 999,
+    coefficient DECIMAL(5,2) NOT NULL DEFAULT 1.0,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS area_coefficients (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(20) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    area_min DECIMAL(10,2) NOT NULL DEFAULT 0,
+    area_max DECIMAL(10,2) NOT NULL DEFAULT 999999,
+    coefficient DECIMAL(5,2) NOT NULL DEFAULT 1.0,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS depth_coefficients (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(20) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    depth_min DECIMAL(5,2) NOT NULL DEFAULT 0,
+    depth_max DECIMAL(5,2) NOT NULL DEFAULT 999,
+    coefficient DECIMAL(5,2) NOT NULL DEFAULT 1.0,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  CREATE TABLE IF NOT EXISTS feng_shui_coefficients (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(20) UNIQUE NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    coefficient DECIMAL(5,2) NOT NULL DEFAULT 1.0,
+    sort_order INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+
+  -- Enable RLS on new tables
+  ALTER TABLE segments ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE search_history ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE brand_settings ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE land_type_coefficients ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE location_coefficients ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE area_coefficients ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE depth_coefficients ENABLE ROW LEVEL SECURITY;
+  ALTER TABLE feng_shui_coefficients ENABLE ROW LEVEL SECURITY;
+
+  -- Add public read policies
+  CREATE POLICY "Public read segments" ON segments FOR SELECT USING (true);
+  CREATE POLICY "Public read brand_settings" ON brand_settings FOR SELECT USING (true);
+  CREATE POLICY "Public read land_type_coefficients" ON land_type_coefficients FOR SELECT USING (true);
+  CREATE POLICY "Public read location_coefficients" ON location_coefficients FOR SELECT USING (true);
+  CREATE POLICY "Public read area_coefficients" ON area_coefficients FOR SELECT USING (true);
+  CREATE POLICY "Public read depth_coefficients" ON depth_coefficients FOR SELECT USING (true);
+  CREATE POLICY "Public read feng_shui_coefficients" ON feng_shui_coefficients FOR SELECT USING (true);
+
+  Run this first, then I'll provide updated seed data compatible with integer IDs.
+
+> ok done 
+
+● Now run this seed data:
+
+  -- Brand settings
+  INSERT INTO brand_settings (key, value) VALUES
+    ('app_name', 'Agribank Trà Vinh - Tra Cứu Giá Đất'),
+    ('logo_url', '/logo.png'),
+    ('primary_color', '#AE1C3E'),
+    ('accent_color', '#D4AF37')
+  ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value;
+
+  -- Land type coefficients
+  INSERT INTO land_type_coefficients (code, name, description, coefficient, sort_order) VALUES
+    ('TC', 'Đất thổ cư', 'Đất ở tại nông thôn, đô thị', 1.00, 1),
+    ('TMDV', 'Đất thương mại dịch vụ', 'Đất sử dụng cho mục đích kinh doanh', 1.20, 2),
+    ('SX', 'Đất sản xuất kinh doanh', 'Đất cơ sở sản xuất phi nông nghiệp', 0.90, 3),
+    ('NN', 'Đất nông nghiệp', 'Đất trồng cây hàng năm, lâu năm', 0.30, 4),
+    ('LN', 'Đất lâm nghiệp', 'Đất rừng sản xuất, phòng hộ', 0.20, 5),
+    ('NTTS', 'Đất nuôi trồng thủy sản', 'Đất ao, hồ nuôi cá, tôm', 0.25, 6),
+    ('CLN', 'Đất trồng cây lâu năm', 'Đất trồng cây ăn quả, công nghiệp', 0.35, 7)
+  ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name, coefficient = EXCLUDED.coefficient;
+
+  -- Location coefficients
+  INSERT INTO location_coefficients (code, name, description, width_min, width_max, coefficient, sort_order) VALUES
+    ('MT', 'Mặt tiền', 'Đất mặt tiền đường', 0, 999, 1.00, 1),
+    ('HEM4', 'Hẻm ≥4m', 'Hẻm rộng từ 4m trở lên', 4, 999, 0.90, 2),
+    ('HEM3', 'Hẻm 3-4m', 'Hẻm rộng từ 3m đến dưới 4m', 3, 4, 0.80, 3),
+    ('HEM2', 'Hẻm 2-3m', 'Hẻm rộng từ 2m đến dưới 3m', 2, 3, 0.70, 4),
+    ('HEM1', 'Hẻm <2m', 'Hẻm rộng dưới 2m', 0, 2, 0.60, 5),
+    ('H2MT', 'Hẻm 2 mặt tiền', 'Đất trong hẻm có 2 mặt tiền', 0, 999, 0.85, 6),
+    ('XSAT', 'Hẻm xe ô tô', 'Hẻm xe ô tô vào được', 3, 999, 0.75, 7),
+    ('XMAY', 'Hẻm xe máy', 'Hẻm chỉ xe máy vào được', 1, 3, 0.55, 8),
+    ('XDAP', 'Hẻm nhỏ', 'Hẻm chỉ đi bộ, xe đạp', 0, 1, 0.40, 9)
+  ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name, coefficient = EXCLUDED.coefficient;
+
+  -- Area coefficients
+  INSERT INTO area_coefficients (code, name, area_min, area_max, coefficient, sort_order) VALUES
+    ('A1', 'Dưới 50m²', 0, 50, 1.10, 1),
+    ('A2', '50-100m²', 50, 100, 1.00, 2),
+    ('A3', '100-200m²', 100, 200, 0.95, 3),
+    ('A4', '200-500m²', 200, 500, 0.90, 4),
+    ('A5', '500-1000m²', 500, 1000, 0.85, 5),
+    ('A6', '1000-2000m²', 1000, 2000, 0.75, 6),
+    ('A7', '2000-5000m²', 2000, 5000, 0.60, 7),
+    ('A8', 'Trên 5000m²', 5000, 999999, 0.50, 8)
+  ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name, coefficient = EXCLUDED.coefficient;
+
+  -- Depth coefficients
+  INSERT INTO depth_coefficients (code, name, depth_min, depth_max, coefficient, sort_order) VALUES
+    ('D1', 'Bình thường', 5, 30, 1.00, 1),
+    ('D2', 'Nông (<5m)', 0, 5, 0.90, 2),
+    ('D3', 'Sâu (>30m)', 30, 999, 0.80, 3)
+  ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name, coefficient = EXCLUDED.coefficient;
+
+  -- Feng shui coefficients
+  INSERT INTO feng_shui_coefficients (code, name, description, coefficient, sort_order) VALUES
+    ('BT', 'Bình thường', 'Không có yếu tố đặc biệt', 1.00, 1),
+    ('TOT', 'Tốt', 'Hướng tốt, đẹp', 1.05, 2),
+    ('RTOT', 'Rất tốt', 'Hướng rất đẹp, phong thủy tốt', 1.10, 3),
+    ('XAU', 'Không tốt', 'Hướng xấu hoặc có yếu tố bất lợi', 0.90, 4)
+  ON CONFLICT (code) DO UPDATE SET name = EXCLUDED.name, coefficient = EXCLUDED.coefficient;
+
+  -- Sample segments (need actual street IDs from your database)
+  -- First check existing streets: SELECT id, name FROM streets LIMIT 10;
+  -- Then insert segments referencing actual street_id values
+
+  After running this, check if you have streets in the database:
+  SELECT id, name FROM streets LIMIT 5;
+
+  Let me know the result and I'll provide segment seed data with correct street IDs.
+
+
+

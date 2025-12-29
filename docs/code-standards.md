@@ -189,6 +189,128 @@ export const AGRIBANK_PRIMARY = '#AE1C3E'
 export const AGRIBANK_DARK = '#8B1631'
 ```
 
+## Database Standards
+
+### SQL Naming Conventions
+
+#### Tables & Fields
+```sql
+-- Table names: lowercase, plural, snake_case
+CREATE TABLE users (
+  id UUID PRIMARY KEY,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  phone_number VARCHAR(20),
+  password_hash VARCHAR(255) NOT NULL,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT now(),
+  updated_at TIMESTAMP DEFAULT now()
+);
+
+-- Foreign keys: {table_name}_id
+CREATE TABLE search_history (
+  id UUID PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id),
+  district_id UUID NOT NULL REFERENCES districts(id),
+  created_at TIMESTAMP DEFAULT now()
+);
+
+-- Coefficient tables: {attribute}_coefficients
+CREATE TABLE land_type_coefficients (
+  id UUID PRIMARY KEY,
+  land_type VARCHAR(50) NOT NULL,
+  coefficient_value DECIMAL(4,3) NOT NULL
+);
+
+-- Boolean columns: is_, has_, can_
+CREATE TABLE users (
+  is_active BOOLEAN,
+  has_verified_email BOOLEAN,
+  can_admin BOOLEAN
+);
+
+-- Decimal for prices: DECIMAL(12, 2) for VND
+CREATE TABLE segments (
+  base_price_4_level DECIMAL(12, 2),
+  base_price_3_level DECIMAL(12, 2),
+  base_price_2_level DECIMAL(12, 2),
+  base_price_1_level DECIMAL(12, 2)
+);
+```
+
+#### Indexes & Constraints
+```sql
+-- Index foreign keys
+CREATE INDEX idx_search_history_user_id ON search_history(user_id);
+CREATE INDEX idx_search_history_district_id ON search_history(district_id);
+
+-- Unique constraints
+CREATE UNIQUE INDEX idx_users_email ON users(email);
+CREATE UNIQUE INDEX idx_districts_name ON districts(name);
+
+-- Composite indexes for common queries
+CREATE INDEX idx_segments_district_street
+  ON segments(district_id, street_id);
+```
+
+#### Type Definitions in TypeScript
+```typescript
+// Map database types to TypeScript
+export interface User {
+  id: string        // UUID from database
+  email: string
+  phone_number: string | null
+  password_hash: string
+  is_active: boolean
+  created_at: string  // ISO 8601 from database
+  updated_at: string
+}
+
+export interface Segment {
+  id: string
+  district_id: string
+  street_id: string
+  base_price_4_level: number  // From DECIMAL
+  base_price_3_level: number
+  base_price_2_level: number
+  base_price_1_level: number
+}
+
+// Coefficient value is decimal: number 0.0 to 1.5
+export interface LandTypeCoefficient {
+  id: string
+  land_type: string
+  coefficient_value: number  // e.g., 0.7, 1.0, 1.2
+}
+```
+
+#### Row Level Security (RLS)
+
+```sql
+-- Enable RLS on all tables
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE search_history ENABLE ROW LEVEL SECURITY;
+
+-- Users can only see their own data
+CREATE POLICY "Users can view own profile"
+  ON users FOR SELECT
+  USING (auth.uid() = id);
+
+-- Users can see public search history from others
+CREATE POLICY "Search history is readable by all"
+  ON search_history FOR SELECT
+  USING (true);
+
+-- Users can only insert their own search history
+CREATE POLICY "Users can insert own search history"
+  ON search_history FOR INSERT
+  WITH CHECK (auth.uid() = user_id);
+
+-- Admin can perform all operations
+CREATE POLICY "Admin can do all operations"
+  ON users FOR ALL
+  USING (auth.jwt() ->> 'role' = 'admin');
+```
+
 ## TypeScript Standards
 
 ### Type Definitions

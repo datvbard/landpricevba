@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/button'
 import Input from '@/components/ui/input'
-import { loginAction } from './actions'
+import { validateLoginInput } from './actions'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -21,16 +21,36 @@ export default function LoginPage() {
     setIsLoading(true)
     setError(null)
 
-    const result = await loginAction(identifier, password)
-
-    if (!result.success) {
-      setError(result.error || 'Đã xảy ra lỗi')
+    // Step 1: Validate input and get user info
+    const validation = await validateLoginInput(identifier, password)
+    if (!validation.success) {
+      setError(validation.error || 'Đã xảy ra lỗi')
       setIsLoading(false)
       return
     }
 
-    // Redirect based on role
-    router.push(result.redirectTo || '/')
+    // Step 2: Sign in via direct API fetch (ensures cookies are set)
+    try {
+      const res = await fetch('/api/auth/sign-in/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: validation.email, password }),
+        credentials: 'include',
+      })
+
+      if (!res.ok) {
+        setError('Email/số điện thoại hoặc mật khẩu không chính xác')
+        setIsLoading(false)
+        return
+      }
+    } catch {
+      setError('Đã xảy ra lỗi, vui lòng thử lại')
+      setIsLoading(false)
+      return
+    }
+
+    // Step 3: Redirect based on role
+    router.push(validation.redirectTo || '/')
     router.refresh()
   }
 
