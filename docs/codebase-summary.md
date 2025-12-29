@@ -1,9 +1,9 @@
 # Land Price App - Codebase Summary
 
-**Version:** 1.7.0
+**Version:** 1.8.0
 **Last Updated:** 2025-12-29
-**Status:** Phase 7 Complete (Search History Feature)
-**Overall Progress:** 58% - 7 of 12 phases complete
+**Status:** Phase 8 Complete (Admin User Management)
+**Overall Progress:** 67% - 8 of 12 phases complete
 
 ## Overview
 
@@ -34,8 +34,10 @@ landprice/
 │       ├── layout.tsx       # Admin layout with sidebar
 │       ├── dashboard/
 │       │   └── page.tsx     # Admin dashboard with stats & activity
-│       └── settings/
-│           └── page.tsx     # Admin settings page
+│       ├── settings/
+│       │   └── page.tsx     # Admin settings page
+│       └── users/
+│           └── page.tsx     # Admin user management (Phase 8)
 ├── components/
 │   ├── ui/
 │   │   ├── button.tsx       # Reusable button component
@@ -47,7 +49,8 @@ landprice/
 │       ├── sidebar.tsx      # Admin navigation sidebar
 │       ├── stat-card.tsx    # Statistic card component
 │       ├── data-table.tsx   # Admin data table component
-│       └── activity-item.tsx # Activity list item component
+│       ├── activity-item.tsx # Activity list item component
+│       └── user-form.tsx    # User CRUD modal form (Phase 8)
 ├── hooks/
 │   └── use-auth.ts          # useAuth custom hook with role checks
 ├── docs/
@@ -68,7 +71,8 @@ landprice/
 │   ├── api/
 │   │   ├── search-data.ts         # Database queries for districts/streets/segments
 │   │   ├── coefficients.ts        # Coefficient data aggregation
-│   │   └── history.ts             # History API client (CRUD operations + formatting)
+│   │   ├── history.ts             # History API client (CRUD operations + formatting)
+│   │   └── users.ts               # Users API client (Phase 8 CRUD + helpers)
 │   ├── calculations/
 │   │   └── price-calculator.ts    # Price calculation engine with 5 coefficients
 │   └── mock-data/
@@ -431,6 +435,7 @@ landprice/
 - **Phase 5:** Authentication system with Better Auth
 - **Phase 6:** User search flow & price calculation
 - **Phase 7:** Search history feature with pagination
+- **Phase 8:** Admin user management with CRUD operations
 
 ### Phase 5 Details: Authentication System
 
@@ -561,9 +566,54 @@ Feature Tables:
 - Actions: View (→ results), Share (clipboard), Delete (with confirm)
 - Navigation: segmentId from coefficients_json routes to /results page
 
+### Phase 8 Details: Admin User Management
+
+**User CRUD API** (`lib/api/users.ts`)
+- `getUsers(search?)` - Fetch all users with optional search filter
+- `createUser(input)` - Create new user with validation
+- `updateUser(id, input)` - Update existing user fields
+- `deleteUser(id)` - Delete user by ID
+- `formatRole(role)` - Format role as Vietnamese text
+- `formatUserDate(dateStr)` - Format date as Vietnamese locale
+- UsersApiError custom error class with status codes
+
+**User Form Modal** (`components/admin/user-form.tsx`)
+- Create/edit modal form with validation
+- Fields: full_name, email (required), phone, password (required for create), role, is_active
+- Validation: email format, password length (min 8 chars)
+- Password optional when editing (leave blank to keep current)
+- Close button and cancel/submit actions
+
+**Users Admin Page** (`app/(admin)/users/page.tsx`)
+- Client component with user table and CRUD operations
+- Search by email, name, or phone with form submission
+- Create button opens modal with empty form
+- Edit button loads user data into form
+- Delete button with confirmation (updates state after delete)
+- Loading spinner, error handling with retry, empty state
+- Table columns: name, email, phone, role, status, creation date
+- User count display
+
+**User Management API Routes**
+- GET `/api/admin/users?search=x` - List all users (admin-only)
+- POST `/api/admin/users` - Create new user (admin-only)
+- PUT `/api/admin/users/:id` - Update user (admin-only)
+- DELETE `/api/admin/users/:id` - Delete user (admin-only)
+- All routes verify admin role and return proper status codes
+- Password hashed with scrypt using `hashPassword()`
+- Vietnamese error messages for validation failures
+
+**Security Implementation**
+- Admin role verification on all endpoints (403 Forbidden for non-admin)
+- Session verification (401 Unauthorized if not authenticated)
+- Password hashing with scrypt salt+derivedKey format
+- Email format validation (RFC compliant regex)
+- Duplicate email prevention (database constraint 23505)
+- Password length validation (minimum 8 characters)
+- Updated sidebar.tsx with "Quản lý người dùng" link
+
 ## Future Development Phases
 
-- **Phase 8:** Admin user management
 - **Phase 9:** Admin price management
 - **Phase 10:** Excel upload & parsing
 - **Phase 11:** Brand settings management

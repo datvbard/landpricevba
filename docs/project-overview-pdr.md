@@ -1,8 +1,8 @@
 # Land Price App - Project Overview & Product Development Requirements
 
-**Version:** 1.6.0
-**Last Updated:** 2025-12-29 (Phase 7 Complete)
-**Status:** Phase 7 Complete - 58% Overall (7 of 12 phases)
+**Version:** 1.7.0
+**Last Updated:** 2025-12-29 (Phase 8 Complete)
+**Status:** Phase 8 Complete - 67% Overall (8 of 12 phases)
 **Client:** Agribank Trà Vinh
 
 ## Executive Summary
@@ -179,9 +179,45 @@ Empower citizens and real estate professionals to quickly access accurate proper
 **Timeline:** 2025-12-29
 **Team:** Full-Stack Development
 
-### Phase 8-12: Future Phases (PLANNED)
+### Phase 8: Admin User Management (COMPLETE)
 
-Detailed planning for phases 8-12 in project roadmap
+**Status:** Complete (as of 2025-12-29)
+
+**Deliverables:**
+- User CRUD operations with admin-only access verification
+- Password hashing using scrypt (Better Auth compatible)
+- Email validation on create/update
+- User form modal with validation (full_name, email, phone, password, role, is_active)
+- Users table display (name, email, phone, role, status, creation date)
+- Search/filter functionality (email, name, phone)
+- Self-deletion prevention
+- Admin-verified role checks on all endpoints
+- API endpoints: GET/POST /api/admin/users, PUT/DELETE /api/admin/users/[id]
+
+**Key Features Implemented:**
+- GET /api/admin/users - Returns paginated user list with optional search
+- POST /api/admin/users - Creates new user with email validation
+- PUT /api/admin/users/:id - Updates user (excluding password on edit if blank)
+- DELETE /api/admin/users/:id - Removes user record
+- lib/api/users.ts - Client functions for user CRUD with error handling
+- components/admin/user-form.tsx - Modal form with validation
+- app/(admin)/users/page.tsx - Users table with create/edit/delete actions
+- Updated sidebar.tsx with Users Management link
+
+**Security Features:**
+- Admin role verification on all endpoints
+- Password hashing with scrypt before storage
+- Email format validation (RFC compliant)
+- Duplicate email prevention (database constraint)
+- Vietnamese error messages
+- Password optional on edit (leave blank to keep current)
+
+**Timeline:** 2025-12-29
+**Team:** Full-Stack Development
+
+### Phase 9-12: Future Phases (PLANNED)
+
+Detailed planning for phases 9-12 in project roadmap
 
 ## Functional Requirements
 
@@ -315,7 +351,45 @@ Detailed planning for phases 8-12 in project roadmap
 - Extract land type from coefficients_json.landType.name
 - Extract location from coefficients_json.location.name
 
-### Phase 8+ (Future Requirements Listed in Phase Documents)
+### Phase 8 - Admin User Management
+
+**FR8.1: User List Display**
+- Fetch all users from database (admin-only)
+- Display user table with columns: name, email, phone, role, status, creation date
+- Support search/filter by email, name, or phone
+- Show user count
+- Display loading and error states
+
+**FR8.2: User Creation**
+- Provide modal form for creating new users
+- Validate required fields: email, password
+- Validate email format (RFC compliant)
+- Validate password length (min 8 characters)
+- Hash password using scrypt before storage
+- Support optional fields: full_name, phone
+- Set default role to 'user'
+- Set default is_active to true
+
+**FR8.3: User Update**
+- Provide modal form for editing existing users
+- Allow edit of: email, phone, role, full_name, is_active
+- Make password optional on edit (leave blank to keep current)
+- Validate email and password same as create
+
+**FR8.4: User Deletion**
+- Support delete action with confirmation dialog
+- Prevent admin from deleting themselves
+- Remove user record from database
+- Update user count after delete
+
+**FR8.5: Security & Access Control**
+- Verify admin role on all user management endpoints
+- Return 403 Forbidden for non-admin users
+- Return 401 Unauthorized for unauthenticated requests
+- Use scrypt password hashing (Better Auth compatible)
+- Prevent duplicate email addresses
+
+### Phase 9+ (Future Requirements Listed in Phase Documents)
 
 ## Non-Functional Requirements
 

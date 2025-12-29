@@ -61,7 +61,7 @@ const navSections = [
       { href: '/dashboard', label: 'Tổng quan', icon: HomeIcon },
       { href: '#', label: 'Quản lý Giá Đất', icon: PriceIcon, badge: '250' },
       { href: '#', label: 'Quản lý Hệ Số', icon: CoefficientIcon },
-      { href: '#', label: 'Quản lý Users', icon: UsersIcon },
+      { href: '/users', label: 'Quản lý Users', icon: UsersIcon },
     ]
   },
   {

@@ -50,3 +50,29 @@ export const auth = betterAuth({
 
 export type Session = typeof auth.$Infer.Session
 export type User = typeof auth.$Infer.Session.user
+
+/**
+ * Hash password using scrypt (Better Auth compatible)
+ */
+export async function hashPassword(password: string): Promise<string> {
+  const { scrypt, randomBytes } = await import('crypto')
+  const { promisify } = await import('util')
+  const scryptAsync = promisify(scrypt)
+
+  const salt = randomBytes(16).toString('hex')
+  const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer
+  return `${salt}:${derivedKey.toString('hex')}`
+}
+
+/**
+ * Verify password against hash
+ */
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  const { scrypt, timingSafeEqual } = await import('crypto')
+  const { promisify } = await import('util')
+  const scryptAsync = promisify(scrypt)
+
+  const [salt, key] = hash.split(':')
+  const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer
+  return timingSafeEqual(Buffer.from(key, 'hex'), derivedKey)
+}
