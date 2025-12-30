@@ -350,6 +350,91 @@ export interface Database {
           updated_at?: string
         }
       }
+      coefficient_types: {
+        Row: {
+          id: string
+          code: string
+          name: string
+          description: string | null
+          has_range: boolean
+          range_field_name: string | null
+          range_unit: string | null
+          has_description: boolean
+          sort_order: number
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          code: string
+          name: string
+          description?: string | null
+          has_range?: boolean
+          range_field_name?: string | null
+          range_unit?: string | null
+          has_description?: boolean
+          sort_order?: number
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          code?: string
+          name?: string
+          description?: string | null
+          has_range?: boolean
+          range_field_name?: string | null
+          range_unit?: string | null
+          has_description?: boolean
+          sort_order?: number
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      coefficient_values: {
+        Row: {
+          id: string
+          type_id: string
+          code: string
+          name: string
+          description: string | null
+          coefficient: number
+          range_min: number | null
+          range_max: number | null
+          sort_order: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          type_id: string
+          code: string
+          name: string
+          description?: string | null
+          coefficient?: number
+          range_min?: number | null
+          range_max?: number | null
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          type_id?: string
+          code?: string
+          name?: string
+          description?: string | null
+          coefficient?: number
+          range_min?: number | null
+          range_max?: number | null
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
@@ -379,6 +464,8 @@ export type DepthCoefficient = Database['public']['Tables']['depth_coefficients'
 export type FengShuiCoefficient = Database['public']['Tables']['feng_shui_coefficients']['Row']
 export type SearchHistory = Database['public']['Tables']['search_history']['Row']
 export type BrandSetting = Database['public']['Tables']['brand_settings']['Row']
+export type CoefficientType = Database['public']['Tables']['coefficient_types']['Row']
+export type CoefficientValue = Database['public']['Tables']['coefficient_values']['Row']
 
 // Insert types (for INSERT queries)
 export type UserInsert = Database['public']['Tables']['users']['Insert']
@@ -386,11 +473,15 @@ export type DistrictInsert = Database['public']['Tables']['districts']['Insert']
 export type StreetInsert = Database['public']['Tables']['streets']['Insert']
 export type SegmentInsert = Database['public']['Tables']['segments']['Insert']
 export type SearchHistoryInsert = Database['public']['Tables']['search_history']['Insert']
+export type CoefficientTypeInsert = Database['public']['Tables']['coefficient_types']['Insert']
+export type CoefficientValueInsert = Database['public']['Tables']['coefficient_values']['Insert']
 
 // Update types (for UPDATE queries)
 export type UserUpdate = Database['public']['Tables']['users']['Update']
 export type SegmentUpdate = Database['public']['Tables']['segments']['Update']
 export type BrandSettingUpdate = Database['public']['Tables']['brand_settings']['Update']
+export type CoefficientTypeUpdate = Database['public']['Tables']['coefficient_types']['Update']
+export type CoefficientValueUpdate = Database['public']['Tables']['coefficient_values']['Update']
 
 // ============================================================================
 // Joined Types (for queries with relations)

@@ -102,3 +102,58 @@ export function formatPriceWithUnit(price: number): string {
   }
   return `${formatPrice(price)} đ`
 }
+
+export interface CreateSegmentInput {
+  district_name: string
+  street_name: string
+  segment_from: string
+  segment_to: string
+  base_price_min?: number
+  base_price_max?: number
+  government_price?: number
+  adjustment_coef_min?: number
+  adjustment_coef_max?: number
+}
+
+/**
+ * Create a new segment
+ */
+export async function createSegment(data: CreateSegmentInput): Promise<SegmentWithPath> {
+  const res = await fetch('/api/admin/prices', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.error || 'Không thể tạo đoạn đường')
+  }
+  const result = await res.json()
+  return result.data
+}
+
+/**
+ * Delete a segment
+ */
+export async function deleteSegment(id: string): Promise<void> {
+  const res = await fetch(`/api/admin/prices/${id}`, {
+    method: 'DELETE',
+  })
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.error || 'Không thể xóa đoạn đường')
+  }
+}
+
+/**
+ * Delete all price data (segments, streets, districts)
+ */
+export async function deleteAllPrices(): Promise<void> {
+  const res = await fetch('/api/admin/prices', {
+    method: 'DELETE',
+  })
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.error || 'Không thể xóa dữ liệu')
+  }
+}

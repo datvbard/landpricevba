@@ -20,9 +20,9 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check admin role
+    // Check admin role from Better Auth 'user' table
     const { data: adminUser } = await supabaseAdmin
-      .from('users')
+      .from('user')
       .select('role')
       .eq('id', session.user.id)
       .single()
@@ -131,6 +131,48 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ success: true, data })
   } catch (error) {
     console.error('Segment PUT error:', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
+}
+
+/**
+ * DELETE /api/admin/prices/[id] - Delete segment (admin only)
+ */
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
+  try {
+    const { id } = await params
+
+    // Verify admin session
+    const session = await auth.api.getSession({ headers: await headers() })
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Check admin role from Better Auth 'user' table
+    const { data: adminUser } = await supabaseAdmin
+      .from('user')
+      .select('role')
+      .eq('id', session.user.id)
+      .single()
+
+    if (adminUser?.role !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden: Admin access required' }, { status: 403 })
+    }
+
+    // Delete segment
+    const { error } = await supabaseAdmin
+      .from('segments')
+      .delete()
+      .eq('id', id)
+
+    if (error) {
+      console.error('Error deleting segment:', error)
+      return NextResponse.json({ error: 'Failed to delete segment' }, { status: 500 })
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Segment DELETE error:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

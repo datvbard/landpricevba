@@ -20,9 +20,9 @@ export async function PUT(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check admin role
+    // Check admin role from Better Auth 'user' table
     const { data: adminUser } = await supabaseAdmin
-      .from('users')
+      .from('user')
       .select('role')
       .eq('id', session.user.id)
       .single()
@@ -105,9 +105,9 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check admin role
+    // Check admin role from Better Auth 'user' table
     const { data: adminUser } = await supabaseAdmin
-      .from('users')
+      .from('user')
       .select('role')
       .eq('id', session.user.id)
       .single()

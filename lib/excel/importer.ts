@@ -236,23 +236,34 @@ async function importStreetWithSegments(
 }
 
 /**
- * Import coefficients
+ * Import coefficients using the new dynamic structure
  */
 async function importCoefficients(
   coefficients: ParsedExcel['coefficients'],
   result: ImportResult,
   onProgress?: (progress: ImportProgress) => void
 ): Promise<void> {
-  const types = [
-    { key: 'landTypes', table: 'land_type_coefficients', name: 'Loại đất' },
-    { key: 'locations', table: 'location_coefficients', name: 'Vị trí' },
-    { key: 'areas', table: 'area_coefficients', name: 'Diện tích' },
-    { key: 'depths', table: 'depth_coefficients', name: 'Chiều sâu' },
-    { key: 'fengShuis', table: 'feng_shui_coefficients', name: 'Phong thủy' },
+  // Map old keys to new type codes
+  const typeMapping = [
+    { key: 'landTypes', typeCode: 'land_type', name: 'Loại đất' },
+    { key: 'locations', typeCode: 'location', name: 'Vị trí' },
+    { key: 'areas', typeCode: 'area', name: 'Diện tích' },
+    { key: 'depths', typeCode: 'depth', name: 'Chiều sâu' },
+    { key: 'fengShuis', typeCode: 'feng_shui', name: 'Phong thủy' },
   ] as const
 
-  for (let i = 0; i < types.length; i++) {
-    const { key, table, name } = types[i]
+  // Fetch all type IDs upfront
+  const { data: allTypes } = await supabaseAdmin
+    .from('coefficient_types')
+    .select('id, code')
+
+  const typeIdMap = new Map<string, string>()
+  for (const t of allTypes || []) {
+    typeIdMap.set(t.code, t.id)
+  }
+
+  for (let i = 0; i < typeMapping.length; i++) {
+    const { key, typeCode, name } = typeMapping[i]
     const items = coefficients[key]
 
     onProgress?.({
@@ -264,53 +275,59 @@ async function importCoefficients(
 
     if (!items || items.length === 0) continue
 
+    const typeId = typeIdMap.get(typeCode)
+    if (!typeId) {
+      result.errors.push(`Không tìm thấy loại hệ số: ${typeCode}`)
+      continue
+    }
+
     for (const item of items) {
-      await upsertCoefficient(table, item, result)
+      await upsertCoefficientValue(typeId, item, result)
     }
   }
 }
 
 /**
- * Upsert a single coefficient
+ * Upsert a single coefficient value into the new dynamic structure
  */
-async function upsertCoefficient(
-  table: string,
+async function upsertCoefficientValue(
+  typeId: string,
   item: ParsedCoefficient,
   result: ImportResult
 ): Promise<void> {
-  // Build update data based on table type
+  // Build update data for the new unified table
   const updateData: Record<string, unknown> = {
     name: item.name,
     coefficient: item.coefficient,
+    description: item.description || null,
   }
 
-  if (item.description !== undefined) {
-    updateData.description = item.description
-  }
+  // Map old range fields to new unified range_min/range_max
   if (item.widthMin !== undefined) {
-    updateData.width_min = item.widthMin
-    updateData.width_max = item.widthMax
+    updateData.range_min = item.widthMin
+    updateData.range_max = item.widthMax
   }
   if (item.areaMin !== undefined) {
-    updateData.area_min = item.areaMin
-    updateData.area_max = item.areaMax
+    updateData.range_min = item.areaMin
+    updateData.range_max = item.areaMax
   }
   if (item.depthMin !== undefined) {
-    updateData.depth_min = item.depthMin
-    updateData.depth_max = item.depthMax
+    updateData.range_min = item.depthMin
+    updateData.range_max = item.depthMax
   }
 
-  // Check if exists by code
+  // Check if exists by code within this type
   const { data: existing } = await supabaseAdmin
-    .from(table)
+    .from('coefficient_values')
     .select('id')
+    .eq('type_id', typeId)
     .eq('code', item.code)
     .single()
 
   if (existing) {
     // Update existing
     const { error } = await supabaseAdmin
-      .from(table)
+      .from('coefficient_values')
       .update(updateData)
       .eq('id', existing.id)
 
@@ -320,8 +337,9 @@ async function upsertCoefficient(
   } else {
     // Insert new
     const { error } = await supabaseAdmin
-      .from(table)
+      .from('coefficient_values')
       .insert({
+        type_id: typeId,
         code: item.code,
         ...updateData,
         sort_order: 999,

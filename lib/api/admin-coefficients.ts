@@ -121,3 +121,65 @@ export function getCoefficientTableName(type: CoefficientType): string {
 export function formatCoefficient(value: number): string {
   return value.toFixed(2)
 }
+
+export interface CreateCoefficientInput {
+  code: string
+  name: string
+  description?: string | null
+  coefficient: number
+  // Location specific
+  width_min?: number
+  width_max?: number
+  // Area specific
+  area_min?: number
+  area_max?: number
+  // Depth specific
+  depth_min?: number
+  depth_max?: number
+}
+
+/**
+ * Create a new coefficient
+ */
+export async function createCoefficient(
+  type: CoefficientType,
+  data: CreateCoefficientInput
+): Promise<AnyCoefficient> {
+  const res = await fetch(`/api/admin/coefficients?type=${type}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  })
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.error || 'Không thể tạo hệ số')
+  }
+  const result = await res.json()
+  return result.data
+}
+
+/**
+ * Delete a coefficient
+ */
+export async function deleteCoefficient(type: CoefficientType, id: string): Promise<void> {
+  const res = await fetch(`/api/admin/coefficients/${id}?type=${type}`, {
+    method: 'DELETE',
+  })
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.error || 'Không thể xóa hệ số')
+  }
+}
+
+/**
+ * Delete all coefficients of a type (or all types if type='all')
+ */
+export async function deleteAllCoefficients(type: CoefficientType | 'all'): Promise<void> {
+  const res = await fetch(`/api/admin/coefficients?type=${type}`, {
+    method: 'DELETE',
+  })
+  if (!res.ok) {
+    const error = await res.json()
+    throw new Error(error.error || 'Không thể xóa hệ số')
+  }
+}
