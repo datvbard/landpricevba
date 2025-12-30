@@ -79,29 +79,32 @@ export function parseExcelPreview(buffer: ArrayBuffer): ExcelPreview {
       continue
     }
 
-    const headers = (data[0] || []).map(h => String(h || ''))
+    const headers = (data[0] || []).map(h => String(h || '').toLowerCase())
     const rows = data.slice(1, 11) // First 10 data rows for preview
     const rowCount = data.length - 1
 
-    // Detect sheet type
+    // Detect sheet type by column headers (not sheet name)
     let type: 'district' | 'coefficient' | 'unknown' = 'unknown'
-    const lowerName = sheetName.toLowerCase()
 
-    if (lowerName.includes('quận') || lowerName.includes('huyện') || lowerName.includes('district')) {
-      type = 'district'
-    } else if (
-      lowerName.includes('loại đất') || lowerName.includes('vị trí') ||
-      lowerName.includes('diện tích') || lowerName.includes('chiều sâu') ||
-      lowerName.includes('phong thủy') || lowerName.includes('hệ số') ||
-      lowerName.includes('coefficient')
-    ) {
+    // Price sheet: has "địa phương" + "tên đường" + price columns
+    const hasPriceColumns = headers.some(h => h.includes('địa phương') || h.includes('dia_phuong')) &&
+                           headers.some(h => h.includes('tên đường') || h.includes('đường') || h.includes('street')) &&
+                           headers.some(h => h.includes('giá') || h.includes('price'))
+
+    // Coefficient sheet: has "mã" + "hệ số" columns
+    const hasCoefficientColumns = headers.some(h => h.includes('mã') || h === 'code' || h === 'ma') &&
+                                  headers.some(h => h.includes('hệ số') || h.includes('coefficient') || h.includes('he_so'))
+
+    if (hasPriceColumns) {
+      type = 'district' // Actually locality/price data
+    } else if (hasCoefficientColumns) {
       type = 'coefficient'
     }
 
     sheets.push({
       name: sheetName,
       type,
-      headers,
+      headers: (data[0] || []).map(h => String(h || '')), // Original case for display
       rows,
       rowCount,
     })
@@ -140,33 +143,55 @@ export function parseExcelFull(buffer: ArrayBuffer): ParsedExcel {
       continue
     }
 
-    const lowerName = sheetName.toLowerCase()
+    // Get headers to detect sheet type
+    const rawData = XLSX.utils.sheet_to_json<(string | number)[]>(sheet, { header: 1 })
+    const headers = (rawData[0] || []).map(h => String(h || '').toLowerCase())
 
-    // Parse district sheets
-    if (lowerName.includes('quận') || lowerName.includes('huyện') || lowerName.includes('district')) {
-      const segments = parseDistrictSheet(data, sheetName, result.errors)
-      if (segments.length > 0) {
-        result.districts.push({
-          districtName: extractDistrictName(sheetName),
-          segments,
-        })
+    // Detect price sheet by columns: has "địa phương" + "tên đường" + price columns
+    const isPriceSheet = headers.some(h => h.includes('địa phương') || h.includes('dia_phuong')) &&
+                        headers.some(h => h.includes('tên đường') || h.includes('đường') || h.includes('street')) &&
+                        headers.some(h => h.includes('giá') || h.includes('price'))
+
+    // Detect coefficient sheets by "mã" + "hệ số" columns
+    const isCoefficientSheet = headers.some(h => h.includes('mã') || h === 'code' || h === 'ma') &&
+                               headers.some(h => h.includes('hệ số') || h.includes('coefficient') || h.includes('he_so'))
+
+    if (isPriceSheet) {
+      // Parse price data and group by "Địa phương" column
+      const localitySegments = parsePriceSheet(data, sheetName, result.errors)
+      // Merge into districts (localities)
+      for (const [locality, segments] of Object.entries(localitySegments)) {
+        const existing = result.districts.find(d => d.districtName === locality)
+        if (existing) {
+          existing.segments.push(...segments)
+        } else {
+          result.districts.push({ districtName: locality, segments })
+        }
       }
-    }
-    // Parse coefficient sheets
-    else if (lowerName.includes('loại đất') || lowerName.includes('land_type')) {
-      result.coefficients.landTypes = parseLandTypeSheet(data, result.errors)
-    }
-    else if (lowerName.includes('vị trí') || lowerName.includes('location')) {
-      result.coefficients.locations = parseLocationSheet(data, result.errors)
-    }
-    else if (lowerName.includes('diện tích') || lowerName.includes('area')) {
-      result.coefficients.areas = parseAreaSheet(data, result.errors)
-    }
-    else if (lowerName.includes('chiều sâu') || lowerName.includes('depth')) {
-      result.coefficients.depths = parseDepthSheet(data, result.errors)
-    }
-    else if (lowerName.includes('phong thủy') || lowerName.includes('feng_shui')) {
-      result.coefficients.fengShuis = parseFengShuiSheet(data, result.errors)
+    } else if (isCoefficientSheet) {
+      // Detect specific coefficient type by headers
+      const hasWidthCols = headers.some(h => h.includes('độ rộng') || h.includes('width'))
+      const hasAreaCols = headers.some(h => h.includes('diện tích') && (h.includes('min') || h.includes('max')))
+      const hasDepthCols = headers.some(h => h.includes('chiều sâu') || h.includes('depth'))
+
+      if (hasWidthCols) {
+        result.coefficients.locations = parseLocationSheet(data, result.errors)
+      } else if (hasAreaCols) {
+        result.coefficients.areas = parseAreaSheet(data, result.errors)
+      } else if (hasDepthCols) {
+        result.coefficients.depths = parseDepthSheet(data, result.errors)
+      } else {
+        // Check sheet name as fallback for land_type vs feng_shui
+        const lowerName = sheetName.toLowerCase()
+        if (lowerName.includes('loại đất') || lowerName.includes('land')) {
+          result.coefficients.landTypes = parseLandTypeSheet(data, result.errors)
+        } else if (lowerName.includes('phong thủy') || lowerName.includes('feng')) {
+          result.coefficients.fengShuis = parseFengShuiSheet(data, result.errors)
+        } else {
+          // Default: treat as land type
+          result.coefficients.landTypes = parseLandTypeSheet(data, result.errors)
+        }
+      }
     }
   }
 
@@ -174,38 +199,22 @@ export function parseExcelFull(buffer: ArrayBuffer): ParsedExcel {
 }
 
 /**
- * Extract district name from sheet name
+ * Parse price sheet and group segments by "Địa phương" column
+ * Returns: { [locality: string]: ParsedSegment[] }
  */
-function extractDistrictName(sheetName: string): string {
-  // Remove common prefixes/suffixes
-  let name = sheetName
-    .replace(/^(quận|huyện|q\.|h\.)/i, '')
-    .replace(/district/i, '')
-    .trim()
-
-  // Capitalize first letter
-  if (name.length > 0) {
-    name = name.charAt(0).toUpperCase() + name.slice(1)
-  }
-
-  return name || sheetName
-}
-
-/**
- * Parse district sheet (segments data)
- */
-function parseDistrictSheet(
+function parsePriceSheet(
   data: Record<string, unknown>[],
   sheetName: string,
   errors: string[]
-): ParsedSegment[] {
-  const segments: ParsedSegment[] = []
+): Record<string, ParsedSegment[]> {
+  const result: Record<string, ParsedSegment[]> = {}
 
   for (let i = 0; i < data.length; i++) {
     const row = data[i]
     const rowNum = i + 2 // Excel row number (1-indexed + header)
 
-    // Find columns by various possible names
+    // Find "Địa phương" column (locality)
+    const locality = findValue(row, ['địa phương', 'dia_phuong', 'locality', 'ward', 'xã', 'phường'])
     const streetName = findValue(row, ['tên đường', 'đường', 'street', 'street_name', 'ten_duong'])
     const segmentFrom = findValue(row, ['từ', 'đoạn từ', 'from', 'segment_from', 'tu'])
     const segmentTo = findValue(row, ['đến', 'đoạn đến', 'to', 'segment_to', 'den'])
@@ -215,12 +224,22 @@ function parseDistrictSheet(
     const adjustmentCoefMin = findNumber(row, ['hệ số min', 'hs min', 'adjustment_coef_min', 'coef_min']) || 1
     const adjustmentCoefMax = findNumber(row, ['hệ số max', 'hs max', 'adjustment_coef_max', 'coef_max']) || 1
 
+    if (!locality) {
+      errors.push(`[${sheetName}] Dòng ${rowNum}: Thiếu địa phương`)
+      continue
+    }
+
     if (!streetName) {
       errors.push(`[${sheetName}] Dòng ${rowNum}: Thiếu tên đường`)
       continue
     }
 
-    segments.push({
+    const localityName = String(locality).trim()
+    if (!result[localityName]) {
+      result[localityName] = []
+    }
+
+    result[localityName].push({
       streetName: String(streetName),
       segmentFrom: String(segmentFrom || 'Đầu đường'),
       segmentTo: String(segmentTo || 'Cuối đường'),
@@ -232,7 +251,7 @@ function parseDistrictSheet(
     })
   }
 
-  return segments
+  return result
 }
 
 /**

@@ -50,8 +50,8 @@ export async function GET(request: NextRequest) {
     if (streetId) {
       query = query.eq('street_id', streetId)
     } else if (districtId) {
-      // Filter by district through streets
-      query = query.eq('street.district.id', districtId)
+      // Filter by district through streets (use actual table name, not alias)
+      query = query.eq('streets.district_id', districtId)
     }
 
     // Search filter (search in street name or segment description)

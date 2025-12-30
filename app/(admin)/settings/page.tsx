@@ -333,7 +333,7 @@ export default function SettingsPage() {
             <ul className="text-sm text-gray-600 space-y-1">
               <li className="pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-green-600 before:font-bold">Định dạng: .xlsx hoặc .xls</li>
               <li className="pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-green-600 before:font-bold">Kích thước tối đa: 10MB</li>
-              <li className="pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-green-600 before:font-bold">Các sheet quận/huyện: Tên đường, đoạn từ, đoạn đến, giá min, giá max, giá nhà nước</li>
+              <li className="pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-green-600 before:font-bold">Sheet giá đất: Địa phương, Tên đường, Đoạn từ, Đoạn đến, Giá min, Giá max, Giá nhà nước</li>
               <li className="pl-4 relative before:content-['•'] before:absolute before:left-0 before:text-green-600 before:font-bold">Các sheet hệ số: Mã, tên, hệ số, mô tả (tùy loại)</li>
             </ul>
           </div>
@@ -472,7 +472,7 @@ export default function SettingsPage() {
                     <div className="text-lg font-bold text-blue-600">
                       {importResult.stats.districtsCreated + importResult.stats.districtsUpdated}
                     </div>
-                    <div className="text-gray-500">Quận/Huyện</div>
+                    <div className="text-gray-500">Địa phương</div>
                   </div>
                   <div className="bg-white rounded p-2 text-center">
                     <div className="text-lg font-bold text-purple-600">

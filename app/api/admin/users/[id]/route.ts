@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { auth, hashPassword } from '@/lib/auth/auth'
+import { auth } from '@/lib/auth/auth'
 import { headers } from 'next/headers'
 import { supabaseAdmin } from '@/lib/supabase/server'
 
@@ -34,9 +34,9 @@ export async function PUT(request: Request, { params }: RouteParams) {
     const body = await request.json()
     const { email, phone, password, role, full_name, is_active } = body
 
-    // Build update object
+    // Build update object (Better Auth uses camelCase)
     const updateData: Record<string, unknown> = {
-      updated_at: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     }
 
     if (email !== undefined) {
@@ -53,7 +53,7 @@ export async function PUT(request: Request, { params }: RouteParams) {
     if (full_name !== undefined) updateData.full_name = full_name || null
     if (is_active !== undefined) updateData.is_active = is_active
 
-    // Hash new password if provided
+    // Handle password change through Better Auth if provided
     if (password) {
       if (password.length < 8) {
         return NextResponse.json(
@@ -61,15 +61,27 @@ export async function PUT(request: Request, { params }: RouteParams) {
           { status: 400 }
         )
       }
-      updateData.password_hash = await hashPassword(password)
+      // Update password through Better Auth's account table
+      const { scrypt, randomBytes } = await import('crypto')
+      const { promisify } = await import('util')
+      const scryptAsync = promisify(scrypt)
+      const salt = randomBytes(16).toString('hex')
+      const derivedKey = (await scryptAsync(password, salt, 64)) as Buffer
+      const hashedPassword = `${salt}:${derivedKey.toString('hex')}`
+
+      await supabaseAdmin
+        .from('account')
+        .update({ password: hashedPassword })
+        .eq('userId', id)
+        .eq('providerId', 'credential')
     }
 
-    // Update user
+    // Update user in Better Auth 'user' table
     const { data, error } = await supabaseAdmin
-      .from('users')
+      .from('user')
       .update(updateData)
       .eq('id', id)
-      .select('id, email, phone, role, full_name, is_active, created_at, updated_at')
+      .select('id, email, name, phone, role, full_name, is_active, createdAt, updatedAt')
       .single()
 
     if (error) {
@@ -124,9 +136,9 @@ export async function DELETE(request: Request, { params }: RouteParams) {
       )
     }
 
-    // Delete user
+    // Delete user from Better Auth 'user' table (cascades to 'account' and 'session')
     const { error } = await supabaseAdmin
-      .from('users')
+      .from('user')
       .delete()
       .eq('id', id)
 

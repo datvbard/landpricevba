@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth/auth'
 import { headers } from 'next/headers'
 import { supabaseAdmin } from '@/lib/supabase/server'
-import { hashPassword } from '@/lib/auth/auth'
 
 /**
  * GET /api/admin/users - Fetch all users (admin only)
@@ -31,11 +30,11 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search')
 
-    // Build query
+    // Build query - use 'user' table (Better Auth uses camelCase)
     let query = supabaseAdmin
-      .from('users')
-      .select('id, email, phone, role, full_name, is_active, created_at, updated_at', { count: 'exact' })
-      .order('created_at', { ascending: false })
+      .from('user')
+      .select('id, email, name, phone, role, full_name, is_active, createdAt, updatedAt', { count: 'exact' })
+      .order('createdAt', { ascending: false })
 
     // Apply search filter
     if (search) {
@@ -103,21 +102,30 @@ export async function POST(request: Request) {
       )
     }
 
-    // Hash password using Better Auth
-    const password_hash = await hashPassword(password)
-
-    // Insert user
-    const { data, error } = await supabaseAdmin
-      .from('users')
-      .insert({
+    // Use Better Auth's sign-up API to create user (ensures proper password hashing)
+    const signUpResult = await auth.api.signUpEmail({
+      body: {
         email,
+        password,
+        name: full_name || email.split('@')[0],
+      },
+    })
+
+    if (!signUpResult?.user?.id) {
+      return NextResponse.json({ error: 'Không thể tạo tài khoản' }, { status: 500 })
+    }
+
+    // Update additional fields in user table
+    const { data, error } = await supabaseAdmin
+      .from('user')
+      .update({
         phone: phone || null,
-        password_hash,
         role: role || 'user',
         full_name: full_name || null,
         is_active: is_active ?? true,
       })
-      .select('id, email, phone, role, full_name, is_active, created_at, updated_at')
+      .eq('id', signUpResult.user.id)
+      .select('id, email, name, phone, role, full_name, is_active, createdAt, updatedAt')
       .single()
 
     if (error) {

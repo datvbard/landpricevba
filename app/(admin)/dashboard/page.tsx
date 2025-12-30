@@ -74,7 +74,7 @@ const activityIcons: Record<string, React.FC> = {
 // Table columns
 const columns = [
   { key: 'stt', header: 'STT', className: 'w-[50px] text-center font-medium text-gray-500' },
-  { key: 'district', header: 'Quận/Huyện', className: 'font-medium text-gray-700' },
+  { key: 'district', header: 'Địa phương', className: 'font-medium text-gray-700' },
   { key: 'street', header: 'Tên đường', className: 'font-semibold text-gray-800' },
   { key: 'segmentFrom', header: 'Đoạn (Từ)', className: 'text-gray-600 text-xs max-w-[150px] truncate' },
   { key: 'segmentTo', header: 'Đoạn (Đến)', className: 'text-gray-600 text-xs max-w-[150px] truncate' },

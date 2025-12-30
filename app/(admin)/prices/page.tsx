@@ -367,7 +367,7 @@ export default function PricesPage() {
             }}
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary"
           >
-            <option value="">Tất cả quận/huyện</option>
+            <option value="">Tất cả địa phương</option>
             {districts.map(d => (
               <option key={d.id} value={d.id}>{d.name}</option>
             ))}
@@ -517,7 +517,7 @@ export default function PricesPage() {
             <h2 className="text-xl font-bold text-gray-800 mb-4">Xác nhận xóa tất cả</h2>
             <p className="text-gray-600 mb-6">
               Bạn có chắc chắn muốn xóa <strong>TẤT CẢ</strong> dữ liệu giá đất?
-              Hành động này không thể hoàn tác và sẽ xóa toàn bộ quận/huyện, đường và đoạn đường.
+              Hành động này không thể hoàn tác và sẽ xóa toàn bộ địa phương, đường và đoạn đường.
             </p>
             <div className="flex gap-3">
               <button
@@ -570,7 +570,7 @@ export default function PricesPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Quận/Huyện <span className="text-red-500">*</span>
+                    Địa phương <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"

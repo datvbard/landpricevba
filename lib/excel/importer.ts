@@ -116,7 +116,7 @@ async function importDistrict(district: ParsedDistrict, result: ImportResult): P
       .single()
 
     if (error || !newDistrict) {
-      result.errors.push(`Không thể tạo quận/huyện: ${district.districtName}`)
+      result.errors.push(`Không thể tạo địa phương: ${district.districtName}`)
       return
     }
     districtId = newDistrict.id

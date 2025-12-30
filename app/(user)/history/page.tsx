@@ -133,7 +133,7 @@ export default function HistoryPage() {
           </div>
           <div className="bg-white/15 backdrop-blur-[10px] rounded-xl p-4 text-center text-white">
             <div className="text-2xl font-bold mb-1">{new Set(history.map(h => h.district_name)).size}</div>
-            <div className="text-xs opacity-90">Quận/Huyện</div>
+            <div className="text-xs opacity-90">Địa phương</div>
           </div>
           <div className="bg-white/15 backdrop-blur-[10px] rounded-xl p-4 text-center text-white">
             <div className="text-2xl font-bold mb-1">{history.length}</div>

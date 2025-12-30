@@ -163,7 +163,7 @@ export default function HomePage() {
 
   const handleSearch = () => {
     if (!districtId) {
-      alert('Vui lòng chọn Quận/Huyện')
+      alert('Vui lòng chọn Địa phương')
       return
     }
     if (!streetId) {
@@ -225,7 +225,7 @@ export default function HomePage() {
           <div className="grid grid-cols-3 gap-3 mt-4">
             <div className="text-center p-3 bg-white/10 rounded-lg">
               <div className="text-xl font-bold">{districts.length || 9}</div>
-              <div className="text-xs opacity-80 mt-1">Quận/Huyện</div>
+              <div className="text-xs opacity-80 mt-1">Địa phương</div>
             </div>
             <div className="text-center p-3 bg-white/10 rounded-lg">
               <div className="text-xl font-bold">250+</div>
@@ -258,17 +258,17 @@ export default function HomePage() {
                 </div>
                 <div className="flex-1">
                   <div className="text-base font-semibold text-gray-800">Chọn vị trí</div>
-                  <div className="text-sm text-gray-500">Chọn quận/huyện, đường và đoạn đường</div>
+                  <div className="text-sm text-gray-500">Chọn địa phương, đường và đoạn đường</div>
                 </div>
               </div>
 
               {/* District Select */}
               <div className="relative">
                 <Select
-                  label="Quận/Huyện"
+                  label="Địa phương"
                   icon={loadingDistricts ? <LoadingSpinner /> : <BuildingIcon />}
                   options={districtOptions}
-                  placeholder={loadingDistricts ? 'Đang tải...' : 'Chọn Quận/Huyện'}
+                  placeholder={loadingDistricts ? 'Đang tải...' : 'Chọn Địa phương'}
                   value={districtId}
                   onChange={(e) => setDistrictId(e.target.value)}
                   disabled={loadingDistricts}
@@ -281,7 +281,7 @@ export default function HomePage() {
                   label="Đường"
                   icon={loadingStreets ? <LoadingSpinner /> : <MapIcon />}
                   options={streetOptions}
-                  placeholder={loadingStreets ? 'Đang tải...' : districtId ? 'Chọn Đường' : 'Chọn Quận/Huyện trước'}
+                  placeholder={loadingStreets ? 'Đang tải...' : districtId ? 'Chọn Đường' : 'Chọn Địa phương trước'}
                   value={streetId}
                   onChange={(e) => setStreetId(e.target.value)}
                   disabled={!districtId || loadingStreets}
