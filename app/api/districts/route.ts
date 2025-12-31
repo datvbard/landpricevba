@@ -28,7 +28,7 @@ export async function GET() {
   // Extract unique districts
   const districtMap = new Map<string, { id: string; code: string; name: string; sort_order: number }>()
   for (const street of streets || []) {
-    const d = street.districts as { id: string; code: string; name: string; sort_order: number } | null
+    const d = street.districts as unknown as { id: string; code: string; name: string; sort_order: number } | null
     if (d && !districtMap.has(d.id)) {
       districtMap.set(d.id, d)
     }

@@ -77,8 +77,8 @@ export async function validateLoginInput(
  * Get user by email or phone (for internal use)
  */
 export async function getUserByIdentifier(identifier: string) {
-  const normalized = normalizeEmailOrPhone(identifier)
-  if (normalized.type === 'invalid') return null
+  const normalized = normalizeIdentifier(identifier)
+  if (normalized.type === 'invalid' || normalized.type === 'username') return null
 
   const query = normalized.type === 'email'
     ? supabaseAdmin.from('user').select('*').eq('email', normalized.value).single()

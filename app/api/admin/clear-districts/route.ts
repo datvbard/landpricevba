@@ -27,11 +27,11 @@ export async function DELETE() {
 
     // Delete in order: segments -> streets -> districts
     console.log('Deleting all segments...')
-    const { error: segErr, count: segCount } = await supabaseAdmin
+    const { error: segErr, data: segData } = await supabaseAdmin
       .from('segments')
       .delete()
       .neq('id', '00000000-0000-0000-0000-000000000000')
-      .select('*', { count: 'exact', head: true })
+      .select()
 
     if (segErr) {
       console.error('Error deleting segments:', segErr)
@@ -39,11 +39,11 @@ export async function DELETE() {
     }
 
     console.log('Deleting all streets...')
-    const { error: streetErr, count: streetCount } = await supabaseAdmin
+    const { error: streetErr, data: streetData } = await supabaseAdmin
       .from('streets')
       .delete()
       .neq('id', '00000000-0000-0000-0000-000000000000')
-      .select('*', { count: 'exact', head: true })
+      .select()
 
     if (streetErr) {
       console.error('Error deleting streets:', streetErr)
@@ -51,11 +51,11 @@ export async function DELETE() {
     }
 
     console.log('Deleting all districts...')
-    const { error: distErr, count: distCount } = await supabaseAdmin
+    const { error: distErr, data: distData } = await supabaseAdmin
       .from('districts')
       .delete()
       .neq('id', '00000000-0000-0000-0000-000000000000')
-      .select('*', { count: 'exact', head: true })
+      .select()
 
     if (distErr) {
       console.error('Error deleting districts:', distErr)
@@ -63,18 +63,18 @@ export async function DELETE() {
     }
 
     // Verify deletion
-    const { count: remaining } = await supabaseAdmin
+    const { data: remaining } = await supabaseAdmin
       .from('districts')
-      .select('*', { count: 'exact', head: true })
+      .select('id')
 
     return NextResponse.json({
       success: true,
       deleted: {
-        segments: segCount || 0,
-        streets: streetCount || 0,
-        districts: distCount || 0,
+        segments: segData?.length || 0,
+        streets: streetData?.length || 0,
+        districts: distData?.length || 0,
       },
-      remainingDistricts: remaining || 0,
+      remainingDistricts: remaining?.length || 0,
     })
   } catch (error) {
     console.error('Clear districts error:', error)
