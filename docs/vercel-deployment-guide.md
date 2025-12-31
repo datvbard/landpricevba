@@ -48,19 +48,57 @@ Tại màn hình Import hoặc **Project Settings** > **Environment Variables**:
 
 | Name | Value | Environment |
 |------|-------|-------------|
+| `DATABASE_URL` | `postgresql://postgres.xxx:password@...` | All |
 | `NEXT_PUBLIC_SUPABASE_URL` | `https://xxx.supabase.co` | All |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `eyJhbGc...` | All |
 | `SUPABASE_SERVICE_ROLE_KEY` | `eyJhbGc...` | All |
 | `BETTER_AUTH_SECRET` | `random-string-32-chars` | All |
 | `NEXT_PUBLIC_APP_URL` | `https://your-domain.vercel.app` | All |
 
-### Bước 2: Lưu Ý Quan Trọng
-- Variables với prefix `NEXT_PUBLIC_` sẽ được expose ở client
-- `SUPABASE_SERVICE_ROLE_KEY` phải được bảo mật (không có prefix)
-- Sau khi thêm variables, cần redeploy để apply
+### Bước 2: Lấy Values từ Supabase
 
-### Bước 3: Generate Auth Secret
+**NEXT_PUBLIC_SUPABASE_URL:**
+- Supabase Dashboard → Settings → API → Project URL
+- Format: `https://[project-id].supabase.co`
+
+**NEXT_PUBLIC_SUPABASE_ANON_KEY & SUPABASE_SERVICE_ROLE_KEY:**
+- Supabase Dashboard → Settings → API → Project API keys
+
+**DATABASE_URL (QUAN TRỌNG cho Better Auth):**
+- Supabase Dashboard → Settings → Database → Connection string → URI
+- Format: `postgresql://postgres.[project-id]:[password]@aws-0-[region].pooler.supabase.com:6543/postgres`
+
+### Bước 3: URL Encode Password
+
+⚠️ **Nếu password chứa ký tự đặc biệt**, cần URL encode:
+
+| Ký tự | URL Encoded |
+|-------|-------------|
+| `@` | `%40` |
+| `#` | `%23` |
+| `$` | `%24` |
+| `&` | `%26` |
+| `+` | `%2B` |
+| `/` | `%2F` |
+| `:` | `%3A` |
+| `=` | `%3D` |
+| `?` | `%3F` |
+
+**Ví dụ:**
+- Password gốc: `Minhan@03092014`
+- Sau encode: `Minhan%4003092014`
+- DATABASE_URL: `postgresql://postgres.xxx:Minhan%4003092014@aws-0-...`
+
+### Bước 4: Lưu Ý Quan Trọng
+- Variables với prefix `NEXT_PUBLIC_` sẽ được expose ở client
+- `SUPABASE_SERVICE_ROLE_KEY` và `DATABASE_URL` phải được bảo mật
+- Sau khi thêm/sửa variables, cần **Redeploy** để apply
+
+### Bước 5: Generate Auth Secret
 ```bash
+# Windows (PowerShell)
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
 # Linux/Mac
 openssl rand -base64 32
 
@@ -222,6 +260,20 @@ Kiểm tra:
 - API route syntax đúng (app router)
 - CORS nếu gọi từ domain khác
 
+### Login Thất Bại (Local OK, Production Fail)
+
+**Nguyên nhân phổ biến:**
+1. Thiếu `DATABASE_URL` environment variable
+2. Password trong DATABASE_URL chưa URL encode
+3. Supabase chưa cho phép Vercel domain
+
+**Giải pháp:**
+1. Thêm `DATABASE_URL` vào Vercel Environment Variables
+2. URL encode ký tự đặc biệt trong password (`@` → `%40`)
+3. Vào Supabase → Authentication → URL Configuration:
+   - Site URL: `https://your-domain.vercel.app`
+   - Redirect URLs: `https://your-domain.vercel.app/**`
+
 ---
 
 ## 9. Redeploy
@@ -308,11 +360,18 @@ export const dynamic = 'force-dynamic'
 - [ ] Build local thành công (`npm run build`)
 - [ ] Type check pass (`npm run type-check`)
 - [ ] ESLint pass (`npm run lint`)
-- [ ] Environment variables đã set trên Vercel
+- [ ] Environment variables đã set trên Vercel (6 biến):
+  - [ ] `DATABASE_URL` (URL encoded nếu password có ký tự đặc biệt)
+  - [ ] `NEXT_PUBLIC_SUPABASE_URL`
+  - [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+  - [ ] `SUPABASE_SERVICE_ROLE_KEY`
+  - [ ] `BETTER_AUTH_SECRET`
+  - [ ] `NEXT_PUBLIC_APP_URL`
 - [ ] Supabase RLS policies đã cấu hình
+- [ ] Supabase URL Configuration đã thêm Vercel domain
 - [ ] Custom domain đã verify (nếu có)
 - [ ] Analytics đã enable
-- [ ] Test production URL sau deploy
+- [ ] Test login/logout trên production URL
 
 ---
 

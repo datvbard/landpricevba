@@ -35,10 +35,10 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { href: '/', label: 'Trang chu', icon: <HomeIcon /> },
-  { href: '/', label: 'Tra cuu', icon: <SearchIcon /> },
-  { href: '/history', label: 'Lich su', icon: <HistoryIcon /> },
-  { href: '#', label: 'Tai khoan', icon: <UserIcon /> },
+  { href: '/', label: 'Trang chủ', icon: <HomeIcon /> },
+  { href: '/', label: 'Tra cứu', icon: <SearchIcon /> },
+  { href: '/history', label: 'Lịch sử', icon: <HistoryIcon /> },
+  { href: '#', label: 'Tài khoản', icon: <UserIcon /> },
 ]
 
 export default function BottomNav() {
